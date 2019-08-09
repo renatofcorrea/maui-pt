@@ -7,3 +7,82 @@ mvn clean package
 the fully standalone runner with all of the dependencies packaged up and ready to use is in the target folder.
 
 java -Dlog4j.configuration=file:///Path/to/your/log4j.xml -jar standalone-1.1-SNAPSHOT.jar
+
+planejamento do experimento de Samela (realizar experimento comparativo sisa maui artigos ci)
+*sistemas
+1.sisa
+2.maui
+*keywords
+1.folksonomia
+*corpus
+1.corpus ci60full (qual o padrão sisa de marcação a utilizar? salvar textos originais?)
+*metricas (tst30, tst60)
+----
+*modelos MAUI (eu seleciono um default e monto a tabela para samela)
+1.trn10 (trn30)
+2.trn20 (trn30)
+3.trn30 (trn30) 
+---corpusciabs, autores deixar para Márcio.
+(ordering or not ordering, stemmer, features, usar wikifier no lugar de wikiminer)
+(repetir ultimo experimento do sisa com o maui)
+(sn como candidate generation, incluir binary feature inthes, quando usa tesauro maui só gera termos do tesauro?)
+
+TESE de Medelyan (https://researchcommons.waikato.ac.nz/bitstream/handle/10289/3513/thesis.pdf?sequence=1&isAllowed=y)
+
+REFERENCES
+(Leininger 2000) - Experiments assessing the quality of human indexing using controlled vocabularies report consistency values between 13% and 70%, with an average of 44.3% 
+(Csonomai and Mihalcea 2008) - back of book indexing
+
+
+OPERATION OF MAUI: Figure 6.1, 6.2, 6.3
+USING MAUI
+command: Figure 6.9
+code for French: Figure 6.10
+p. 126 semi-automatic indexing
+p. 127 graphical visualization of topics (Grineva et al. 2009)
+
+MAUI GENERAL FEATURES (categories +- of Table 7.1, Table 7.2, Table 7.3 for fao-780)
+frequency features
+0 tf
+1 idf
++basic features
+2 tfidf
+3 firstOccur
+occurence features
+4 lastOccur
+5 spreadOccur
++keypraseness feature (bom quando palavras-chaves repetem muito nos documentos)
+6 domainKeyphraseness (trnset keyword frequency)
+(+-)length feature
+7 length
+(+-)thesaurus features
+8 generality (not implemented, in Vocabulary return always 0, wiki based?)
+9 node degree
+x wiki features
+10 wiki_keyphraseness
+11 wiki_inlinks
+12 wiki_generality
+
+three features used in the original Kea (Frank et al., 1999)—
+TFxIDF, first occurrence and keyphraseness 
+kea++ four features, the four features used in Medelyan (2005)—
+TF×IDF, position of the first occurrence, node degree and term length 
+
+VOCABULARY
+Agrovoc (en,fr,es)(7 levels of specificity)(disambiguation terms using ())
+Mesh
+HEP thesaurus (composite:, compositeOf:)
+term length: 1,2,3,4+ (4,5,6,7)
+
+CORPUS 
+seção 7.2 
+FAO-780   ([f 29.6% (kea++) 33% (Maui non-Wik. Features)] 81% of keys appear in docs) table 7.1, 7.3: tfxidf, firstOccur, keyphraseness, node degree, length
+NLM-500 f[26.1% (kea++) 44.6% (Maui non-Wik. Features)] table7.4
+CERN-290 f[34.5%(kea++) 42.4% (Maui non-Wik. Features)] table7.4
+FAO-67 FR ([f 30.4%(kea++) 33.1%(Maui all features)] table 7.5,  74% of keys appear in docs, vocabulary language = fr, encoding=UTF-8, leave-one-out) stemmer is explained at http://snowball.tartarus.org/
+FAO-47 ES ([f 21.1%(kea++) 25.7%(Maui all features)] table 7.5, 66% of keys appear in docs, vocabulary language = fr, encoding=UTF-8, leave-one-out) stemmer is explained at http://snowball.tartarus.org/
+FAO-30 inter-indexing consistency, low key repetition, 6 indexadores, termos usados por pelo menos dois indexadores
+
+COMPETITORS, competitive systems p.133
+Medical Text Indexer, medical domain (Gay et al., 2005);
+BibClassify (module of CDS Invenio), developed for physics domain (Pepe and Yeomans,2008) 
