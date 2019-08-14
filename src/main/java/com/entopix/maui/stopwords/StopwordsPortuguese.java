@@ -25,10 +25,12 @@ import java.util.*;
  * Class that can test whether a given string is a stopword.
  * Lowercases all words before the test.
  *
- * @author  Maria Abadia Lacerda Dias (mald@univates.br)
+ * @author Maria Abadia Lacerda Dias (mald@univates.br)
  * @author Renato Correa (renatocorrea@gmail.com)
+ * @author Rahmon Jorge
  * @version 1.1
  */
+@SuppressWarnings({ "rawtypes", "unchecked" })
 public class StopwordsPortuguese extends Stopwords {
 	
 	public StopwordsPortuguese() {

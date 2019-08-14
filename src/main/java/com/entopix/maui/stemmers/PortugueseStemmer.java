@@ -18,11 +18,10 @@
  *    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 package com.entopix.maui.stemmers;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-
-import org.apache.lucene.LucenePackage;
 
 
 /**
@@ -42,7 +41,12 @@ public class PortugueseStemmer extends Stemmer implements Serializable {
   // - modificar tamanho mínimo de stem para tamanho da palavra?
   // - use a a HashMap instead of a String array?
 
-  private static Rule[] plural = {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = -2065318638410371252L;
+
+private static Rule[] plural = {
     // -NS
     new PRule("ns",      1, "m",  new String[] {"íons", "elétrons", "prótons",
     "nêutrons", "fótons", "epsilons"}), // EX: uns
@@ -776,7 +780,8 @@ public class PortugueseStemmer extends Stemmer implements Serializable {
   public String stem(String word) {
 	
     StringBuffer w = new StringBuffer(word.toLowerCase());
-    boolean changed;
+    @SuppressWarnings("unused")
+	boolean changed;
     int n = w.length();
     if (n > 2) {
       if (w.charAt(n - 1) == 's') {
@@ -863,7 +868,8 @@ public class PortugueseStemmer extends Stemmer implements Serializable {
     }
 
     try {
-      int num;
+      @SuppressWarnings("unused")
+	int num;
       BufferedReader br = new BufferedReader(new InputStreamReader(System.in,Charset.forName("utf8")));
       StringBuffer wordBuffer = new StringBuffer();
       String line;
