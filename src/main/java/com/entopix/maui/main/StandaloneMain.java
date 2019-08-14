@@ -31,7 +31,7 @@ import weka.core.Utils;
  *
  * @author Richard Vowles - https://google.com/+RichardVowles, Alyona Medelyan - medelyan@gmail.com
  * @author Renato Correa
- * 
+ * @author Rahmon Jorge
  */
 public class StandaloneMain {
 	
