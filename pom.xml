@@ -6,7 +6,7 @@
     	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 	<groupId>com.entopix.maui</groupId>
-	<artifactId>maui-standalone</artifactId>
+	<artifactId>maui-pt</artifactId>
 	<version>1.1-SNAPSHOT</version>
 	<dependencies>
 		<dependency>

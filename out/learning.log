@@ -1,0 +1,6 @@
+10:26:50,794 INFO  [Vocabulary] --- Loading RDF model from the SKOS file...
+10:27:06,176 INFO  [Vocabulary] --- Building the Vocabulary index from the RDF model...
+10:27:10,358 INFO  [Vocabulary] --- Statistics about the vocabulary: 
+10:27:10,374 INFO  [Vocabulary] 	1818 terms in total
+10:27:10,374 INFO  [Vocabulary] 	769 non-descriptive terms
+10:27:10,374 INFO  [Vocabulary] 	1049 terms have related terms

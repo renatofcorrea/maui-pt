@@ -1,6 +1,7 @@
 package com.entopix.maui.main;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -9,7 +10,6 @@ import org.apache.commons.io.FileUtils;
 
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
-import com.entopix.maui.stemmers.PorterStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
@@ -35,6 +35,7 @@ import weka.core.Utils;
  */
 public class StandaloneMain {
 	
+	/*
 	public static void runMaui(String[] options) throws Exception {
 		
 		String inputString = options[0];
@@ -69,6 +70,7 @@ public class StandaloneMain {
 			topicsPerDocument = Integer.parseInt(numPhrases);
 		}
 		
+		//stay
 		MauiWrapper mauiWrapper = null;
 		try {
 			// Use default stemmer, stopwords and language
@@ -95,6 +97,103 @@ public class StandaloneMain {
 			throw new RuntimeException();
 		}
 	}
+	*/
+	@SuppressWarnings("unused")
+	public static void setOptions(String command, String[] args) throws Exception {
+		switch(command) {
+		case "train":
+			MauiModelBuilder modelBuilder = new MauiModelBuilder();
+			modelBuilder.inputDirectoryName = Utils.getOption('l', args);
+			modelBuilder.modelName = Utils.getOption('m', args);
+			modelBuilder.vocabularyName = Utils.getOption('v', args);
+			modelBuilder.vocabularyFormat = Utils.getOption('f', args);
+			modelBuilder.documentLanguage = Utils.getOption('i', args);
+			modelBuilder.maxPhraseLength = 5;
+			modelBuilder.minPhraseLength = 1;
+			modelBuilder.minNumOccur = 1;
+			modelBuilder.serialize = true;
+			if(modelBuilder.documentLanguage.equals("pt")) {
+				modelBuilder.stopwords = new StopwordsPortuguese();
+				modelBuilder.stemmer = new PortugueseStemmer();
+			} else {
+				modelBuilder.stopwords = (Stopwords) Class.forName(Utils.getOption('s', args)).newInstance();
+				modelBuilder.stemmer = (Stemmer) Class.forName(Utils.getOption('t', args)).newInstance();
+			}
+			
+			modelBuilder.setBasicFeatures(true);
+			modelBuilder.setLengthFeature(true);
+			modelBuilder.setFrequencyFeatures(true);
+			modelBuilder.setPositionsFeatures(false);
+			modelBuilder.setKeyphrasenessFeature(false);
+			modelBuilder.setThesaurusFeatures(false);
+			modelBuilder.setWikipediaFeatures(false);
+			
+			MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
+			modelBuilder.saveModel(filter);
+			break;
+		case "test":
+			MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
+			topicExtractor.inputDirectoryName = Utils.getOption('l', args);
+			topicExtractor.modelName = Utils.getOption('m', args);
+			topicExtractor.vocabularyName = Utils.getOption('v', args);
+			topicExtractor.vocabularyFormat = Utils.getOption('f', args);
+			topicExtractor.documentLanguage = Utils.getOption('i', args);
+			topicExtractor.cutOffTopicProbability = 0.12;
+			topicExtractor.serialize = true;
+			if(topicExtractor.documentLanguage.equals("pt")) {
+				topicExtractor.stopwords = new StopwordsPortuguese();
+				topicExtractor.stemmer = new PortugueseStemmer();
+			} else {
+				topicExtractor.stopwords = (Stopwords) Class.forName(Utils.getOption('s', args)).newInstance();
+				topicExtractor.stemmer = (Stemmer) Class.forName(Utils.getOption('t', args)).newInstance();
+			}
+			
+			topicExtractor.loadModel();
+
+			List<MauiDocument> documents = DataLoader.loadTestDocuments(topicExtractor.inputDirectoryName);
+			List<MauiTopics> topics = topicExtractor.extractTopics(documents);
+			topicExtractor.printTopics(topics);
+			Evaluator.evaluateTopics(topics);
+			break;
+		case "run":
+			String rootPath = new File(".").getCanonicalPath();
+			
+			String documentPath = Utils.getOption('l', args).replace("\"", "\\");
+			String fullDocumentPath = rootPath + "\\" + documentPath;
+			File document = new File(fullDocumentPath);
+			String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
+			
+			String modelPath = Utils.getOption('m', args).replace("\"", "\\");
+			String fullModelPath = rootPath + "\\" + modelPath;
+			
+			String vocabularyPath = Utils.getOption('v', args).replace("\"", "\\");
+			String fullVocabPath = rootPath + "\\" + vocabularyPath;
+			
+			String vocabularyFormat = Utils.getOption('f', args);
+			int topicsPerDocument = 10;
+			String documentLanguage = Utils.getOption('i', args);
+			Stopwords stopwords = null;
+			Stemmer stemmer = null;
+			if(documentLanguage.equals("pt")) {
+				stopwords = new StopwordsPortuguese();
+				stemmer = new PortugueseStemmer();
+			} else {
+				stopwords = (Stopwords) Class.forName(Utils.getOption('s', args)).newInstance();
+				stemmer = (Stemmer) Class.forName(Utils.getOption('t', args)).newInstance();
+			}
+			
+			MauiWrapper mauiWrapper = null;
+			mauiWrapper = new MauiWrapper(fullModelPath, fullVocabPath, vocabularyFormat, stopwords,stemmer, documentLanguage);
+			mauiWrapper.setModelParameters(fullVocabPath, stemmer, stopwords, documentLanguage); 
+
+	        ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, topicsPerDocument);
+	        for (Topic keyword : keywords) {
+	        	System.out.println("Keyword: " + keyword.getTitle() + " " + keyword.getProbability());
+	        }
+			break;
+		}
+	}
+	
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -113,7 +212,6 @@ public class StandaloneMain {
 		//instruct user if wrong the first parameter value
 		if ((!command.equals("train") && !command.equals("test") && !command.equals("run"))) {
 			System.out.printf("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.\n");
-
 			System.exit(-1);
 		}
 
@@ -121,13 +219,7 @@ public class StandaloneMain {
 
 		System.arraycopy(args, 1, remainingArgs, 0, args.length-1);
 
-		if (command.equals("train")) {
-			MauiModelBuilder.main(remainingArgs);
-		} else if (command.equals("test")) {
-			MauiTopicExtractor.main(remainingArgs);
-		} else {
-			runMaui(remainingArgs);
-		}
+		StandaloneMain.setOptions(command,remainingArgs);
 	}
 	
 	/**
@@ -266,6 +358,7 @@ public class StandaloneMain {
 						
 					} catch (Exception e) {
 						e.printStackTrace();
+						sc.close();
 						throw new RuntimeException();
 					}
 	
@@ -276,6 +369,7 @@ public class StandaloneMain {
 			            }
 			        } catch (MauiFilterException e) {
 						e.printStackTrace();
+						sc.close();
 						throw new RuntimeException();
 					}
 				}
