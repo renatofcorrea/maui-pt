@@ -1,6 +1,19 @@
-10:26:50,794 INFO  [Vocabulary] --- Loading RDF model from the SKOS file...
-10:27:06,176 INFO  [Vocabulary] --- Building the Vocabulary index from the RDF model...
-10:27:10,358 INFO  [Vocabulary] --- Statistics about the vocabulary: 
-10:27:10,374 INFO  [Vocabulary] 	1818 terms in total
-10:27:10,374 INFO  [Vocabulary] 	769 non-descriptive terms
-10:27:10,374 INFO  [Vocabulary] 	1049 terms have related terms
+10:47:25,220 INFO  [MauiTopicExtractor] --- Loading the vocabulary...
+10:47:25,236 INFO  [VocabularyStoreFactory] Deserializing vocabulary from C:\Users\PC1\git\maui-pt\data\vocabulary\TBCI-SKOS_pt.rdf_com.entopix.maui.vocab.VocabularyStore_Original_PortugueseStemmer.serialized
+10:50:38,988 INFO  [MauiTopicExtractor] -- Extracting keyphrases... 
+10:50:41,024 INFO  [MauiTopicExtractor] -- Processing document: PLN.txt
+10:50:41,051 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+10:50:41,078 INFO  [MauiTopicExtractor] Topic processamento de textos 1 0.5780303030303029 > false
+10:50:41,082 INFO  [MauiTopicExtractor] Topic processamento da linguagem natural 1 0.5446969696969697 > true
+10:50:41,086 INFO  [MauiTopicExtractor] Topic resumos 1 0.2506493506493507 > false
+10:50:41,090 INFO  [MauiTopicExtractor] Topic fornecedores 1 0.15064935064935064 > false
+10:50:41,094 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.15064935064935064 > false
+10:50:41,099 INFO  [MauiTopicExtractor] Topic computadores 1 0.15064935064935064 > false
+10:50:41,103 INFO  [MauiTopicExtractor] Topic conceitos 1 0.15064935064935064 > false
+10:51:04,898 INFO  [MauiTopicExtractor] 
+-- Evaluation results based on 1 document:
+10:51:04,903 INFO  [MauiTopicExtractor] Avg. number of correct keyphrases per document: 1 +/- 0
+10:51:04,907 INFO  [MauiTopicExtractor] Precision: 14.29 +/- 0
+10:51:04,911 INFO  [MauiTopicExtractor] Recall: 25 +/- 0
+10:51:04,915 INFO  [MauiTopicExtractor] F-Measure: 18.18
+10:51:04,919 INFO  [MauiTopicExtractor] 
