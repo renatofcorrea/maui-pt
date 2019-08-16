@@ -98,8 +98,15 @@ public class StandaloneMain {
 		}
 	}
 	*/
-	@SuppressWarnings("unused")
+	/**
+	 * 
+	 * @param command 
+	 * @param args
+	 * @throws Exception
+	 */
 	public static void setOptions(String command, String[] args) throws Exception {
+		String rootPath = new File(".").getCanonicalPath();
+		String dataPath = rootPath + "\\data\\";
 		switch(command) {
 		case "train":
 			MauiModelBuilder modelBuilder = new MauiModelBuilder();
@@ -133,9 +140,10 @@ public class StandaloneMain {
 			break;
 		case "test":
 			MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
-			topicExtractor.inputDirectoryName = Utils.getOption('l', args);
-			topicExtractor.modelName = Utils.getOption('m', args);
-			topicExtractor.vocabularyName = Utils.getOption('v', args);
+			
+			topicExtractor.inputDirectoryName = dataPath + Utils.getOption('l', args);
+			topicExtractor.modelName = dataPath + Utils.getOption('m', args);
+			topicExtractor.vocabularyName = dataPath + Utils.getOption('v', args);
 			topicExtractor.vocabularyFormat = Utils.getOption('f', args);
 			topicExtractor.documentLanguage = Utils.getOption('i', args);
 			topicExtractor.cutOffTopicProbability = 0.12;
@@ -155,19 +163,17 @@ public class StandaloneMain {
 			topicExtractor.printTopics(topics);
 			Evaluator.evaluateTopics(topics);
 			break;
-		case "run":
-			String rootPath = new File(".").getCanonicalPath();
-			
+		case "run":	
 			String documentPath = Utils.getOption('l', args).replace("\"", "\\");
-			String fullDocumentPath = rootPath + "\\" + documentPath;
+			String fullDocumentPath = dataPath + documentPath;
 			File document = new File(fullDocumentPath);
 			String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
 			
 			String modelPath = Utils.getOption('m', args).replace("\"", "\\");
-			String fullModelPath = rootPath + "\\" + modelPath;
+			String fullModelPath = dataPath + modelPath;
 			
 			String vocabularyPath = Utils.getOption('v', args).replace("\"", "\\");
-			String fullVocabPath = rootPath + "\\" + vocabularyPath;
+			String fullVocabPath = dataPath + vocabularyPath;
 			
 			String vocabularyFormat = Utils.getOption('f', args);
 			int topicsPerDocument = 10;
