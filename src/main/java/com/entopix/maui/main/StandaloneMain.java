@@ -35,6 +35,7 @@ import weka.core.Utils;
  */
 public class StandaloneMain {
 	
+	//UNUSED CODE AREA 
 	/*
 	public static void runMaui(String[] options) throws Exception {
 		
@@ -97,6 +98,8 @@ public class StandaloneMain {
 			throw new RuntimeException();
 		}
 	}
+	
+	
 	*/
 	/**
 	 * 
@@ -164,23 +167,18 @@ public class StandaloneMain {
 			Evaluator.evaluateTopics(topics);
 			break;
 		case "run":	
-			String documentPath = Utils.getOption('l', args).replace("\"", "\\");
-			String fullDocumentPath = dataPath + documentPath;
-			File document = new File(fullDocumentPath);
+			String documentPath = dataPath + Utils.getOption('l', args);
+			File document = new File(documentPath);
 			String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
 			
-			String modelPath = Utils.getOption('m', args).replace("\"", "\\");
-			String fullModelPath = dataPath + modelPath;
-			
-			String vocabularyPath = Utils.getOption('v', args).replace("\"", "\\");
-			String fullVocabPath = dataPath + vocabularyPath;
-			
+			String modelPath = dataPath + Utils.getOption('m', args);
+			String vocabPath = dataPath + Utils.getOption('v', args);
 			String vocabularyFormat = Utils.getOption('f', args);
 			int topicsPerDocument = 10;
 			String documentLanguage = Utils.getOption('i', args);
 			Stopwords stopwords = null;
 			Stemmer stemmer = null;
-			if(documentLanguage.equals("pt")) {
+			if(documentLanguage.equals("pt")) { //Forces class initialization manually (ignores -s and -t arguments)
 				stopwords = new StopwordsPortuguese();
 				stemmer = new PortugueseStemmer();
 			} else {
@@ -189,8 +187,8 @@ public class StandaloneMain {
 			}
 			
 			MauiWrapper mauiWrapper = null;
-			mauiWrapper = new MauiWrapper(fullModelPath, fullVocabPath, vocabularyFormat, stopwords,stemmer, documentLanguage);
-			mauiWrapper.setModelParameters(fullVocabPath, stemmer, stopwords, documentLanguage); 
+			mauiWrapper = new MauiWrapper(modelPath, vocabPath, vocabularyFormat, stopwords,stemmer, documentLanguage);
+			mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, documentLanguage); 
 
 	        ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, topicsPerDocument);
 	        for (Topic keyword : keywords) {
@@ -198,34 +196,6 @@ public class StandaloneMain {
 	        }
 			break;
 		}
-	}
-	
-	
-	public static void main(String[] args) throws Exception {
-		
-		//instruct user if empty parameters
-		if(args == null || args.length == 0){
-			System.out.printf("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.\n");
-
-			System.out.println("By default, MAUI is running example in pt language and CI documents.");
-			runPTCi();
-			return;
-			//System.exit(-1);
-		}
-		
-		String command = args[0].toLowerCase(); 
-		
-		//instruct user if wrong the first parameter value
-		if ((!command.equals("train") && !command.equals("test") && !command.equals("run"))) {
-			System.out.printf("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.\n");
-			System.exit(-1);
-		}
-
-		String[] remainingArgs = new String[args.length - 1];
-
-		System.arraycopy(args, 1, remainingArgs, 0, args.length-1);
-
-		StandaloneMain.setOptions(command,remainingArgs);
 	}
 	
 	/**
@@ -403,6 +373,33 @@ public class StandaloneMain {
 					System.out.println("Invalid option");
 				}
 			}
+	}
+	
+	public static void main(String[] args) throws Exception {
+		
+		//instruct user if empty parameters
+		if(args == null || args.length == 0){
+			System.out.printf("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.\n");
+
+			System.out.println("By default, MAUI is running example in pt language and CI documents.");
+			runPTCi();
+			return;
+			//System.exit(-1);
+		}
+		
+		String command = args[0].toLowerCase(); 
+		
+		//instruct user if wrong the first parameter value
+		if ((!command.equals("train") && !command.equals("test") && !command.equals("run"))) {
+			System.out.printf("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.\n");
+			System.exit(-1);
+		}
+
+		String[] remainingArgs = new String[args.length - 1];
+
+		System.arraycopy(args, 1, remainingArgs, 0, args.length-1);
+
+		StandaloneMain.setOptions(command,remainingArgs);
 	}
 
 }
