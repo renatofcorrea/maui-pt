@@ -1,3 +1,5 @@
 = Maui Indexer Standalone adapted to portuguese language
 
 Para executar instalação no Eclipse, clique com o botão direito no projeto, Run As -> Maven Install. Certifique-se que possui o JDK instalado e selecionado pelo Eclipse em Window -> Preferences -> Installed JREs.
+
+Tutorial: https://github.com/renatofcorrea/maui-pt/wiki/Tutorial
