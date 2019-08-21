@@ -1,2 +1,0 @@
-java -Xmx1024m -Dfile.encoding=UTF-8  -jar ../target/maui.jar train -l docs/train10a/ -m models/trn10a -v vocabulary/TBCI-SKOS_pt.rdf.gz -f skos -i pt -e UTF-8 -s StopwordsPortuguese -t PortugueseStemmer
-pause

@@ -7,7 +7,7 @@
 	</properties>
 	<groupId>com.entopix.maui</groupId>
 	<artifactId>maui-pt</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

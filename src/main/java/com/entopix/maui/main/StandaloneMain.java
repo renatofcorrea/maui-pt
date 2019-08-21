@@ -9,7 +9,6 @@ import java.util.Scanner;
 import org.apache.commons.io.FileUtils;
 
 import com.entopix.maui.filters.MauiFilter;
-import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
@@ -43,7 +42,7 @@ public class StandaloneMain {
 	 */
 	public static void setOptions(String command, String[] args) throws Exception {
 		String rootPath = new File(".").getCanonicalPath();
-		String dataPath = rootPath + "\\";
+		String dataPath = rootPath + "\\"; // add "data" folder if maui-pt is the root directory
 		switch(command) {
 		case "train":
 			MauiModelBuilder modelBuilder = new MauiModelBuilder();
@@ -108,7 +107,7 @@ public class StandaloneMain {
 			String documentLanguage = Utils.getOption('i', args);
 			Stopwords stopwords = null;
 			Stemmer stemmer = null;
-			if(documentLanguage.equals("pt")) { //Forces class initialization manually (ignores -s and -t arguments)
+			if(documentLanguage.equals("pt")) { //forces class initialization manually (ignores -s and -t arguments)
 				stopwords = new StopwordsPortuguese();
 				stemmer = new PortugueseStemmer();
 			} else {
@@ -135,7 +134,7 @@ public class StandaloneMain {
 		
 		//Pre-Init
 		String rootPath = new File(".").getCanonicalPath();
-		String dataPath = rootPath + "/data";
+		String dataPath = rootPath;// + "/data"; //Add data if maui-pt is the root directory
 		String modelOutputPath = dataPath + "/models";
 		String trainDir = dataPath + "/docs/train10a";
 		String testDir = dataPath + "/docs/test60";
@@ -160,8 +159,8 @@ public class StandaloneMain {
 		while(!exit) {
 			Scanner sc = new Scanner(System.in);
 			String option;
-			System.out.println("1 - Train (Load model)");
-			System.out.println("2 - Run topic extractor on directory");
+			System.out.println("1 - Train (Build model)");
+			System.out.println("2 - Test topic extractor on directory");
 			System.out.println("3 - Run topic extractor on file");
 			System.out.println("0 - Exit");
 			System.out.print("Option: ");
@@ -192,7 +191,7 @@ public class StandaloneMain {
 				modelBuilder.saveModel(filter);
 				System.out.println("Done!");
 				break;
-			//Run topic extractor on directory
+			//Test topic extractor on directory
 			case "2":
 				topicExtractor.inputDirectoryName = testDir;
 				topicExtractor.modelName = modelPath;
