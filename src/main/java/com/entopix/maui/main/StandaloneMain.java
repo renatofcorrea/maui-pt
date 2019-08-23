@@ -18,6 +18,8 @@ import com.entopix.maui.util.Evaluator;
 import com.entopix.maui.util.MauiDocument;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
+import com.entopix.maui.utils.Paths;
+import com.entopix.maui.utils.StructuredTest;
 
 import weka.core.Utils;
 
@@ -131,17 +133,16 @@ public class StandaloneMain {
 	 * @throws Exception
 	 */
 	public static void runPTCi() throws Exception {
-		
 		//Pre-Init
-		String rootPath = new File(".").getCanonicalPath();
-		String dataPath = rootPath;// + "/data"; //Add data if maui-pt is the root directory
-		String modelOutputPath = dataPath + "/models";
-		String trainDir = dataPath + "/docs/train10a";
-		String testDir = dataPath + "/docs/test60";
+		String rootPath = Paths.getRootPath();
+		String dataPath = rootPath + "\\data"; //Add data if maui-pt is the root directory
+		String modelOutputPath = dataPath + "\\models";
+		String trainDir = dataPath + "\\docs\\train10a";
+		String testDir = dataPath + "\\docs\\test60";
 		String testDocPath = dataPath + "/docs/test30/Artigo32.txt";
 		
-		String modelPath = modelOutputPath + "/pt_model10";
-		String vocabPath = dataPath + "/vocabulary/TBCI-SKOS_pt.rdf";
+		String modelPath = modelOutputPath + "\\pt_model10";
+		String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 		String vocabFormat = "skos";
 		
 		int numTopicsToExtract = 10;
@@ -162,12 +163,13 @@ public class StandaloneMain {
 			System.out.println("1 - Train (Build model)");
 			System.out.println("2 - Test topic extractor on directory");
 			System.out.println("3 - Run topic extractor on file");
+			System.out.println("4 - Execute structured test");
 			System.out.println("0 - Exit");
 			System.out.print("Option: ");
 			option = sc.nextLine();
 
 			switch(option) {
-			//Train (Load Model)
+			//Train (Build Model)
 			case "1":
 				modelBuilder.inputDirectoryName = trainDir;
 				modelBuilder.modelName = modelPath;
@@ -225,6 +227,9 @@ public class StandaloneMain {
 		        for (Topic keyword : keywords) {
 		        	System.out.println("Keyword: " + keyword.getTitle() + " " + keyword.getProbability());
 		        }
+				break;
+			case "4":
+				StructuredTest.runAllTests();
 				break;
 			case "0":
 				exit = true;
