@@ -43,8 +43,7 @@ public class StandaloneMain {
 	 * @throws Exception
 	 */
 	public static void setOptions(String command, String[] args) throws Exception {
-		String rootPath = new File(".").getCanonicalPath();
-		String dataPath = rootPath + "\\"; // add "data" folder if maui-pt is the root directory
+		String dataPath = Paths.getDataPath();
 		switch(command) {
 		case "train":
 			MauiModelBuilder modelBuilder = new MauiModelBuilder();
@@ -134,14 +133,13 @@ public class StandaloneMain {
 	 */
 	public static void runPTCi() throws Exception {
 		//Pre-Init
-		String rootPath = Paths.getRootPath();
-		String dataPath = rootPath + "\\data"; //Add data if maui-pt is the root directory
+		String dataPath = Paths.getDataPath();
 		String modelOutputPath = dataPath + "\\models";
-		String trainDir = dataPath + "\\docs\\train10a";
-		String testDir = dataPath + "\\docs\\test60";
-		String testDocPath = dataPath + "/docs/test30/Artigo32.txt";
+		String trainDir = dataPath + "\\docs\\structured_test\\train\\full_texts\\train20";
+		String testDir = dataPath + "\\docs\\structured_test\\test\\test30";
+		String testDocPath = dataPath + "\\docs\\test30\\Artigo32.txt";
 		
-		String modelPath = modelOutputPath + "\\pt_model10";
+		String modelPath = modelOutputPath + "\\structured_test\\full_texts\\full_text_model20";
 		String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 		String vocabFormat = "skos";
 		
@@ -189,7 +187,8 @@ public class StandaloneMain {
 				modelBuilder.setThesaurusFeatures(false);
 
 				MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
-				System.out.println("Model built. Saving the model...");
+				String modelName = modelPath.substring(modelPath.lastIndexOf("\\") + 1);
+				System.out.println("Model '" + modelName + "' built. Saving the model...");
 				modelBuilder.saveModel(filter);
 				System.out.println("Done!");
 				break;

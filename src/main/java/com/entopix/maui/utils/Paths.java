@@ -12,5 +12,12 @@ public class Paths {
 			return null;
 		} 
 	}
-	public static final String dataPath = getRootPath(); //add "\\data" if maui-pt is the root directory
+	public static final String getDataPath() {
+		String rootPath = getRootPath();
+		if(rootPath.endsWith("maui-pt")) {
+			return rootPath + "\\data";
+		} else {
+			return rootPath;
+		}
+	}
 }
