@@ -1,11 +1,5 @@
-= Maui Indexer Standalone
+= Maui Indexer Standalone adapted to portuguese language
 
-To build the standalone version, just type:
+Para executar instalação no Eclipse, clique com o botão direito no projeto, Run As -> Maven Install. Certifique-se que possui o JDK instalado e selecionado pelo Eclipse em Window -> Preferences -> Installed JREs.
 
-mvn clean package
-
-the fully standalone runner with all of the dependencies packaged up and ready to use is in the target folder.
-
-java -Dlog4j.configuration=file:///Path/to/your/log4j.xml -jar standalone-1.1-SNAPSHOT.jar
-
-Maui Indexer Standalone adapted to index document in Portuguese Language.
+Tutorial: https://github.com/renatofcorrea/maui-pt/wiki/Tutorial
