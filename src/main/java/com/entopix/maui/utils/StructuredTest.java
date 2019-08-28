@@ -14,7 +14,10 @@ import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 
 import weka.core.Utils;
-
+/**
+ * Performs a structured test comparing models made with abstracts and full texts, made with 10 to 30 documents.
+ * @author Rahmon Jorge
+ */
 public class StructuredTest {
 	
 	static String testDocsPath = Paths.getDataPath() + "\\docs\\structured_test\\test\\test30";
