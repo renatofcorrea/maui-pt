@@ -2,7 +2,11 @@ package com.entopix.maui.utils;
 
 import java.io.File;
 import java.io.IOException;
-
+/**
+ * Provides paths to avoid path conflicts
+ * @author Rahmon Jorge
+ *
+ */
 public class Paths {
 	public static final String getRootPath() {
 		try {
