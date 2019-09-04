@@ -134,9 +134,9 @@ public class StandaloneMain {
 		//Pre-Init
 		String dataPath = Paths.getDataPath();
 		String modelOutputPath = dataPath + "\\models";
-		String trainDir = dataPath + "\\docs\\structured_test\\train\\full_texts\\train20";
-		String testDir = dataPath + "\\docs\\structured_test\\test\\test30";
-		String testDocPath = dataPath + "\\docs\\test30\\Artigo32.txt";
+		String trainDir = dataPath + "\\docs\\corpusci\\full_texts\\train30";
+		String testDir = dataPath + "\\docs\\corpusci\\full_texts\\test30";
+		String testDocPath = dataPath + "\\docs\\corpusci\\full_texts\\test30\\Artigo32.txt";
 		
 		String modelPath = modelOutputPath + "\\structured_test\\full_texts\\full_text_model20";
 		String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
