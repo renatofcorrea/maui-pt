@@ -6,8 +6,8 @@
     	<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 	</properties>
 	<groupId>com.entopix.maui</groupId>
-	<artifactId>maui-pt</artifactId>
-	<version>1.1</version>
+	<artifactId>maui</artifactId>
+	<version>pt</version>
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

@@ -37,7 +37,6 @@ import weka.core.Utils;
 public class StandaloneMain {
 	
 	/**
-	 * 
 	 * @param command 
 	 * @param args
 	 * @throws Exception
