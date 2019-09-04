@@ -21,7 +21,7 @@ public class Paths {
 		if(rootPath.endsWith("maui-pt")) {
 			return rootPath + "\\data";
 		} else {
-			return rootPath;
+			return rootPath + "\\";
 		}
 	}
 }

@@ -157,12 +157,7 @@ public class StandaloneMain {
 		while(!exit) {
 			Scanner sc = new Scanner(System.in);
 			String option;
-			System.out.println("1 - Train (Build model)");
-			System.out.println("2 - Test topic extractor on directory");
-			System.out.println("3 - Run topic extractor on file");
-			System.out.println("4 - Execute structured test");
-			System.out.println("0 - Exit");
-			System.out.print("Option: ");
+			instructUser(language);
 			option = sc.nextLine();
 
 			switch(option) {
@@ -237,6 +232,26 @@ public class StandaloneMain {
 				System.out.println("Invalid option");
 				break;
 			}
+		}
+	}
+
+	private static void instructUser(String language) {
+		if(language.equals("en")) {
+			System.out.println("1 - Train (Build model)");
+			System.out.println("2 - Test topic extractor on directory");
+			System.out.println("3 - Run topic extractor on file");
+			System.out.println("4 - Execute structured test");
+			System.out.println("0 - Exit");
+			System.out.print("Option: ");
+			return;
+		} else if(language.equals("pt")) {
+			System.out.println("1 - Treinar (Construir modelo)");
+			System.out.println("2 - Testar extrator de tópicos em diretório");
+			System.out.println("3 - Executar extrator de tópicos em arquivo");
+			System.out.println("4 - Executar teste estruturado");
+			System.out.println("0 - Sair");
+			System.out.print("Opção: ");
+			return;
 		}
 	}
 	

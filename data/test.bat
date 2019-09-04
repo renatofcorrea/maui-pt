@@ -1,3 +1,3 @@
 CHCP 65001
-java -Dfile.encoding=UTF-8 -jar ..\target\maui-pt-1.1.jar test -l docs\test60 -m models\testmodel -v  vocabulary\TBCI-SKOS_pt.rdf -f skos -i pt
+java -Dfile.encoding=UTF-8 -jar ..\target\maui-pt.jar test -l docs\corpusci\full_texts\test30 -m models\testmodel -v  vocabulary\TBCI-SKOS_pt.rdf.gz -f skos -i pt
 pause
