@@ -138,7 +138,7 @@ public class StandaloneMain {
 		String testDir = dataPath + "\\docs\\corpusci\\full_texts\\test30";
 		String testDocPath = dataPath + "\\docs\\corpusci\\full_texts\\test30\\Artigo32.txt";
 		
-		String modelPath = modelOutputPath + "\\structured_test\\full_texts\\full_text_model20";
+		String modelPath = modelOutputPath + "\\testmodel";
 		String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 		String vocabFormat = "skos";
 		
@@ -182,9 +182,9 @@ public class StandaloneMain {
 
 				MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
 				String modelName = modelPath.substring(modelPath.lastIndexOf("\\") + 1);
-				System.out.println("Model '" + modelName + "' built. Saving the model...");
+				System.out.println("Modelo '" + modelName + "' construído. Salvando modelo...");
 				modelBuilder.saveModel(filter);
-				System.out.println("Done!");
+				System.out.println("Pronto!");
 				break;
 			//Test topic extractor on directory
 			case "2":
@@ -218,7 +218,7 @@ public class StandaloneMain {
 
 		        ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, numTopicsToExtract);
 		        for (Topic keyword : keywords) {
-		        	System.out.println("Keyword: " + keyword.getTitle() + " " + keyword.getProbability());
+		        	System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
 		        }
 				break;
 			case "4":
@@ -229,7 +229,7 @@ public class StandaloneMain {
 				sc.close();
 				break;
 			default:
-				System.out.println("Invalid option");
+				System.out.println("Opção inválida");
 				break;
 			}
 		}
@@ -242,30 +242,29 @@ public class StandaloneMain {
 			System.out.println("3 - Run topic extractor on file");
 			System.out.println("4 - Execute structured test");
 			System.out.println("0 - Exit");
-			System.out.print("Option: ");
+			System.out.print("Option:  ");
 			return;
 		} else if(language.equals("pt")) {
-			System.out.println("1 - Treinar (Construir modelo)");
-			System.out.println("2 - Testar extrator de tópicos em diretório");
-			System.out.println("3 - Executar extrator de tópicos em arquivo");
-			System.out.println("4 - Executar teste estruturado");
-			System.out.println("0 - Sair");
-			System.out.print("Opção: ");
+			System.out.println("1 - Treinar (Construir modelo)  ");
+			System.out.println("2 - Testar extrator de tópicos em diretório  ");
+			System.out.println("3 - Executar extrator de tópicos em arquivo  ");
+			System.out.println("4 - Executar teste estruturado  ");
+			System.out.println("0 - Sair  ");
+			System.out.print("Opção:  ");
 			return;
 		}
 	}
 	
 	public static void main(String[] args) throws Exception {
 		if(args == null || args.length == 0) {
-			System.out.printf("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.\n");
-			System.out.println("By default, MAUI is running example in pt language and CI documents.");
+			instructUser2("pt");
 			runPTCi();
 			return;
 		}
 		
 		String command = args[0].toLowerCase(); 
 		if ((!command.equals("train") && !command.equals("test") && !command.equals("run"))) {
-			System.out.printf("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.\n");
+			instructUser3(Utils.getOption('i', args));
 			System.exit(-1);
 		}
 		
@@ -273,6 +272,23 @@ public class StandaloneMain {
 		System.arraycopy(args, 1, remainingArgs, 0, args.length-1);
 
 		StandaloneMain.setOptions(command, remainingArgs);
+	}
+
+	private static void instructUser3(String language) {
+		if(language.equals("en"))
+			System.out.println("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.   ");
+		else if(language.equals("pt"))
+			System.out.println("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] opções...\nFavor especificar train ou test ou run e em seguida os parâmetros apropriados.   ");
+	}
+
+	private static void instructUser2(String language) {
+		if(language.equals("en")) {
+			instructUser3(language);
+			System.out.println("By default, MAUI is running example in pt language and CI documents.   ");
+		} else if(language.equals("pt")) {
+			instructUser3(language);
+			System.out.println("Por padrão, MAUI está executando exemplo no idioma português e documentos de CI.   ");
+		}
 	}
 
 }
