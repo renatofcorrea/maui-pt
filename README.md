@@ -1,6 +1,6 @@
 # Maui Indexer Standalone adapted to portuguese language
 
-##Maui adaptado para o processamento de textos escritos em português do Brasil.
+## Maui adaptado para o processamento de textos escritos em português do Brasil.
 
 Para acessar a descrição do software acesse a página [Apresentação](https://github.com/renatofcorrea/maui-pt/wiki/Apresentação) .
 
