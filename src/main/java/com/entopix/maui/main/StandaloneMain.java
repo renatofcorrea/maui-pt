@@ -277,7 +277,7 @@ public class StandaloneMain {
 	private static void instructUser3(String language) {
 		if(language.equals("en"))
 			System.out.println("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.   ");
-		else if(language.equals("pt"))
+		else //if(language.equals("pt"))
 			System.out.println("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] opções...\nFavor especificar train ou test ou run e em seguida os parâmetros apropriados.   ");
 	}
 
@@ -285,7 +285,8 @@ public class StandaloneMain {
 		if(language.equals("en")) {
 			instructUser3(language);
 			System.out.println("By default, MAUI is running example in pt language and CI documents.   ");
-		} else if(language.equals("pt")) {
+		} else //if(language.equals("pt")) 
+		{
 			instructUser3(language);
 			System.out.println("Por padrão, MAUI está executando exemplo no idioma português e documentos de CI.   ");
 		}

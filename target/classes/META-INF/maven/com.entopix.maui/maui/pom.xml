@@ -29,6 +29,12 @@
     		<groupId>com.entopix</groupId>
     		<artifactId>maui</artifactId>
     		<version>1.3.0</version>
+    		<exclusions>
+    			<exclusion>
+    				<groupId>com.entopix</groupId>
+    				<artifactId>maui-data</artifactId>
+    			</exclusion>
+    		</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
