@@ -1,5 +1,0 @@
-= Maui Indexer Standalone adapted to portuguese language
-
-Para instruções de download e instalação acesse https://github.com/renatofcorrea/maui-pt/wiki/Download-e-Instala%C3%A7%C3%A3o
-
-Para informações sobre utilização, acesse o tutorial: https://github.com/renatofcorrea/maui-pt/wiki/Tutorial
