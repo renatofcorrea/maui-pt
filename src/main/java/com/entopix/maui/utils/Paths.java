@@ -16,12 +16,22 @@ public class Paths {
 			return null;
 		} 
 	}
+	
 	public static final String getDataPath() {
 		String rootPath = getRootPath();
 		if(rootPath.endsWith("maui-pt")) {
 			return rootPath + "\\data";
 		} else {
 			return rootPath + "\\";
+		}
+	}
+	
+	public static boolean exists(String path) {
+		File file = new File(path);
+		if (!file.exists()) {
+			return false;
+		} else {
+			return true;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 package com.entopix.maui.main;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Scanner;
 import org.apache.commons.io.FileUtils;
 
 import com.entopix.maui.filters.MauiFilter;
+import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
@@ -36,12 +38,37 @@ import weka.core.Utils;
  */
 public class StandaloneMain {
 	
+	static String guiLanguage = "pt";
+	static MauiModelBuilder modelBuilder = new MauiModelBuilder();
+	static MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
+	static MauiFilter filter;
+	static Stopwords stopwords = new StopwordsPortuguese();
+	static Stemmer stemmer = new PortugueseStemmer();
+	
+	static String dataPath = Paths.getDataPath();
+	static String trainDir = dataPath + "\\docs\\corpusci\\full_texts\\train30";
+	static String testDir = dataPath + "\\docs\\corpusci\\full_texts\\test60";
+	static String testDocPath = dataPath + "\\docs\\corpusci\\full_texts\\test30\\Artigo32.txt";
+	
+	static String modelsDir = dataPath + "\\models";
+	static String modelName = "stdmodel";
+	static String modelPath = modelsDir + "\\" + modelName;
+	
+	static String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
+	static String vocabFormat = "skos";
+	
+	static int numTopicsToExtract = 10;
+	
+	static String language = "pt";
+	static String encoding = "UTF-8";
+	
+	
 	/**
 	 * @param command 
 	 * @param args
 	 * @throws Exception
 	 */
-	public static void setOptions(String command, String[] args) throws Exception {
+	public static void runWithArguments(String command, String[] args) throws Exception {
 		String dataPath = Paths.getDataPath();
 		switch(command) {
 		case "train":
@@ -131,128 +158,175 @@ public class StandaloneMain {
 	 * @throws Exception
 	 */
 	public static void runPTCi() throws Exception {
-		//Pre-Init
-		String dataPath = Paths.getDataPath();
-		String modelOutputPath = dataPath + "\\models";
-		String trainDir = dataPath + "\\docs\\corpusci\\full_texts\\train30";
-		String testDir = dataPath + "\\docs\\corpusci\\full_texts\\test60";
-		String testDocPath = dataPath + "\\docs\\corpusci\\full_texts\\test30\\Artigo32.txt";
-		
-		String modelPath = modelOutputPath + "\\testmodel";
-		String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
-		String vocabFormat = "skos";
-		
-		int numTopicsToExtract = 10;
-			
-		Stemmer stemmer = new PortugueseStemmer();
-		Stopwords stopwords = new StopwordsPortuguese();
-		String language = "pt";
-		String encoding = "UTF-8";
-			
-		MauiModelBuilder modelBuilder = new MauiModelBuilder();
-		MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
-				
-		//Run
+		if(guiLanguage.equals("pt")) {
+			runOptionsMenuPT();
+		} else {
+			//TODO runOptionsMenuEN();
+		}
+	}
+
+	private static void runOptionsMenuPT() throws Exception {
+		Scanner scan = new Scanner(System.in);
+		String option;
 		boolean exit = false;
-		while(!exit) {
-			Scanner sc = new Scanner(System.in);
-			String option;
-			instructUser(language);
-			option = sc.nextLine();
-
-			switch(option) {
-			//Train (Build Model)
-			case "1":
-				modelBuilder.inputDirectoryName = trainDir;
-				modelBuilder.modelName = modelPath;
-				modelBuilder.vocabularyFormat = vocabFormat;
-				modelBuilder.vocabularyName = vocabPath;
-				modelBuilder.stemmer = stemmer;
-				modelBuilder.stopwords = stopwords;
-				modelBuilder.documentLanguage = language;
-				modelBuilder.documentEncoding = encoding;
-				modelBuilder.minNumOccur = 1;
-				modelBuilder.maxPhraseLength = 5;
-				modelBuilder.minPhraseLength = 1;
-				modelBuilder.serialize = true;
-
-				modelBuilder.setPositionsFeatures(false);
-				modelBuilder.setKeyphrasenessFeature(false);
-				modelBuilder.setThesaurusFeatures(false);
-
-				MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
-				String modelName = modelPath.substring(modelPath.lastIndexOf("\\") + 1);
-				System.out.println("Modelo '" + modelName + "' construído. Salvando modelo...");
-				modelBuilder.saveModel(filter);
-				System.out.println("Pronto!");
-				break;
-			//Test topic extractor on directory
-			case "2":
-				topicExtractor.inputDirectoryName = testDir;
-				topicExtractor.modelName = modelPath;
-				topicExtractor.vocabularyName = vocabPath;
-				topicExtractor.vocabularyFormat = vocabFormat;
-				topicExtractor.stemmer = stemmer;
-				topicExtractor.stopwords = stopwords;
-				topicExtractor.documentLanguage = language;
-				topicExtractor.documentEncoding = encoding;
-				topicExtractor.cutOffTopicProbability = 0.12;
-				topicExtractor.serialize = true;
-
-				topicExtractor.loadModel();
-				List<MauiDocument> documents = DataLoader.loadTestDocuments(testDir);
-				List<MauiTopics> topics = topicExtractor.extractTopics(documents);
-				
-				topicExtractor.printTopics(topics);
-				Evaluator.evaluateTopics(topics);
-				break;
-			//Run topic extractor on file
-			case "3":
-				File document = new File(testDocPath);
-				String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
-				
-				MauiWrapper mauiWrapper = null;
+		while (!exit) {
+			System.out.println();
+			System.out.println("1 - Construir modelo  ");
+			System.out.println("2 - Testar extrator de tópicos em diretório  ");
+			System.out.println("3 - Executar extrator de tópicos em arquivo  ");
+			System.out.println("4 - Executar teste estruturado  ");
+			System.out.println("0 - Sair  ");
+			System.out.print("Opção:  ");
+			option = scan.nextLine();
 			
-				mauiWrapper = new MauiWrapper(modelPath, vocabPath, vocabFormat, stopwords,stemmer, language);
-				mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, language); 
-
-		        ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, numTopicsToExtract);
-		        for (Topic keyword : keywords) {
-		        	System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
-		        }
+			switch (option) {
+			//TRAIN OPTION
+			case "1":
+				System.out.println("Digite o caminho do diretório de treinamento ou aperte [enter] para usar o atual.");
+				System.out.println("Diretório de treinamento selecionado: " + trainDir);
+				option = scan.nextLine();
+				switch(option) {
+				default:
+					if (Paths.exists(option))
+						trainDir = option;
+					else
+						System.out.println("O diretório " + option + " não foi encontrado.");
+					break;
+				case "":
+					break;
+				}
+				System.out.println("Deseja definir um novo modelo ou sobrescrever o atual?");
+				System.out.println("Modelo atual: '" + modelName + "'");
+				System.out.println("Digite 1 para alterar o modelo ou aperte enter para continuar.");
+				option = scan.nextLine();
+				switch (option) {
+				case "1":
+					System.out.println("Digite o nome do novo modelo: ");
+					modelName = scan.nextLine();
+					modelPath = modelsDir + "\\" + modelName;
+					setupAndBuildModel();
+					break;
+				case "":
+					setupAndBuildModel();
+					break;
+				default:
+					System.out.println("Opção inválida.");
+					break;
+				}
 				break;
+				
+			//TEST ON DIRECTORY OPTION
+			case "2":
+				System.out.println("Digite o caminho do diretório de teste ou aperte enter para usar o atual.");
+				System.out.println("Diretório de teste selecionado: " + testDir);
+				option = scan.nextLine();
+				switch (option) {
+				default:
+					if (Paths.exists(option)) {
+						testDir = option;
+						setupAndRunTopicExtractor();
+					}
+					else
+						System.out.println("O diretório " + option + " não foi encontrado.");
+					break;
+				case "":
+					setupAndRunTopicExtractor();
+					break;
+				}
+				break;
+				
+			//RUN ON FILE OPTION
+			case "3":
+				System.out.println("Digite o caminho do arquivo (.txt) ou aperte enter para usar o atual: ");
+				System.out.println("Arquivo selecionado: " + testDocPath);
+				option = scan.nextLine();
+				switch (option) {
+				default:
+					if (Paths.exists(option)) {
+						testDocPath = option;
+						runMauiWrapperOnFile();
+					} else
+						System.out.println("O diretório " + option + " não foi encontrado.");
+					break;
+				case "":
+					runMauiWrapperOnFile();
+					break;
+				}
+				break;
+				
+			//STRUCTURED TEST OPTION
 			case "4":
 				StructuredTest.runAllTests();
 				break;
+				
+			//EXIT OPTION
 			case "0":
 				exit = true;
-				sc.close();
 				break;
 			default:
 				System.out.println("Opção inválida");
 				break;
 			}
 		}
+		scan.close();
 	}
 
-	private static void instructUser(String language) {
-		if(language.equals("en")) {
-			System.out.println("1 - Train (Build model)");
-			System.out.println("2 - Test topic extractor on directory");
-			System.out.println("3 - Run topic extractor on file");
-			System.out.println("4 - Execute structured test");
-			System.out.println("0 - Exit");
-			System.out.print("Option:  ");
-			return;
-		} else if(language.equals("pt")) {
-			System.out.println("1 - Treinar (Construir modelo)  ");
-			System.out.println("2 - Testar extrator de tópicos em diretório  ");
-			System.out.println("3 - Executar extrator de tópicos em arquivo  ");
-			System.out.println("4 - Executar teste estruturado  ");
-			System.out.println("0 - Sair  ");
-			System.out.print("Opção:  ");
-			return;
+	static void setupAndBuildModel() throws Exception {
+		modelBuilder.inputDirectoryName = trainDir;
+		modelBuilder.modelName = modelPath;
+		modelBuilder.vocabularyFormat = vocabFormat;
+		modelBuilder.vocabularyName = vocabPath;
+		modelBuilder.stemmer = stemmer;
+		modelBuilder.stopwords = stopwords;
+		modelBuilder.documentLanguage = language;
+		modelBuilder.documentEncoding = encoding;
+		modelBuilder.minNumOccur = 1;
+		modelBuilder.maxPhraseLength = 5;
+		modelBuilder.minPhraseLength = 1;
+		modelBuilder.serialize = true;
+
+		modelBuilder.setPositionsFeatures(false);
+		modelBuilder.setKeyphrasenessFeature(false);
+		modelBuilder.setThesaurusFeatures(false);
+
+		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
+		System.out.println("Modelo '" + modelName + "' construído. Salvando modelo...");
+		modelBuilder.saveModel(filter);
+		System.out.println("Pronto!");
+	}
+	
+	private static void runMauiWrapperOnFile() throws IOException, MauiFilterException {
+		File document = new File(testDocPath);
+		String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
+
+		MauiWrapper mauiWrapper = null;
+
+		mauiWrapper = new MauiWrapper(modelPath, vocabPath, vocabFormat, stopwords, stemmer, language);
+		mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, language);
+
+		ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, numTopicsToExtract);
+		for (Topic keyword : keywords) {
+			System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
 		}
+		//TODO Not writing .maui file because keywords were stored in List<Topic> instead of List<MauiTopics>
+	}
+
+	private static void setupAndRunTopicExtractor() throws MauiFilterException {
+		topicExtractor.inputDirectoryName = testDir;
+		topicExtractor.modelName = modelPath;
+		topicExtractor.vocabularyName = vocabPath;
+		topicExtractor.vocabularyFormat = vocabFormat;
+		topicExtractor.stemmer = stemmer;
+		topicExtractor.stopwords = stopwords;
+		topicExtractor.documentLanguage = language;
+		topicExtractor.documentEncoding = encoding;
+		topicExtractor.cutOffTopicProbability = 0.12;
+		topicExtractor.serialize = true;
+		topicExtractor.loadModel();
+		List<MauiDocument> documents = DataLoader.loadTestDocuments(testDir);
+		List<MauiTopics> topics = topicExtractor.extractTopics(documents);
+		topicExtractor.printTopics(topics);
+		Evaluator.evaluateTopics(topics);
 	}
 	
 	public static void main(String[] args) throws Exception {
@@ -271,7 +345,7 @@ public class StandaloneMain {
 		String[] remainingArgs = new String[args.length - 1];
 		System.arraycopy(args, 1, remainingArgs, 0, args.length-1);
 
-		StandaloneMain.setOptions(command, remainingArgs);
+		StandaloneMain.runWithArguments(command, remainingArgs);
 	}
 
 	private static void instructUser3(String language) {
@@ -291,5 +365,4 @@ public class StandaloneMain {
 			System.out.println("Por padrão, MAUI está executando exemplo em português e documentos de CI.   ");
 		}
 	}
-
 }
