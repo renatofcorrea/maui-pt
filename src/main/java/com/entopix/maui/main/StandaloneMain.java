@@ -288,7 +288,7 @@ public class StandaloneMain {
 		} else //if(language.equals("pt")) 
 		{
 			instructUser3(language);
-			System.out.println("Por padrão, MAUI está executando exemplo no idioma português e documentos de CI.   ");
+			System.out.println("Por padrão, MAUI está executando exemplo em português e documentos de CI.   ");
 		}
 	}
 
