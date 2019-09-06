@@ -189,6 +189,7 @@ public class StructuredTest {
 
 		List<MauiDocument> documents = DataLoader.loadTestDocuments(topicExtractor.inputDirectoryName);
 		List<MauiTopics> topics = topicExtractor.extractTopics(documents);
+		topicExtractor.printTopics(topics);
 		return evaluateTopics(topics);
 	}
 	

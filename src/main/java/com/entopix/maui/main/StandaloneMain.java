@@ -135,7 +135,7 @@ public class StandaloneMain {
 		String dataPath = Paths.getDataPath();
 		String modelOutputPath = dataPath + "\\models";
 		String trainDir = dataPath + "\\docs\\corpusci\\full_texts\\train30";
-		String testDir = dataPath + "\\docs\\corpusci\\full_texts\\test30";
+		String testDir = dataPath + "\\docs\\corpusci\\full_texts\\test60";
 		String testDocPath = dataPath + "\\docs\\corpusci\\full_texts\\test30\\Artigo32.txt";
 		
 		String modelPath = modelOutputPath + "\\testmodel";
@@ -257,7 +257,7 @@ public class StandaloneMain {
 	
 	public static void main(String[] args) throws Exception {
 		if(args == null || args.length == 0) {
-			instructUser2("pt");
+			printPTCIMessage("pt");
 			runPTCi();
 			return;
 		}
@@ -281,7 +281,7 @@ public class StandaloneMain {
 			System.out.println("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] opções...\nFavor especificar train ou test ou run e em seguida os parâmetros apropriados.   ");
 	}
 
-	private static void instructUser2(String language) {
+	private static void printPTCIMessage(String language) {
 		if(language.equals("en")) {
 			instructUser3(language);
 			System.out.println("By default, MAUI is running example in pt language and CI documents.   ");
