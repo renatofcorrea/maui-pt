@@ -1,1 +1,5 @@
 /maui-pt.jar.original
+/classes
+/generated-sources
+/maven-status
+/test-classes
