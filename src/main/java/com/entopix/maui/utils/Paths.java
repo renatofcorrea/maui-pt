@@ -26,6 +26,11 @@ public class Paths {
 		}
 	}
 	
+	/**
+	 * Verifies if a file path exists.
+	 * @param path
+	 * @return
+	 */
 	public static boolean exists(String path) {
 		File file = new File(path);
 		if (!file.exists()) {
@@ -34,4 +39,5 @@ public class Paths {
 			return true;
 		}
 	}
+	
 }

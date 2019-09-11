@@ -22,6 +22,7 @@ import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.Paths;
 import com.entopix.maui.utils.StructuredTest;
+import com.entopix.maui.utils.UI;
 
 import weka.core.Utils;
 
@@ -46,9 +47,11 @@ public class StandaloneMain {
 	static Stemmer stemmer = new PortugueseStemmer();
 	
 	static String dataPath = Paths.getDataPath();
+	static String abstractsPath = dataPath + "\\docs\\corpusci\\abstracts";
+	static String fullTextsPath = dataPath + "\\docs\\corpusci\\full_texts";
 	static String trainDir = dataPath + "\\docs\\corpusci\\full_texts\\train30";
 	static String testDir = dataPath + "\\docs\\corpusci\\full_texts\\test60";
-	static String testDocPath = dataPath + "\\docs\\corpusci\\full_texts\\test30\\Artigo32.txt";
+	static String testFilePath = dataPath + "\\docs\\corpusci\\full_texts\\test30\\Artigo32.txt";
 	
 	static String modelsDir = dataPath + "\\models";
 	static String modelName = "stdmodel";
@@ -58,7 +61,6 @@ public class StandaloneMain {
 	static String vocabFormat = "skos";
 	
 	static int numTopicsToExtract = 10;
-	
 	static String language = "pt";
 	static String encoding = "UTF-8";
 	
@@ -167,7 +169,7 @@ public class StandaloneMain {
 
 	private static void runOptionsMenuPT() throws Exception {
 		Scanner scan = new Scanner(System.in);
-		String option;
+		String input;
 		boolean exit = false;
 		while (!exit) {
 			System.out.println();
@@ -177,57 +179,72 @@ public class StandaloneMain {
 			System.out.println("4 - Executar teste estruturado  ");
 			System.out.println("0 - Sair  ");
 			System.out.print("Opção:  ");
-			option = scan.nextLine();
+			input = scan.nextLine();
 			
-			switch (option) {
+			switch (input) {
 			//TRAIN OPTION
 			case "1":
-				System.out.println("Digite o caminho do diretório de treinamento ou aperte [enter] para usar o atual.");
+				System.out.println("Escolha o diretório de treinamento ou aperte [enter] para usar o atual.");
 				System.out.println("Diretório de treinamento selecionado: " + trainDir);
-				option = scan.nextLine();
-				switch(option) {
-				default:
-					if (Paths.exists(option))
-						trainDir = option;
+				System.out.println("1 - Escolher da lista");
+				System.out.println("2 - Diretório customizado");
+				System.out.print("Opção: ");
+				input = scan.nextLine();
+				switch(input) {
+				case "1":
+					chooseFileFromList(scan,"train");
+					break;
+				case "2":
+					System.out.println("Digite o caminho completo do diretório: ");
+					input = scan.nextLine();
+					if (Paths.exists(input))
+						trainDir = input;
 					else
-						System.out.println("O diretório " + option + " não foi encontrado.");
+						System.out.println("O diretório " + input + " não foi encontrado.");
 					break;
 				case "":
 					break;
+				default:
+					System.out.println("Opção inválida.");
+					continue;
 				}
-				System.out.println("Deseja definir um novo modelo ou sobrescrever o atual?");
-				System.out.println("Modelo atual: '" + modelName + "'");
-				System.out.println("Digite 1 para alterar o modelo ou aperte enter para continuar.");
-				option = scan.nextLine();
-				switch (option) {
-				case "1":
-					System.out.println("Digite o nome do novo modelo: ");
-					modelName = scan.nextLine();
+				
+				System.out.println("Digite o nome do modelo ou aperte [enter] para sobrescrever o atual:");
+				System.out.println("Modelo atual: " + modelName);
+				input = scan.nextLine();
+				switch (input) {
+				default:
+					modelName = input;
 					modelPath = modelsDir + "\\" + modelName;
 					setupAndBuildModel();
 					break;
 				case "":
 					setupAndBuildModel();
 					break;
-				default:
-					System.out.println("Opção inválida.");
-					break;
 				}
 				break;
 				
 			//TEST ON DIRECTORY OPTION
 			case "2":
-				System.out.println("Digite o caminho do diretório de teste ou aperte enter para usar o atual.");
+				System.out.println("Escolha o  diretório de teste ou aperte [enter] para usar o atual.");
 				System.out.println("Diretório de teste selecionado: " + testDir);
-				option = scan.nextLine();
-				switch (option) {
-				default:
-					if (Paths.exists(option)) {
-						testDir = option;
+				System.out.println("1 - Escolher da lista");
+				System.out.println("2 - Diretório customizado");
+				System.out.print("Opção: ");
+				input = scan.nextLine();
+				switch (input) {
+				case "1":
+					chooseFileFromList(scan, "test");
+					setupAndRunTopicExtractor();
+					break;
+				case "2":
+					System.out.println("Digite o caminho completo do diretório: ");
+					input = scan.nextLine();
+					if (Paths.exists(input)) {
+						testDir = input;
 						setupAndRunTopicExtractor();
-					}
-					else
-						System.out.println("O diretório " + option + " não foi encontrado.");
+					} else
+						System.out.println("O diretório " + input + " não foi encontrado.");
 					break;
 				case "":
 					setupAndRunTopicExtractor();
@@ -237,16 +254,24 @@ public class StandaloneMain {
 				
 			//RUN ON FILE OPTION
 			case "3":
-				System.out.println("Digite o caminho do arquivo (.txt) ou aperte enter para usar o atual: ");
-				System.out.println("Arquivo selecionado: " + testDocPath);
-				option = scan.nextLine();
-				switch (option) {
-				default:
-					if (Paths.exists(option)) {
-						testDocPath = option;
+				System.out.println("Escolha o arquivo (.txt) ou aperte [enter] para usar o atual: ");
+				System.out.println("Arquivo selecionado: " + testFilePath);
+				System.out.println("1 - Escolher da lista");
+				System.out.println("2 - Arquivo customizado");
+				input = scan.nextLine();
+				switch (input) {
+				case "1":
+					chooseFileFromList(scan, "run");
+					runMauiWrapperOnFile();
+					break;
+				case "2":
+					System.out.println("Digite o caminho completo do arquivo de texto: ");
+					input = scan.nextLine();
+					if (Paths.exists(input)) {
+						testFilePath = input;
 						runMauiWrapperOnFile();
 					} else
-						System.out.println("O diretório " + option + " não foi encontrado.");
+						System.out.println("O diretório " + input + " não foi encontrado.");
 					break;
 				case "":
 					runMauiWrapperOnFile();
@@ -271,6 +296,89 @@ public class StandaloneMain {
 		scan.close();
 	}
 
+	/**
+	 * Procedure to choose a file from a list interactively.
+	 * @param scan
+	 */
+	public static void chooseFileFromList(Scanner scan, String dirType) {
+		String input;
+		File dir = null;
+		File[] fileList = null;
+		int fileChoice;
+		String finalFolder;
+		System.out.println("1 - Resumos");
+		System.out.println("2 - Textos Completos");
+		System.out.print("Opção: ");
+		input = scan.nextLine();
+		
+		if(input.equals("1"))
+			dir = new File(abstractsPath);
+		else if(input.equals("2"))
+			dir = new File(fullTextsPath);
+		else {
+			System.out.println("Opção Inválida.");
+			return;
+		}
+		
+		fileList = dir.listFiles();
+		
+		if(dirType.equals("train"))
+			fileList = filterFileList(fileList, "train");
+		else if(dirType.equals("test"))
+			fileList = filterFileList(fileList, "test");
+		
+		System.out.println("Diretório atual: " + dir.getAbsolutePath());
+		System.out.println("Modelo atual: " + modelName);
+		UI.displayDirContent(fileList);
+		System.out.print("Opção: ");
+		input = scan.nextLine();
+		fileChoice = Integer.parseInt(input)-1; //WARNING: Files are displayed starting with 1, but array starts with 0
+		finalFolder = fileList[fileChoice].getAbsolutePath();
+		
+		if(dirType.equals("train")) {trainDir = finalFolder;}
+		else if(dirType.equals("test")) {testDir = finalFolder;}
+		else if(dirType.equals("run")) {
+			File txtFileFolder = new File(finalFolder);
+			fileList = txtFileFolder.listFiles();
+			
+			fileList = filterFileList(fileList, ".txt");
+			
+			System.out.println("Diretório atual: " + txtFileFolder.getAbsolutePath());
+			UI.displayDirContent(fileList);
+			System.out.print("Opção: ");
+			input = scan.nextLine();
+			fileChoice = Integer.parseInt(input)-1; //WARNING: Files are displayed starting with 1, but array starts with 0
+			
+			testFilePath = fileList[fileChoice].getAbsolutePath();
+		}
+	}
+
+	static File[] filterFileList(File[] array, String filterMethod) {
+		ArrayList<File> newArray = new ArrayList<File>();
+		
+		switch(filterMethod) {
+		case ".txt":
+			for(File f : array) {
+				if(f.getName().endsWith(".txt"))
+					newArray.add(f);
+			}
+			break;
+		case "train":
+			for(File f : array) {
+				if(f.getName().startsWith("train"))
+					newArray.add(f);
+			}
+			break;
+		case "test":
+			for(File f : array) {
+				if(f.getName().startsWith("test"))
+					newArray.add(f);
+			}
+			break;
+		}
+		return newArray.toArray(new File[newArray.size()]);
+	}
+	
 	static void setupAndBuildModel() throws Exception {
 		modelBuilder.inputDirectoryName = trainDir;
 		modelBuilder.modelName = modelPath;
@@ -296,7 +404,7 @@ public class StandaloneMain {
 	}
 	
 	private static void runMauiWrapperOnFile() throws IOException, MauiFilterException {
-		File document = new File(testDocPath);
+		File document = new File(testFilePath);
 		String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
 
 		MauiWrapper mauiWrapper = null;
@@ -331,14 +439,14 @@ public class StandaloneMain {
 	
 	public static void main(String[] args) throws Exception {
 		if(args == null || args.length == 0) {
-			printPTCIMessage("pt");
+			UI.printPTCIMessage("pt");
 			runPTCi();
 			return;
 		}
 		
 		String command = args[0].toLowerCase(); 
 		if ((!command.equals("train") && !command.equals("test") && !command.equals("run"))) {
-			instructUser3(Utils.getOption('i', args));
+			UI.instructUser(Utils.getOption('i', args));
 			System.exit(-1);
 		}
 		
@@ -346,23 +454,5 @@ public class StandaloneMain {
 		System.arraycopy(args, 1, remainingArgs, 0, args.length-1);
 
 		StandaloneMain.runWithArguments(command, remainingArgs);
-	}
-
-	private static void instructUser3(String language) {
-		if(language.equals("en"))
-			System.out.println("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] options...\nPlease specify train or test or run and then the appropriate parameters.   ");
-		else //if(language.equals("pt"))
-			System.out.println("Maui Standalone Runner\njava -jar maui-standalone.jar [train|test|run] opções...\nFavor especificar train ou test ou run e em seguida os parâmetros apropriados.   ");
-	}
-
-	private static void printPTCIMessage(String language) {
-		if(language.equals("en")) {
-			instructUser3(language);
-			System.out.println("By default, MAUI is running example in pt language and CI documents.   ");
-		} else //if(language.equals("pt")) 
-		{
-			instructUser3(language);
-			System.out.println("Por padrão, MAUI está executando exemplo em português e documentos de CI.   ");
-		}
 	}
 }
