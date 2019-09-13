@@ -28,8 +28,8 @@ public class StructuredTest {
 	static String abstractsTestPath = abstractsDocsPath + "test30";
 	static String fullTextsTestPath = fullTextsDocsPath + "test30";
 	
-	static String abstractsModelsPath = dataPath + "\\models\\structured_test\\abstracts";
-	static String fullTextsModelsPath = dataPath + "\\models\\structured_test\\full_texts";
+	static String abstractsModelsPath = dataPath + "\\models";
+	static String fullTextsModelsPath = dataPath + "\\models";
 	
 	static String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 	
@@ -115,19 +115,19 @@ public class StructuredTest {
 			switch(docCount) {
 			case 10:
 				modelBuilder.inputDirectoryName = abstractsDocsPath + "\\train10";
-				modelBuilder.modelName = abstractsModelsPath + "\\abstracts_model10";
+				modelBuilder.modelName = abstractsModelsPath + "\\model_abstracts_train10";
 				MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 				modelBuilder.saveModel(filter);
 				break;
 			case 20:
 				modelBuilder.inputDirectoryName = abstractsDocsPath + "\\train20";
-				modelBuilder.modelName = abstractsModelsPath + "\\abstracts_model20";
+				modelBuilder.modelName = abstractsModelsPath + "\\model_abstracts_train20";
 				filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 				modelBuilder.saveModel(filter);
 				break;
 			case 30:
 				modelBuilder.inputDirectoryName = abstractsDocsPath + "\\train30";
-				modelBuilder.modelName = abstractsModelsPath + "\\abstracts_model30";
+				modelBuilder.modelName = abstractsModelsPath + "\\model_abstracts_train30";
 				filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 				modelBuilder.saveModel(filter);
 				break;
@@ -138,19 +138,19 @@ public class StructuredTest {
 			switch(docCount) {
 			case 10:
 				modelBuilder.inputDirectoryName = fullTextsDocsPath + "\\train10";
-				modelBuilder.modelName = fullTextsModelsPath + "\\full_text_model10";
+				modelBuilder.modelName = fullTextsModelsPath + "\\model_fulltexts_train10";
 				MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 				modelBuilder.saveModel(filter);
 				break;
 			case 20:
 				modelBuilder.inputDirectoryName = fullTextsDocsPath + "\\train20";
-				modelBuilder.modelName = fullTextsModelsPath + "\\full_text_model20";
+				modelBuilder.modelName = fullTextsModelsPath + "\\model_fulltexts_train20";
 				filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 				modelBuilder.saveModel(filter);
 				break;
 			case 30:
 				modelBuilder.inputDirectoryName = fullTextsDocsPath + "\\train30";
-				modelBuilder.modelName = fullTextsModelsPath + "\\full_text_model30";
+				modelBuilder.modelName = fullTextsModelsPath + "\\model_fulltexts_train30";
 				filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 				modelBuilder.saveModel(filter);
 				break;
@@ -227,42 +227,42 @@ public class StructuredTest {
 				{"modelE","correctkeys1","correctkeys2","precision1","precision2","recall1","recall2","f-measure"},
 		};
 		double[] results = null;
-		results = testModel("abstracts",abstractsModelsPath + "\\abstracts_model10");
+		results = testModel("abstracts",abstractsModelsPath + "\\model_abstracts_train10");
 		resultsString[0][0] = "abstracts_model10";
 		for (int i = 0; i < 7; i++) {
 			if(i > 1) {results[i] *= 100;}
 			resultsString[0][i+1] = Utils.doubleToString(results[i], 2);
 		}
 		
-		results = testModel("abstracts",abstractsModelsPath + "\\abstracts_model20");
+		results = testModel("abstracts",abstractsModelsPath + "\\model_abstracts_train20");
 		resultsString[1][0] = "abstracts_model20";
 		for (int i = 0; i < 7; i++) {
 			if(i > 1) {results[i] *= 100;}
 			resultsString[1][i+1] = Utils.doubleToString(results[i], 2);
 		}
 		
-		results = testModel("abstracts",abstractsModelsPath + "\\abstracts_model30");
+		results = testModel("abstracts",abstractsModelsPath + "\\model_abstracts_train30");
 		resultsString[2][0] = "abstracts_model30";
 		for (int i = 0; i < 7; i++) {
 			if(i > 1) {results[i] *= 100;}
 			resultsString[2][i+1] = Utils.doubleToString(results[i], 2);
 		}
 		
-		results = testModel("full_texts",fullTextsModelsPath + "\\full_text_model10");
+		results = testModel("full_texts",fullTextsModelsPath + "\\model_fulltexts_train10");
 		resultsString[3][0] = "full_text_model10";
 		for (int i = 0; i < 7; i++) {
 			if(i > 1) {results[i] *= 100;}
 			resultsString[3][i+1] = Utils.doubleToString(results[i], 2);
 		}
 		
-		results = testModel("full_texts",fullTextsModelsPath + "\\full_text_model20");
+		results = testModel("full_texts",fullTextsModelsPath + "\\model_fulltexts_train20");
 		resultsString[4][0] = "full_text_model20";
 		for (int i = 0; i < 7; i++) {
 			if(i > 1) {results[i] *= 100;}
 			resultsString[4][i+1] = Utils.doubleToString(results[i], 2);
 		}
 		
-		results = testModel("full_texts",fullTextsModelsPath + "\\full_text_model30");
+		results = testModel("full_texts",fullTextsModelsPath + "\\model_fulltexts_train30");
 		resultsString[5][0] = "full_text_model30";
 		for (int i = 0; i < 7; i++) {
 			if(i > 1) {results[i] *= 100;}

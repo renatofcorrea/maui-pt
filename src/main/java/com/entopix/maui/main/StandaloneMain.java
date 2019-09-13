@@ -51,11 +51,12 @@ public class StandaloneMain {
 	static String fullTextsPath = dataPath + "\\docs\\corpusci\\full_texts";
 	static String trainDir = dataPath + "\\docs\\corpusci\\full_texts\\train30";
 	static String testDir = dataPath + "\\docs\\corpusci\\full_texts\\test60";
-	static String testFilePath = dataPath + "\\docs\\corpusci\\full_texts\\test30\\Artigo32.txt";
+	static String testFilePath = dataPath + "\\docs\\corpusci\\full_texts\\test60\\Artigo32.txt";
 	
 	static String modelsDir = dataPath + "\\models";
-	static String modelName = "stdmodel";
+	static String modelName = "model_fulltexts_train30";
 	static String modelPath = modelsDir + "\\" + modelName;
+	static String modelType = "fulltexts"; //abstracts or fulltexts
 	
 	static String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 	static String vocabFormat = "skos";
@@ -63,7 +64,6 @@ public class StandaloneMain {
 	static int numTopicsToExtract = 10;
 	static String language = "pt";
 	static String encoding = "UTF-8";
-	
 	
 	/**
 	 * @param command 
@@ -160,11 +160,11 @@ public class StandaloneMain {
 	 * @throws Exception
 	 */
 	public static void runPTCi() throws Exception {
-		if(guiLanguage.equals("pt")) {
+		if(!Paths.exists(modelPath))
+			setupAndBuildModel();
+		
+		if(guiLanguage.equals("pt"))
 			runOptionsMenuPT();
-		} else {
-			//TODO runOptionsMenuEN();
-		}
 	}
 
 	private static void runOptionsMenuPT() throws Exception {
@@ -178,13 +178,31 @@ public class StandaloneMain {
 			System.out.println("3 - Executar extrator de tópicos em arquivo  ");
 			System.out.println("4 - Executar teste estruturado  ");
 			System.out.println("0 - Sair  ");
-			System.out.print("Opção:  ");
+			System.out.print("Opção: ");
 			input = scan.nextLine();
 			
 			switch (input) {
 			//TRAIN OPTION
 			case "1":
-				System.out.println("Escolha o diretório de treinamento ou aperte [enter] para usar o atual.");
+				System.out.println();
+				System.out.println("Escolha o tipo de modelo: ");
+				System.out.println("1 - Resumos");
+				System.out.println("2 - Textos Completos");
+				System.out.print("Opção: ");
+				input = scan.nextLine();
+				switch(input) {
+				case "1":
+					modelType = "abstracts";
+					break;
+				case "2":
+					modelType = "fulltexts";
+					break;
+				default:
+					System.out.println("ERRO: Opção Inválida.");
+					continue;
+				}
+				System.out.println();
+				System.out.println("Escolha o diretório de treinamento:");
 				System.out.println("Diretório de treinamento selecionado: " + trainDir);
 				System.out.println("1 - Escolher da lista");
 				System.out.println("2 - Diretório customizado");
@@ -195,38 +213,46 @@ public class StandaloneMain {
 					chooseFileFromList(scan,"train");
 					break;
 				case "2":
+					System.out.println();
 					System.out.println("Digite o caminho completo do diretório: ");
+					System.out.println("Opção: ");
 					input = scan.nextLine();
-					if (Paths.exists(input))
+					if(Paths.exists(input))
 						trainDir = input;
 					else
-						System.out.println("O diretório " + input + " não foi encontrado.");
-					break;
-				case "":
+						System.out.println("O diretório '" + input + "' não foi encontrado.");
 					break;
 				default:
-					System.out.println("Opção inválida.");
+					System.out.println("ERRO: Opção inválida.");
 					continue;
 				}
 				
-				System.out.println("Digite o nome do modelo ou aperte [enter] para sobrescrever o atual:");
-				System.out.println("Modelo atual: " + modelName);
+				System.out.println();
+				System.out.println("Digite o nome do novo modelo ou aperte [enter] para usar o nome padrão:");
+				modelName = "model_" + modelType + "_" + new File(trainDir).getName();
+				System.out.println("Nome padrão: " + modelName);
+				System.out.print("Nome do novo modelo: ");
 				input = scan.nextLine();
-				switch (input) {
-				default:
+				if(input.equals("")) {
+					modelPath = modelsDir + "\\" + modelName;
+					setupAndBuildModel();
+				} else {
 					modelName = input;
 					modelPath = modelsDir + "\\" + modelName;
 					setupAndBuildModel();
-					break;
-				case "":
-					setupAndBuildModel();
-					break;
 				}
 				break;
 				
 			//TEST ON DIRECTORY OPTION
 			case "2":
+				System.out.println();
+				System.out.println("Escolha o modelo a ser utilizado ou aperte [enter] para usar o atual: ");
+				System.out.println("Modelo Atual: " + modelName);
+				chooseFileFromList(scan, "model");
+				
+				System.out.println();
 				System.out.println("Escolha o  diretório de teste ou aperte [enter] para usar o atual.");
+				testDir = (modelType.equals("abstracts") ? abstractsPath + "\\test60" : fullTextsPath + "\\test60");
 				System.out.println("Diretório de teste selecionado: " + testDir);
 				System.out.println("1 - Escolher da lista");
 				System.out.println("2 - Diretório customizado");
@@ -234,6 +260,16 @@ public class StandaloneMain {
 				input = scan.nextLine();
 				switch (input) {
 				case "1":
+					if(modelType.equals("")) {
+						if(modelPath.contains("abstracts"))
+							modelType = "abstracts";
+						else if(modelPath.contains("full_texts"))
+							modelType = "fulltexts";
+						else {
+							System.out.println("ERRO: Caminho do modelo inválido.");
+							continue;
+						}
+					}
 					chooseFileFromList(scan, "test");
 					setupAndRunTopicExtractor();
 					break;
@@ -243,8 +279,10 @@ public class StandaloneMain {
 					if (Paths.exists(input)) {
 						testDir = input;
 						setupAndRunTopicExtractor();
-					} else
-						System.out.println("O diretório " + input + " não foi encontrado.");
+					} else {
+						System.out.println("ERRO: O diretório " + input + " não foi encontrado.");
+						continue;
+					}
 					break;
 				case "":
 					setupAndRunTopicExtractor();
@@ -254,10 +292,18 @@ public class StandaloneMain {
 				
 			//RUN ON FILE OPTION
 			case "3":
+				System.out.println();
+				System.out.println("Escolha o modelo a ser utilizado ou aperte [enter] para usar o atual: ");
+				System.out.println("Modelo Atual: " + modelName);
+				chooseFileFromList(scan, "model");
+				
+				System.out.println();
 				System.out.println("Escolha o arquivo (.txt) ou aperte [enter] para usar o atual: ");
+				testFilePath = (modelType.equals("abstracts") ? abstractsPath + "\\test60\\Artigo32.txt" : fullTextsPath + "\\test60\\Artigo32.txt");
 				System.out.println("Arquivo selecionado: " + testFilePath);
 				System.out.println("1 - Escolher da lista");
 				System.out.println("2 - Arquivo customizado");
+				System.out.print("Opção: ");
 				input = scan.nextLine();
 				switch (input) {
 				case "1":
@@ -270,8 +316,10 @@ public class StandaloneMain {
 					if (Paths.exists(input)) {
 						testFilePath = input;
 						runMauiWrapperOnFile();
-					} else
-						System.out.println("O diretório " + input + " não foi encontrado.");
+					} else {
+						System.out.println("ERRO: O diretório " + input + " não foi encontrado.");
+						continue;
+					}
 					break;
 				case "":
 					runMauiWrapperOnFile();
@@ -304,52 +352,66 @@ public class StandaloneMain {
 		String input;
 		File dir = null;
 		File[] fileList = null;
-		int fileChoice;
-		String finalFolder;
-		System.out.println("1 - Resumos");
-		System.out.println("2 - Textos Completos");
-		System.out.print("Opção: ");
-		input = scan.nextLine();
+		String fileChoice;
 		
-		if(input.equals("1"))
-			dir = new File(abstractsPath);
-		else if(input.equals("2"))
-			dir = new File(fullTextsPath);
-		else {
-			System.out.println("Opção Inválida.");
-			return;
+		if(dirType.equals("model")) {
+			dir = new File(modelsDir);
+		} else {
+			if(modelType.equals("abstracts")) {
+				dir = new File(abstractsPath);
+			} else if(modelType.equals("fulltexts")) {
+				dir = new File(fullTextsPath);
+			} else {
+				System.out.println("ERRO: Tipo de Modelo Inválido.");
+				return;
+			}
 		}
+		
 		
 		fileList = dir.listFiles();
 		
-		if(dirType.equals("train"))
-			fileList = filterFileList(fileList, "train");
-		else if(dirType.equals("test"))
-			fileList = filterFileList(fileList, "test");
+		if(dirType.equals("train") || dirType.equals("test") || dirType.equals("model"))
+			fileList = filterFileList(fileList, dirType);
 		
 		System.out.println("Diretório atual: " + dir.getAbsolutePath());
-		System.out.println("Modelo atual: " + modelName);
 		UI.displayDirContent(fileList);
 		System.out.print("Opção: ");
 		input = scan.nextLine();
-		fileChoice = Integer.parseInt(input)-1; //WARNING: Files are displayed starting with 1, but array starts with 0
-		finalFolder = fileList[fileChoice].getAbsolutePath();
 		
-		if(dirType.equals("train")) {trainDir = finalFolder;}
-		else if(dirType.equals("test")) {testDir = finalFolder;}
-		else if(dirType.equals("run")) {
-			File txtFileFolder = new File(finalFolder);
+		if(input.equals("") && dirType.equals("model")) //User selected standard model
+			return;
+		
+		fileChoice = fileList[Integer.parseInt(input)-1].getAbsolutePath(); //WARNING: Files are displayed starting with 1, but array starts with 0
+		
+		switch(dirType) {
+		case "train":
+			trainDir = fileChoice;
+			break;
+		case "test":
+			testDir = fileChoice;
+			break;
+		case "model":
+			modelPath = fileChoice;
+			modelName = new File(modelPath).getName();
+			if(modelName.contains("asbtracts"))
+				modelType = "abstracts";
+			else if(modelName.contains("fulltexts"))
+				modelType = "fulltexts";
+			else
+				//TODO Custom names don't work, standard modelType assumed
+			break;
+		case "run":
+			File txtFileFolder = new File(fileChoice);
 			fileList = txtFileFolder.listFiles();
-			
 			fileList = filterFileList(fileList, ".txt");
 			
 			System.out.println("Diretório atual: " + txtFileFolder.getAbsolutePath());
 			UI.displayDirContent(fileList);
 			System.out.print("Opção: ");
 			input = scan.nextLine();
-			fileChoice = Integer.parseInt(input)-1; //WARNING: Files are displayed starting with 1, but array starts with 0
 			
-			testFilePath = fileList[fileChoice].getAbsolutePath();
+			testFilePath = fileList[Integer.parseInt(input)-1].getAbsolutePath(); //WARNING: Files are displayed starting with 1, but array starts with 0
+			break;
 		}
 	}
 
@@ -375,7 +437,13 @@ public class StandaloneMain {
 					newArray.add(f);
 			}
 			break;
+		case "model":
+			for(File f : array) {
+				if(!f.isDirectory())
+					newArray.add(f);
+			}
 		}
+		
 		return newArray.toArray(new File[newArray.size()]);
 	}
 	
@@ -400,7 +468,7 @@ public class StandaloneMain {
 		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
 		System.out.println("Modelo '" + modelName + "' construído. Salvando modelo...");
 		modelBuilder.saveModel(filter);
-		System.out.println("Pronto!");
+		System.out.println("Modelo salvo em " + modelPath);
 	}
 	
 	private static void runMauiWrapperOnFile() throws IOException, MauiFilterException {

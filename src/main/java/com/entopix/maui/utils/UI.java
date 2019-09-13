@@ -7,13 +7,8 @@ public class UI {
 	 * Displays a list of the folders and text files in a directory.
 	 */
 	public static void displayDirContent(File[] fileList) {
-		for (int i = 0; i < fileList.length; i++) {
-			if (fileList[i].isDirectory()) {
-				System.out.println(i+1 + " - " + fileList[i].getName());
-			} else if(fileList[i].getName().endsWith(".txt")) {
-				System.out.println(i+1 + " - " + fileList[i].getName());
-			}
-		}
+		for (int i = 0; i < fileList.length; i++)
+			System.out.println(i+1 + " - " + fileList[i].getName());
 	}
 
 	public static void instructUser(String language) {
