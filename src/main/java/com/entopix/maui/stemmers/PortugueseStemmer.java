@@ -778,7 +778,7 @@ private static Rule[] plural = {
    * @param word a string consisting of a single word
    */
   public String stem(String word) {
-	
+	  
     StringBuffer w = new StringBuffer(word.toLowerCase());
     @SuppressWarnings("unused")
 	boolean changed;

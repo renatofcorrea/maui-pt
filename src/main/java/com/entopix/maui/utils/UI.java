@@ -3,12 +3,15 @@ package com.entopix.maui.utils;
 import java.io.File;
 
 public class UI {
-	/**
-	 * Displays a list of the folders and text files in a directory.
-	 */
-	public static void displayDirContent(File[] fileList) {
+	public static void displayFileList(File[] fileList) {
 		for (int i = 0; i < fileList.length; i++)
 			System.out.println(i+1 + " - " + fileList[i].getName());
+	}
+	
+	public static void displayDirContent(String dirPath) {
+		File dir = new File(dirPath);
+		File[] fileList = dir.listFiles();
+		displayFileList(fileList);
 	}
 
 	public static void instructUser(String language) {
@@ -22,10 +25,20 @@ public class UI {
 		if(language.equals("en")) {
 			instructUser(language);
 			System.out.println("By default, MAUI is running example in pt language and CI documents.   ");
-		} else //if(language.equals("pt")) 
-		{
+		} else { //if(language.equals("pt"))
 			instructUser(language);
 			System.out.println("Por padrão, MAUI está executando exemplo em português e documentos de CI.   ");
 		}
+	}
+	
+	public static void displayCredits() {
+		System.out.println();
+		System.out.println("----------------------CRÉDITOS----------------------");
+		System.out.println("MAUI-PT - Maui adaptado para o português");
+		System.out.println("Desenvolvido por Renato Corrêa e Rahmon Jorge,"); 
+		System.out.println("como parte do projeto PIBITI/UFPE/CNPq em 2019.");
+		System.out.println("MAUI original criado por Alyona Medelyan");
+		System.out.println("-------------------------//-------------------------");
+		System.out.println();
 	}
 }

@@ -49,14 +49,20 @@ public class StandaloneMain {
 	static String dataPath = Paths.getDataPath();
 	static String abstractsPath = dataPath + "\\docs\\corpusci\\abstracts";
 	static String fullTextsPath = dataPath + "\\docs\\corpusci\\full_texts";
-	static String trainDir = dataPath + "\\docs\\corpusci\\full_texts\\train30";
-	static String testDir = dataPath + "\\docs\\corpusci\\full_texts\\test60";
+	static String trainDir = dataPath + fullTextsPath + "\\train30";
+	static String testDir = dataPath + fullTextsPath + "\\test60";
 	static String testFilePath = dataPath + "\\docs\\corpusci\\full_texts\\test60\\Artigo32.txt";
 	
+	static enum ModelType {
+		FULLTEXTS("full_texts"), ABSTRACTS("abstracts");
+		String name;
+		ModelType(String name) {this.name = name;}
+		public String getName() {return name;}
+	}
+	static ModelType modelType = ModelType.FULLTEXTS;
 	static String modelsDir = dataPath + "\\models";
 	static String modelName = "model_fulltexts_train30";
 	static String modelPath = modelsDir + "\\" + modelName;
-	static String modelType = "fulltexts"; //abstracts or fulltexts
 	
 	static String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 	static String vocabFormat = "skos";
@@ -72,7 +78,7 @@ public class StandaloneMain {
 	 */
 	public static void runWithArguments(String command, String[] args) throws Exception {
 		String dataPath = Paths.getDataPath();
-		switch(command) {
+		switch (command) {
 		case "train":
 			MauiModelBuilder modelBuilder = new MauiModelBuilder();
 			modelBuilder.inputDirectoryName = dataPath + Utils.getOption('l', args);
@@ -84,7 +90,7 @@ public class StandaloneMain {
 			modelBuilder.minPhraseLength = 1;
 			modelBuilder.minNumOccur = 1;
 			modelBuilder.serialize = true;
-			if(modelBuilder.documentLanguage.equals("pt")) {
+			if (modelBuilder.documentLanguage.equals("pt")) {
 				modelBuilder.stopwords = new StopwordsPortuguese();
 				modelBuilder.stemmer = new PortugueseStemmer();
 			} else {
@@ -109,7 +115,7 @@ public class StandaloneMain {
 			topicExtractor.documentLanguage = Utils.getOption('i', args);
 			topicExtractor.cutOffTopicProbability = 0.12;
 			topicExtractor.serialize = true;
-			if(topicExtractor.documentLanguage.equals("pt")) {
+			if (topicExtractor.documentLanguage.equals("pt")) {
 				topicExtractor.stopwords = new StopwordsPortuguese();
 				topicExtractor.stemmer = new PortugueseStemmer();
 			} else {
@@ -136,7 +142,7 @@ public class StandaloneMain {
 			String documentLanguage = Utils.getOption('i', args);
 			Stopwords stopwords = null;
 			Stemmer stemmer = null;
-			if(documentLanguage.equals("pt")) { //forces class initialization manually (ignores -s and -t arguments)
+			if (documentLanguage.equals("pt")) { //forces class initialization manually (ignores -s and -t arguments)
 				stopwords = new StopwordsPortuguese();
 				stemmer = new PortugueseStemmer();
 			} else {
@@ -149,21 +155,21 @@ public class StandaloneMain {
 			mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, documentLanguage); 
 
 	        ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, topicsPerDocument);
-	        for (Topic keyword : keywords) {
+	        for  (Topic keyword : keywords) {
 	        	System.out.println("Keyword: " + keyword.getTitle() + " " + keyword.getProbability());
 	        }
 			break;
-		}
-	}
+		} // switch (command) end
+	} // runWithArguments end
 	
 	/**
 	 * @throws Exception
 	 */
 	public static void runPTCi() throws Exception {
-		if(!Paths.exists(modelPath))
+		if (!Paths.exists(modelPath))
 			setupAndBuildModel();
 		
-		if(guiLanguage.equals("pt"))
+		if (guiLanguage.equals("pt"))
 			runOptionsMenuPT();
 	}
 
@@ -171,12 +177,14 @@ public class StandaloneMain {
 		Scanner scan = new Scanner(System.in);
 		String input;
 		boolean exit = false;
-		while (!exit) {
+		while  (!exit) {
 			System.out.println();
-			System.out.println("1 - Construir modelo  ");
-			System.out.println("2 - Testar extrator de tópicos em diretório  ");
-			System.out.println("3 - Executar extrator de tópicos em arquivo  ");
-			System.out.println("4 - Executar teste estruturado  ");
+			System.out.println("1 - Criar modelo  ");
+			System.out.println("2 - Selecionar modelo");
+			System.out.println("3 - Testar modelo em diretório  ");
+			System.out.println("4 - Executar modelo em arquivo  ");
+			System.out.println("5 - Executar teste estruturado  ");
+			System.out.println("6 - Sobre");
 			System.out.println("0 - Sair  ");
 			System.out.print("Opção: ");
 			input = scan.nextLine();
@@ -192,17 +200,18 @@ public class StandaloneMain {
 				input = scan.nextLine();
 				switch(input) {
 				case "1":
-					modelType = "abstracts";
+					modelType = ModelType.ABSTRACTS;
 					break;
 				case "2":
-					modelType = "fulltexts";
+					modelType = ModelType.FULLTEXTS;
 					break;
 				default:
 					System.out.println("ERRO: Opção Inválida.");
 					continue;
 				}
 				System.out.println();
-				System.out.println("Escolha o diretório de treinamento:");
+				System.out.println("Escolha o diretório de treinamento ou aperte [enter] para usar o atual:");
+				trainDir = (modelType.equals(ModelType.ABSTRACTS) ? abstractsPath + "\\train30" : trainDir);
 				System.out.println("Diretório de treinamento selecionado: " + trainDir);
 				System.out.println("1 - Escolher da lista");
 				System.out.println("2 - Diretório customizado");
@@ -217,10 +226,12 @@ public class StandaloneMain {
 					System.out.println("Digite o caminho completo do diretório: ");
 					System.out.println("Opção: ");
 					input = scan.nextLine();
-					if(Paths.exists(input))
+					if (Paths.exists(input))
 						trainDir = input;
 					else
 						System.out.println("O diretório '" + input + "' não foi encontrado.");
+					break;
+				case "":
 					break;
 				default:
 					System.out.println("ERRO: Opção inválida.");
@@ -229,11 +240,11 @@ public class StandaloneMain {
 				
 				System.out.println();
 				System.out.println("Digite o nome do novo modelo ou aperte [enter] para usar o nome padrão:");
-				modelName = "model_" + modelType + "_" + new File(trainDir).getName();
+				modelName = "model_" + modelType.getName() + "_" + new File(trainDir).getName();
 				System.out.println("Nome padrão: " + modelName);
 				System.out.print("Nome do novo modelo: ");
 				input = scan.nextLine();
-				if(input.equals("")) {
+				if (input.equals("")) {
 					modelPath = modelsDir + "\\" + modelName;
 					setupAndBuildModel();
 				} else {
@@ -243,16 +254,22 @@ public class StandaloneMain {
 				}
 				break;
 				
-			//TEST ON DIRECTORY OPTION
+			//DISPLAY MODELS OPTION
 			case "2":
 				System.out.println();
-				System.out.println("Escolha o modelo a ser utilizado ou aperte [enter] para usar o atual: ");
-				System.out.println("Modelo Atual: " + modelName);
+				chooseFileFromList(scan, "model");
+				System.out.println("\nModelo " + modelName + " selecionado.");
+				break;
+			
+			//TEST ON DIRECTORY OPTION
+			case "3":
+				System.out.println("\nEscolha o modelo a ser utilizado ou aperte [enter] para usar o atual:");
+				System.out.println("Modelo Selecionado: " + modelName + "\n");
 				chooseFileFromList(scan, "model");
 				
 				System.out.println();
 				System.out.println("Escolha o  diretório de teste ou aperte [enter] para usar o atual.");
-				testDir = (modelType.equals("abstracts") ? abstractsPath + "\\test60" : fullTextsPath + "\\test60");
+				testDir = (modelType.equals(ModelType.ABSTRACTS) ? abstractsPath + "\\test60" : fullTextsPath + "\\test60");
 				System.out.println("Diretório de teste selecionado: " + testDir);
 				System.out.println("1 - Escolher da lista");
 				System.out.println("2 - Diretório customizado");
@@ -260,23 +277,13 @@ public class StandaloneMain {
 				input = scan.nextLine();
 				switch (input) {
 				case "1":
-					if(modelType.equals("")) {
-						if(modelPath.contains("abstracts"))
-							modelType = "abstracts";
-						else if(modelPath.contains("full_texts"))
-							modelType = "fulltexts";
-						else {
-							System.out.println("ERRO: Caminho do modelo inválido.");
-							continue;
-						}
-					}
 					chooseFileFromList(scan, "test");
 					setupAndRunTopicExtractor();
 					break;
 				case "2":
 					System.out.println("Digite o caminho completo do diretório: ");
 					input = scan.nextLine();
-					if (Paths.exists(input)) {
+					if  (Paths.exists(input)) {
 						testDir = input;
 						setupAndRunTopicExtractor();
 					} else {
@@ -291,15 +298,14 @@ public class StandaloneMain {
 				break;
 				
 			//RUN ON FILE OPTION
-			case "3":
-				System.out.println();
-				System.out.println("Escolha o modelo a ser utilizado ou aperte [enter] para usar o atual: ");
-				System.out.println("Modelo Atual: " + modelName);
+			case "4":
+				System.out.println("\nEscolha o modelo a ser utilizado ou aperte [enter] para usar o atual: ");
+				System.out.println("Modelo Selecionado: " + modelName + "\n");
 				chooseFileFromList(scan, "model");
 				
 				System.out.println();
 				System.out.println("Escolha o arquivo (.txt) ou aperte [enter] para usar o atual: ");
-				testFilePath = (modelType.equals("abstracts") ? abstractsPath + "\\test60\\Artigo32.txt" : fullTextsPath + "\\test60\\Artigo32.txt");
+				testFilePath = (modelType.equals(ModelType.ABSTRACTS) ? abstractsPath + "\\test60\\Artigo32.txt" : fullTextsPath + "\\test60\\Artigo32.txt");
 				System.out.println("Arquivo selecionado: " + testFilePath);
 				System.out.println("1 - Escolher da lista");
 				System.out.println("2 - Arquivo customizado");
@@ -313,7 +319,7 @@ public class StandaloneMain {
 				case "2":
 					System.out.println("Digite o caminho completo do arquivo de texto: ");
 					input = scan.nextLine();
-					if (Paths.exists(input)) {
+					if  (Paths.exists(input)) {
 						testFilePath = input;
 						runMauiWrapperOnFile();
 					} else {
@@ -328,8 +334,17 @@ public class StandaloneMain {
 				break;
 				
 			//STRUCTURED TEST OPTION
-			case "4":
+			case "5":
 				StructuredTest.runAllTests();
+				break;
+			
+			//ABOUT OPTION
+			case "6":
+				UI.displayCredits();
+				System.out.println("Aperte [enter] para continuar ou 0 para sair.");
+				input = scan.nextLine();
+				if (input.equals("")) break;
+				else if (input.equals("0")) exit = true;
 				break;
 				
 			//EXIT OPTION
@@ -354,12 +369,12 @@ public class StandaloneMain {
 		File[] fileList = null;
 		String fileChoice;
 		
-		if(dirType.equals("model")) {
+		if (dirType.equals("model")) {
 			dir = new File(modelsDir);
 		} else {
-			if(modelType.equals("abstracts")) {
+			if (modelType.equals(ModelType.ABSTRACTS)) {
 				dir = new File(abstractsPath);
-			} else if(modelType.equals("fulltexts")) {
+			} else if (modelType.equals(ModelType.FULLTEXTS)) {
 				dir = new File(fullTextsPath);
 			} else {
 				System.out.println("ERRO: Tipo de Modelo Inválido.");
@@ -370,16 +385,21 @@ public class StandaloneMain {
 		
 		fileList = dir.listFiles();
 		
-		if(dirType.equals("train") || dirType.equals("test") || dirType.equals("model"))
+		if (dirType.equals("train") || dirType.equals("test") || dirType.equals("model")) {
 			fileList = filterFileList(fileList, dirType);
+		} else {
+			System.out.println("ERRO: Tipo do diretório inválido");
+		}
 		
 		System.out.println("Diretório atual: " + dir.getAbsolutePath());
-		UI.displayDirContent(fileList);
-		System.out.print("Opção: ");
+		UI.displayFileList(fileList);
+		if (dirType.equals("model")) System.out.print("Digite o número correspondente ao modelo: ");
+		else System.out.println("Opção: ");
 		input = scan.nextLine();
 		
-		if(input.equals("") && dirType.equals("model")) //User selected standard model
+		if (input.equals("") && dirType.equals("model")) { //User selected standard model
 			return;
+		}
 		
 		fileChoice = fileList[Integer.parseInt(input)-1].getAbsolutePath(); //WARNING: Files are displayed starting with 1, but array starts with 0
 		
@@ -393,12 +413,8 @@ public class StandaloneMain {
 		case "model":
 			modelPath = fileChoice;
 			modelName = new File(modelPath).getName();
-			if(modelName.contains("asbtracts"))
-				modelType = "abstracts";
-			else if(modelName.contains("fulltexts"))
-				modelType = "fulltexts";
-			else
-				//TODO Custom names don't work, standard modelType assumed
+			if (modelName.contains("abstracts")) modelType = ModelType.ABSTRACTS;
+			else if (modelName.contains("fulltexts")) modelType = ModelType.FULLTEXTS;
 			break;
 		case "run":
 			File txtFileFolder = new File(fileChoice);
@@ -406,7 +422,7 @@ public class StandaloneMain {
 			fileList = filterFileList(fileList, ".txt");
 			
 			System.out.println("Diretório atual: " + txtFileFolder.getAbsolutePath());
-			UI.displayDirContent(fileList);
+			UI.displayFileList(fileList);
 			System.out.print("Opção: ");
 			input = scan.nextLine();
 			
@@ -420,26 +436,26 @@ public class StandaloneMain {
 		
 		switch(filterMethod) {
 		case ".txt":
-			for(File f : array) {
-				if(f.getName().endsWith(".txt"))
+			for (File f : array) {
+				if (f.getName().endsWith(".txt"))
 					newArray.add(f);
 			}
 			break;
 		case "train":
-			for(File f : array) {
-				if(f.getName().startsWith("train"))
+			for (File f : array) {
+				if (f.getName().startsWith("train"))
 					newArray.add(f);
 			}
 			break;
 		case "test":
-			for(File f : array) {
-				if(f.getName().startsWith("test"))
+			for (File f : array) {
+				if (f.getName().startsWith("test"))
 					newArray.add(f);
 			}
 			break;
 		case "model":
-			for(File f : array) {
-				if(!f.isDirectory())
+			for (File f : array) {
+				if (!f.isDirectory())
 					newArray.add(f);
 			}
 		}
@@ -481,7 +497,7 @@ public class StandaloneMain {
 		mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, language);
 
 		ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, numTopicsToExtract);
-		for (Topic keyword : keywords) {
+		for  (Topic keyword : keywords) {
 			System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
 		}
 		//TODO Not writing .maui file because keywords were stored in List<Topic> instead of List<MauiTopics>
@@ -506,7 +522,7 @@ public class StandaloneMain {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		if(args == null || args.length == 0) {
+		if (args == null || args.length == 0) {
 			UI.printPTCIMessage("pt");
 			runPTCi();
 			return;
