@@ -26,10 +26,65 @@ public class TempClass {
 	private static String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 	private static Stopwords stopwords = new StopwordsPortuguese();
 	
-	private static Stemmer stemmer = new NewPortugueseStemmer();
+	private static String[] stemOptions = {"-S","Savoy"};
+	private static Stemmer stemmer = new NewPortugueseStemmer(stemOptions);
 	
 	public static void main(String[] args) {
-		String a = "palavra";
-		System.out.println(stemmer.stem(a));
+		
+		System.out.println("-> Savoy: ");
+		stemAll2();
+		
+		stemOptions[1] = "Porter";
+		stemmer = new NewPortugueseStemmer(stemOptions);
+		System.out.println("-> Porter: ");
+		stemAll2();
+		
+		stemOptions[1] = "Orengo";
+		stemmer = new NewPortugueseStemmer(stemOptions);
+		System.out.println("-> Orengo: ");
+		stemAll2();
+		
+	}
+
+	private static void stemAll() {
+		System.out.println(stemmer.stemString("ciência da informação"));
+		System.out.println(stemmer.stemString("cientista da informação"));
+		System.out.println(stemmer.stemString("pesquisa pesquisadores"));
+		System.out.println(stemmer.stemString("bibliotecários bibliotecas"));
+		System.out.println(stemmer.stemString("gestores  gestão"));
+		System.out.println(stemmer.stemString("hipertextos hipertexto"));
+		System.out.println(stemmer.stemString("público publicações"));
+		System.out.println(stemmer.stemString("publicação publicações"));
+		System.out.println(stemmer.stemString("realizada realia"));
+		System.out.println(stemmer.stemString("realizada realismo"));
+		System.out.println(stemmer.stemString("soc socialmente"));
+		System.out.println(stemmer.stemString("soc sociais"));
+		System.out.println(stemmer.stemString("informação informacional"));
+		System.out.println();
+	}
+	
+	private static void stemAll2() {
+		System.out.println(stemmer.stemString("ciência"));
+		System.out.println(stemmer.stemString("informação"));
+		System.out.println(stemmer.stemString("cientista"));
+		System.out.println(stemmer.stemString("pesquisa"));
+		System.out.println(stemmer.stemString("pesquisadores"));
+		System.out.println(stemmer.stemString("bibliotecários"));
+		System.out.println(stemmer.stemString("bibliotecas"));
+		System.out.println(stemmer.stemString("gestores"));
+		System.out.println(stemmer.stemString("gestão"));
+		System.out.println(stemmer.stemString("hipertexto"));
+		System.out.println(stemmer.stemString("hipertextos"));
+		System.out.println(stemmer.stemString("público"));
+		System.out.println(stemmer.stemString("publicações"));
+		System.out.println(stemmer.stemString("publicação"));
+		System.out.println(stemmer.stemString("realizada"));
+		System.out.println(stemmer.stemString("realia"));
+		System.out.println(stemmer.stemString("realismo"));
+		System.out.println(stemmer.stemString("socialmente"));
+		System.out.println(stemmer.stemString("soc"));
+		System.out.println(stemmer.stemString("sociais"));
+		System.out.println(stemmer.stemString("informacional"));
+		System.out.println();
 	}
 }

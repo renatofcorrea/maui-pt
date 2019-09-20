@@ -11,17 +11,18 @@ import org.apache.commons.io.FileUtils;
 
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
+import com.entopix.maui.stemmers.NewPortugueseStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
+import com.entopix.maui.tests.StructuredTest;
 import com.entopix.maui.util.DataLoader;
 import com.entopix.maui.util.Evaluator;
 import com.entopix.maui.util.MauiDocument;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.Paths;
-import com.entopix.maui.utils.StructuredTest;
 import com.entopix.maui.utils.UI;
 
 import weka.core.Utils;
@@ -49,8 +50,8 @@ public class StandaloneMain {
 	static String dataPath = Paths.getDataPath();
 	static String abstractsPath = dataPath + "\\docs\\corpusci\\abstracts";
 	static String fullTextsPath = dataPath + "\\docs\\corpusci\\full_texts";
-	static String trainDir = dataPath + fullTextsPath + "\\train30";
-	static String testDir = dataPath + fullTextsPath + "\\test60";
+	static String trainDir = fullTextsPath + "\\train30";
+	static String testDir = fullTextsPath + "\\test60";
 	static String testFilePath = dataPath + "\\docs\\corpusci\\full_texts\\test60\\Artigo32.txt";
 	
 	static enum ModelType {
@@ -89,10 +90,11 @@ public class StandaloneMain {
 			modelBuilder.maxPhraseLength = 5;
 			modelBuilder.minPhraseLength = 1;
 			modelBuilder.minNumOccur = 1;
-			modelBuilder.serialize = true;
+			modelBuilder.serialize = false; //true
 			if (modelBuilder.documentLanguage.equals("pt")) {
 				modelBuilder.stopwords = new StopwordsPortuguese();
-				modelBuilder.stemmer = new PortugueseStemmer();
+				String[] opt = {"-S","Orengo"};
+				modelBuilder.stemmer = new NewPortugueseStemmer(opt); //use standard
 			} else {
 				modelBuilder.stopwords = (Stopwords) Class.forName(Utils.getOption('s', args)).newInstance();
 				modelBuilder.stemmer = (Stemmer) Class.forName(Utils.getOption('t', args)).newInstance();
@@ -166,8 +168,9 @@ public class StandaloneMain {
 	 * @throws Exception
 	 */
 	public static void runPTCi() throws Exception {
-		if (!Paths.exists(modelPath))
-			setupAndBuildModel();
+		if (!Paths.exists(modelPath)) {
+			//setupAndBuildModel();
+		}
 		
 		if (guiLanguage.equals("pt"))
 			runOptionsMenuPT();
