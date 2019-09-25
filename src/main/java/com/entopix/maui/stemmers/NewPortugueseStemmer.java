@@ -8,7 +8,7 @@ public class NewPortugueseStemmer extends Stemmer implements Serializable {
 
 	private static final long serialVersionUID = 3903282839721792340L;
 
-	private static PTStemmer stemmer;
+	public static PTStemmer stemmer; /*static for serializer*/
 	
 	public NewPortugueseStemmer(String[] options) {
 		stemmer = new PTStemmer();

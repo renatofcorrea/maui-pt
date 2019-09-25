@@ -1,12 +1,16 @@
 package com.entopix.maui.tests;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.main.MauiModelBuilder;
 import com.entopix.maui.main.MauiTopicExtractor;
+import com.entopix.maui.stemmers.LuceneBRStemmer;
+import com.entopix.maui.stemmers.LucenePTStemmer;
 import com.entopix.maui.stemmers.NewPortugueseStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
@@ -227,7 +231,7 @@ public class StructuredTest {
 	public static void buildAllModels() throws Exception {
 		
 		Stemmer stemmer = new PortugueseStemmer();
-		stemmerName = "ptstemmer";
+		stemmerName = "std_orengo";
 		buildModel(stemmer,"abstracts",10);
 		buildModel(stemmer,"abstracts",20);
 		buildModel(stemmer,"abstracts",30);
@@ -245,7 +249,7 @@ public class StructuredTest {
 		
 		stemOptions[1] = "Savoy";
 		stemmer = new NewPortugueseStemmer(stemOptions);
-		stemmerName = "savoy";
+		stemmerName = "newpt_savoy";
 		buildModel(stemmer,"abstracts",10);
 		buildModel(stemmer,"abstracts",20);
 		buildModel(stemmer,"abstracts",30);
@@ -257,7 +261,7 @@ public class StructuredTest {
 		
 		stemOptions[1] = "Porter";
 		stemmer = new NewPortugueseStemmer(stemOptions);
-		stemmerName = "porter";
+		stemmerName = "newpt_porter";
 		buildModel(stemmer,"abstracts",10);
 		buildModel(stemmer,"abstracts",20);
 		buildModel(stemmer,"abstracts",30);
@@ -269,7 +273,29 @@ public class StructuredTest {
 		
 		stemOptions[1] = "Orengo";
 		stemmer = new NewPortugueseStemmer(stemOptions);
-		stemmerName = "orengo";
+		stemmerName = "newpt_orengo";
+		buildModel(stemmer,"abstracts",10);
+		buildModel(stemmer,"abstracts",20);
+		buildModel(stemmer,"abstracts",30);
+		buildModel(stemmer,"full_texts",10);
+		buildModel(stemmer,"full_texts",20);
+		buildModel(stemmer,"full_texts",30);
+		vocab = new File(serialPath);
+		vocab.delete();
+		
+		stemmer = new LuceneBRStemmer();
+		stemmerName = "lucene_br";
+		buildModel(stemmer,"abstracts",10);
+		buildModel(stemmer,"abstracts",20);
+		buildModel(stemmer,"abstracts",30);
+		buildModel(stemmer,"full_texts",10);
+		buildModel(stemmer,"full_texts",20);
+		buildModel(stemmer,"full_texts",30);
+		vocab = new File(serialPath);
+		vocab.delete();
+		
+		stemmer = new LucenePTStemmer();
+		stemmerName = "lucene_orengo";
 		buildModel(stemmer,"abstracts",10);
 		buildModel(stemmer,"abstracts",20);
 		buildModel(stemmer,"abstracts",30);
@@ -281,37 +307,59 @@ public class StructuredTest {
 	}
 	
 	public static void runAllTests() throws Exception {
+		Instant start = Instant.now();
 		
 		buildAllModels();
 		
-		stemmerName = "ptstemmer";
+		stemmerName = "std_orengo";
 		String[][] matrix30docsPtStmr = testAllModels(30);
 		String[][] matrix60docsPtStmr = testAllModels(60);
-		stemmerName = "savoy";
+		stemmerName = "newpt_savoy";
 		String[][] matrix30docsSavoy = testAllModels(30);
 		String[][] matrix60docsSavoy = testAllModels(60);
-		stemmerName = "porter";
+		stemmerName = "newpt_porter";
 		String[][] matrix30docsPorter = testAllModels(30);
 		String[][] matrix60docsPorter = testAllModels(60);
-		stemmerName = "orengo";
+		stemmerName = "newpt_orengo";
 		String[][] matrix30docsOrengo = testAllModels(30);
 		String[][] matrix60docsOrengo = testAllModels(60);
+		stemmerName = "lucene_br";
+		String[][] matrix30docsLuceneBR = testAllModels(30);
+		String[][] matrix60docsLuceneBR = testAllModels(60);
+		stemmerName = "lucene_orengo";
+		String[][] matrix30docsLuceneOrengo = testAllModels(30);
+		String[][] matrix60docsLuceneOrengo = testAllModels(60);
 		
-		System.out.println("\n-STANDARD STEMMER-\n");
+		
+		System.out.println("\n---STANDARD ORENGO STEMMER---");
 		printTestResults(30, matrix30docsPtStmr);
 		printTestResults(60, matrix60docsPtStmr);
 		
-		System.out.println("\n-SAVOY STEMMER-\n");
+		System.out.println("\n-NEWPT SAVOY STEMMER---");
 		printTestResults(30, matrix30docsSavoy);
 		printTestResults(60, matrix60docsSavoy);
 		
-		System.out.println("\n-PORTER STEMMER-\n");
+		System.out.println("\n---NEWPT PORTER STEMMER---");
 		printTestResults(30, matrix30docsPorter);
 		printTestResults(60, matrix60docsPorter);
 		
-		System.out.println("\n-ORENGO STEMMER-\n");
+		System.out.println("\n---NEWPT ORENGO STEMMER---");
 		printTestResults(30, matrix30docsOrengo);
 		printTestResults(60, matrix60docsOrengo);
+		
+		System.out.println("\n---LUCENE BR STEMMER---");
+		printTestResults(30, matrix30docsLuceneBR);
+		printTestResults(60, matrix60docsLuceneBR);
+		
+		System.out.println("\n---LUCENE ORENGO STEMMER---");
+		printTestResults(30, matrix30docsLuceneOrengo);
+		printTestResults(60, matrix60docsLuceneOrengo);
+		
+		Instant finish = Instant.now();
+		
+		long timeElapsed = Duration.between(start, finish).toMinutes();
+		
+		System.out.println("Structured test duration: " + timeElapsed + " minutes.");
 	}
 
 }
