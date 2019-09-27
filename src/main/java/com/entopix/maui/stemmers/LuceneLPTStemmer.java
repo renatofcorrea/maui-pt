@@ -1,15 +1,15 @@
 package com.entopix.maui.stemmers;
 
-import org.apache.lucene.analysis.pt.PortugueseStemmer;
+import org.apache.lucene.analysis.pt.PortugueseLightStemmer;
 
-public class LucenePTStemmer extends Stemmer {
-	
-	private static final long serialVersionUID = 4577282386684332746L;
-	
-	public static PortugueseStemmer stemmer; /*static for serializer*/
+public class LuceneLPTStemmer extends Stemmer {
 
-	public LucenePTStemmer() {
-		stemmer = new PortugueseStemmer();
+	private static final long serialVersionUID = -435397420345476573L;
+	
+	public static PortugueseLightStemmer stemmer; /*static for serializer*/
+
+	public LuceneLPTStemmer() {
+		stemmer = new PortugueseLightStemmer();
 	}
 	
 	@Override

@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
 
+import com.entopix.maui.beans.ModelDocType;
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.stemmers.NewPortugueseStemmer;
@@ -54,13 +55,7 @@ public class StandaloneMain {
 	static String testDir = fullTextsPath + "\\test60";
 	static String testFilePath = dataPath + "\\docs\\corpusci\\full_texts\\test60\\Artigo32.txt";
 	
-	static enum ModelType {
-		FULLTEXTS("full_texts"), ABSTRACTS("abstracts");
-		String name;
-		ModelType(String name) {this.name = name;}
-		public String getName() {return name;}
-	}
-	static ModelType modelType = ModelType.FULLTEXTS;
+	static ModelDocType modelType = ModelDocType.FULLTEXTS;
 	static String modelsDir = dataPath + "\\models";
 	static String modelName = "model_fulltexts_train30";
 	static String modelPath = modelsDir + "\\" + modelName;
@@ -203,10 +198,10 @@ public class StandaloneMain {
 				input = scan.nextLine();
 				switch(input) {
 				case "1":
-					modelType = ModelType.ABSTRACTS;
+					modelType = ModelDocType.ABSTRACTS;
 					break;
 				case "2":
-					modelType = ModelType.FULLTEXTS;
+					modelType = ModelDocType.FULLTEXTS;
 					break;
 				default:
 					System.out.println("ERRO: Opção Inválida.");
@@ -214,7 +209,7 @@ public class StandaloneMain {
 				}
 				System.out.println();
 				System.out.println("Escolha o diretório de treinamento ou aperte [enter] para usar o atual:");
-				trainDir = (modelType.equals(ModelType.ABSTRACTS) ? abstractsPath + "\\train30" : trainDir);
+				trainDir = (modelType.equals(ModelDocType.ABSTRACTS) ? abstractsPath + "\\train30" : trainDir);
 				System.out.println("Diretório de treinamento selecionado: " + trainDir);
 				System.out.println("1 - Escolher da lista");
 				System.out.println("2 - Diretório customizado");
@@ -272,7 +267,7 @@ public class StandaloneMain {
 				
 				System.out.println();
 				System.out.println("Escolha o  diretório de teste ou aperte [enter] para usar o atual.");
-				testDir = (modelType.equals(ModelType.ABSTRACTS) ? abstractsPath + "\\test60" : fullTextsPath + "\\test60");
+				testDir = (modelType.equals(ModelDocType.ABSTRACTS) ? abstractsPath + "\\test60" : fullTextsPath + "\\test60");
 				System.out.println("Diretório de teste selecionado: " + testDir);
 				System.out.println("1 - Escolher da lista");
 				System.out.println("2 - Diretório customizado");
@@ -308,7 +303,7 @@ public class StandaloneMain {
 				
 				System.out.println();
 				System.out.println("Escolha o arquivo (.txt) ou aperte [enter] para usar o atual: ");
-				testFilePath = (modelType.equals(ModelType.ABSTRACTS) ? abstractsPath + "\\test60\\Artigo32.txt" : fullTextsPath + "\\test60\\Artigo32.txt");
+				testFilePath = (modelType.equals(ModelDocType.ABSTRACTS) ? abstractsPath + "\\test60\\Artigo32.txt" : fullTextsPath + "\\test60\\Artigo32.txt");
 				System.out.println("Arquivo selecionado: " + testFilePath);
 				System.out.println("1 - Escolher da lista");
 				System.out.println("2 - Arquivo customizado");
@@ -375,9 +370,9 @@ public class StandaloneMain {
 		if (dirType.equals("model")) {
 			dir = new File(modelsDir);
 		} else {
-			if (modelType.equals(ModelType.ABSTRACTS)) {
+			if (modelType.equals(ModelDocType.ABSTRACTS)) {
 				dir = new File(abstractsPath);
-			} else if (modelType.equals(ModelType.FULLTEXTS)) {
+			} else if (modelType.equals(ModelDocType.FULLTEXTS)) {
 				dir = new File(fullTextsPath);
 			} else {
 				System.out.println("ERRO: Tipo de Modelo Inválido.");
@@ -416,8 +411,8 @@ public class StandaloneMain {
 		case "model":
 			modelPath = fileChoice;
 			modelName = new File(modelPath).getName();
-			if (modelName.contains("abstracts")) modelType = ModelType.ABSTRACTS;
-			else if (modelName.contains("fulltexts")) modelType = ModelType.FULLTEXTS;
+			if (modelName.contains("abstracts")) modelType = ModelDocType.ABSTRACTS;
+			else if (modelName.contains("fulltexts")) modelType = ModelDocType.FULLTEXTS;
 			break;
 		case "run":
 			File txtFileFolder = new File(fileChoice);

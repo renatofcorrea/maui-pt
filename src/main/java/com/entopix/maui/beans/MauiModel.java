@@ -1,16 +1,20 @@
 package com.entopix.maui.beans;
 
 import com.entopix.maui.filters.MauiFilter;
+import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.main.MauiModelBuilder;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.util.DataLoader;
 
 public class MauiModel {
-	public MauiModelBuilder modelBuilder;
+	private MauiModelBuilder modelBuilder;
 	private MauiFilter filter;
 	
-	public MauiModel(String dirPath, String name, Stemmer stemmer, String vocabPath) {
+	public ModelDocType docType;
+	
+	public MauiModel(String dirPath, String modelPath, Stemmer stemmer, String vocabPath, ModelDocType docType) throws MauiFilterException {
+		this.docType = docType;
 		modelBuilder = new MauiModelBuilder();
 		modelBuilder.documentEncoding = "UTF-8";
 		modelBuilder.documentLanguage = "pt";
@@ -18,7 +22,7 @@ public class MauiModel {
 		modelBuilder.maxPhraseLength = 5;
 		modelBuilder.minNumOccur = 1;
 		modelBuilder.minPhraseLength = 1;
-		modelBuilder.modelName = name;
+		modelBuilder.modelName = modelPath;
 		modelBuilder.serialize = true;
 		modelBuilder.stemmer = stemmer;
 		modelBuilder.stopwords = new StopwordsPortuguese();
@@ -27,6 +31,7 @@ public class MauiModel {
 		modelBuilder.setPositionsFeatures(false);
 		modelBuilder.setKeyphrasenessFeature(false);
 		modelBuilder.setThesaurusFeatures(false);
+		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 	}
 	
 	public void saveModel() throws Exception {

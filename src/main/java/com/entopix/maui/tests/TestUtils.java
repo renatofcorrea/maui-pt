@@ -9,6 +9,11 @@ import weka.core.Utils;
 
 public class TestUtils {
 
+	/**
+	 * Returns a array of doubles of size 7 containing the test results.
+	 * @param allDocumentsTopics
+	 * @return
+	 */
 	public static double[] evaluateTopics(List<MauiTopics> allDocumentsTopics) {
 	
 		double[] results = null;

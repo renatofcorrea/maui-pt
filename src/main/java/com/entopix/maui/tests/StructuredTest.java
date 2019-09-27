@@ -3,13 +3,16 @@ package com.entopix.maui.tests;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
-import com.entopix.maui.filters.MauiFilter;
+import com.entopix.maui.beans.MauiModel;
+import com.entopix.maui.beans.ModelDocType;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
-import com.entopix.maui.main.MauiModelBuilder;
 import com.entopix.maui.main.MauiTopicExtractor;
 import com.entopix.maui.stemmers.LuceneBRStemmer;
+import com.entopix.maui.stemmers.LuceneLPTStemmer;
+import com.entopix.maui.stemmers.LuceneMPTStemmer;
 import com.entopix.maui.stemmers.LucenePTStemmer;
 import com.entopix.maui.stemmers.NewPortugueseStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
@@ -28,91 +31,30 @@ import weka.core.Utils;
 public class StructuredTest {
 	
 	static String dataPath = Paths.getDataPath();
+	static String vocabPath = Paths.getVocabPath();
 	
 	static String abstractsDocsPath = dataPath + "\\docs\\corpusci\\abstracts";
 	static String fullTextsDocsPath = dataPath + "\\docs\\corpusci\\full_texts";
 	
-	static String abstractsTestPath = abstractsDocsPath + "test30";
-	static String fullTextsTestPath = fullTextsDocsPath + "test30";
-	
-	static String abstractsModelsPath = dataPath + "\\models";
-	static String fullTextsModelsPath = dataPath + "\\models";
-	
-	static String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
+	static String modelsPath = dataPath + "\\models";
 	
 	static String stemmerName;
 	
-	/**
-	 * 
-	 * @param docType abstracts or fulltext
-	 * @param docCount 10, 20 or 30
-	 * @throws Exception
-	 */
-	static void buildModel(Stemmer stemmer, String docType, int docCount) throws Exception {
-		MauiModelBuilder modelBuilder = new MauiModelBuilder();
-		modelBuilder.vocabularyFormat = "skos";
-		modelBuilder.vocabularyName = vocabPath;
-		modelBuilder.stemmer = stemmer;
-		modelBuilder.stopwords = new StopwordsPortuguese();
-		modelBuilder.documentLanguage = "pt";
-		modelBuilder.documentEncoding = "UTF-8";
-		modelBuilder.minNumOccur = 1;
-		modelBuilder.maxPhraseLength = 5;
-		modelBuilder.minPhraseLength = 1;
-		modelBuilder.serialize = false; //true
-		modelBuilder.setPositionsFeatures(false);
-		modelBuilder.setKeyphrasenessFeature(false);
-		modelBuilder.setThesaurusFeatures(false);
+	static void buildModel(Stemmer stemmer, String trainDirPath) throws Exception {
+		ModelDocType modelType = ((trainDirPath.contains("abstracts") ? ModelDocType.ABSTRACTS : ModelDocType.FULLTEXTS));
 		
-		if(docType.equals("abstracts")) {
-			switch(docCount) {
-			case 10:
-				modelBuilder.inputDirectoryName = abstractsDocsPath + "\\train10";
-				modelBuilder.modelName = abstractsModelsPath + "\\model_abstracts_train10_" + stemmerName;
-				MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
-				modelBuilder.saveModel(filter);
-				break;
-			case 20:
-				modelBuilder.inputDirectoryName = abstractsDocsPath + "\\train20";
-				modelBuilder.modelName = abstractsModelsPath + "\\model_abstracts_train20_" + stemmerName;
-				filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
-				modelBuilder.saveModel(filter);
-				break;
-			case 30:
-				modelBuilder.inputDirectoryName = abstractsDocsPath + "\\train30";
-				modelBuilder.modelName = abstractsModelsPath + "\\model_abstracts_train30_" + stemmerName;
-				filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
-				modelBuilder.saveModel(filter);
-				break;
-			default:
-				throw new Exception("ERROR: Invalid docCount in StructuredTest.buildModel");
-			}
-		} else if(docType.equals("full_texts")) {
-			switch(docCount) {
-			case 10:
-				modelBuilder.inputDirectoryName = fullTextsDocsPath + "\\train10";
-				modelBuilder.modelName = fullTextsModelsPath + "\\model_fulltexts_train10_" + stemmerName;
-				MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
-				modelBuilder.saveModel(filter);
-				break;
-			case 20:
-				modelBuilder.inputDirectoryName = fullTextsDocsPath + "\\train20";
-				modelBuilder.modelName = fullTextsModelsPath + "\\model_fulltexts_train20_" + stemmerName;
-				filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
-				modelBuilder.saveModel(filter);
-				break;
-			case 30:
-				modelBuilder.inputDirectoryName = fullTextsDocsPath + "\\train30";
-				modelBuilder.modelName = fullTextsModelsPath + "\\model_fulltexts_train30_" + stemmerName;
-				filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
-				modelBuilder.saveModel(filter);
-				break;
-			default:
-				throw new Exception("ERROR: Invalid docCount in StructuredTest.buildModel");
-			}
+		String modelName = null;
+		
+		if(stemmer instanceof NewPortugueseStemmer) {
+			NewPortugueseStemmer newptstemmer = (NewPortugueseStemmer) stemmer;
+			modelName = "model_NewPortugueseStemmer_" + newptstemmer.type + "_" + modelType.getName() + "_" + new File(trainDirPath).getName();
 		} else {
-			throw new Exception("ERROR: Invalid docType in StructuredTest.buildModel");
+			modelName = "model_" + stemmer.getClass().getSimpleName() + "_" + modelType.getName() + "_" + new File(trainDirPath).getName();
 		}
+		
+		String modelPath = modelsPath + "\\" + modelName;
+		MauiModel model = new MauiModel(trainDirPath, modelPath, stemmer, vocabPath, modelType);
+		model.saveModel();
 	}
 	
 	/**
@@ -121,13 +63,10 @@ public class StructuredTest {
 	 * @param modelPath
 	 * @throws MauiFilterException
 	 */
-	static double[] testModel(String docType, String modelPath) throws MauiFilterException {
+	static String[] testModel(String modelPath, String testDirPath) throws MauiFilterException {
+		//Test model
 		MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
-		
-		if(docType.equals("abstracts"))
-			topicExtractor.inputDirectoryName = abstractsTestPath;
-		else if(docType.equals("full_texts"))
-			topicExtractor.inputDirectoryName = fullTextsTestPath;
+		topicExtractor.inputDirectoryName = testDirPath;
 		topicExtractor.modelName = modelPath;
 		topicExtractor.vocabularyName = vocabPath;
 		topicExtractor.vocabularyFormat = "skos";
@@ -136,13 +75,99 @@ public class StructuredTest {
 		topicExtractor.serialize = true;
 		topicExtractor.stopwords = new StopwordsPortuguese();
 		topicExtractor.stemmer = new PortugueseStemmer();
-		
 		topicExtractor.loadModel();
-
 		List<MauiDocument> documents = DataLoader.loadTestDocuments(topicExtractor.inputDirectoryName);
 		List<MauiTopics> topics = topicExtractor.extractTopics(documents);
 		topicExtractor.printTopics(topics);
-		return TestUtils.evaluateTopics(topics);
+		
+		double[] results = TestUtils.evaluateTopics(topics);
+		
+		//Converts results to string
+		String modelName = new File(modelPath).getName();
+		String[] resultString = new String[8];
+		resultString[0] = modelName;
+		int i;
+		for(i = 0 ; i < resultString.length ; i++) {
+			resultString[i+1] = Utils.doubleToString(results[i], 2);
+		}
+		return resultString;
+	}
+	
+	public static void testAllModels() throws MauiFilterException {
+		List<String[]> resultsMatrix = new ArrayList<String[]>();
+		File modelsDir = new File(modelsPath);
+		File[] abstractsModelsList = Paths.filterFileList(modelsDir.listFiles(), "abstracts");
+		File[] fulltextsModelsList = Paths.filterFileList(modelsDir.listFiles(), "abstracts");
+		String testDir = null;
+		
+		//ALL ABSTRACTS TESTS
+
+		testDir = abstractsDocsPath + "//test30";
+		for(File f : abstractsModelsList) {
+			resultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
+		}
+		
+		testDir = abstractsDocsPath + "//test60";
+		for(File f : abstractsModelsList) {
+			resultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
+		}
+		
+		List<String[]> abstractsResultsMatrix = resultsMatrix;
+		resultsMatrix = new ArrayList<String[]>();
+		
+		//ALL ABSTRACTS TESTS
+
+		testDir = fullTextsDocsPath + "//test30";
+		for(File f : fulltextsModelsList) {
+			resultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
+		}
+		
+		testDir = fullTextsDocsPath + "//test60";
+		for(File f : fulltextsModelsList) {
+			resultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
+		}
+		
+		List<String[]> fulltextsResultsMatrix = resultsMatrix;
+		
+	}
+	
+	public static void buildAllModels() throws Exception {
+		
+		String serialVocabPath = "C:\\Users\\PC1\\git\\maui-pt\\data\\vocabulary\\TBCI-SKOS_pt.rdf_com.entopix.maui.vocab.VocabularyStore_Original_PortugueseStemmer.serialized";
+		File vocab = null;
+		
+		Stemmer[] stemmerList = {
+				new PortugueseStemmer(),
+				new NewPortugueseStemmer(new String[] {"-S","orengo"}),
+				new NewPortugueseStemmer(new String[] {"-S","savoy"}),
+				new NewPortugueseStemmer(new String[] {"-S","porter"}),
+				new LucenePTStemmer(),
+				new LuceneBRStemmer(),
+				new LuceneLPTStemmer(),
+				new LuceneMPTStemmer(),
+		};
+		
+		File[] dirList = new File(abstractsDocsPath).listFiles();
+		dirList = Paths.filterFileList(dirList, "train");
+		
+		for(Stemmer s : stemmerList) {
+			for(File f : dirList) {
+				buildModel(s, f.getAbsolutePath());
+			}
+			vocab = new File(serialVocabPath);
+			vocab.delete();
+		}
+		
+		dirList = new File(fullTextsDocsPath).listFiles();
+		dirList = Paths.filterFileList(dirList, "train");
+		
+		for(Stemmer s : stemmerList) {
+			for(File f : dirList) {
+				buildModel(s, f.getAbsolutePath());
+			}
+			vocab = new File(serialVocabPath);
+			vocab.delete();
+		}
 	}
 	
 	public static void printTestResults(int docsCount, String[][] resultsString) {
@@ -162,155 +187,12 @@ public class StructuredTest {
 		System.out.println();
 	}
 	
-	public static String[][] testAllModels(int testDocsCount) throws MauiFilterException {
-		String[][] resultsString = {
-				{"modelA","correctkeys1","correctkeys2","precision1","precision2","recall1","recall2","f-measure"},
-				{"modelB","correctkeys1","correctkeys2","precision1","precision2","recall1","recall2","f-measure"},
-				{"modelB","correctkeys1","correctkeys2","precision1","precision2","recall1","recall2","f-measure"},
-				{"modelC","correctkeys1","correctkeys2","precision1","precision2","recall1","recall2","f-measure"},
-				{"modelD","correctkeys1","correctkeys2","precision1","precision2","recall1","recall2","f-measure"},
-				{"modelE","correctkeys1","correctkeys2","precision1","precision2","recall1","recall2","f-measure"},
-		};
-		
-		//Selects test directory
-		if(testDocsCount == 30) {
-			abstractsTestPath = abstractsDocsPath + "\\test30";
-			fullTextsTestPath = fullTextsDocsPath + "\\test30";
-		} else if(testDocsCount == 60) {
-			abstractsTestPath = abstractsDocsPath + "\\test60";
-			fullTextsTestPath = fullTextsDocsPath + "\\test60";
-		}
-		
-		double[] results = null;
-		
-		results = testModel("abstracts",abstractsModelsPath + "\\model_abstracts_train10_" + stemmerName);
-		resultsString[0][0] = "abstracts_model10";
-		for (int i = 0; i < 7; i++) {
-			if(i > 1) {results[i] *= 100;}
-			resultsString[0][i+1] = Utils.doubleToString(results[i], 2);
-		}
-		
-		results = testModel("abstracts",abstractsModelsPath + "\\model_abstracts_train20_" + stemmerName);
-		resultsString[1][0] = "abstracts_model20";
-		for (int i = 0; i < 7; i++) {
-			if(i > 1) {results[i] *= 100;}
-			resultsString[1][i+1] = Utils.doubleToString(results[i], 2);
-		}
-		
-		results = testModel("abstracts",abstractsModelsPath + "\\model_abstracts_train30_" + stemmerName);
-		resultsString[2][0] = "abstracts_model30";
-		for (int i = 0; i < 7; i++) {
-			if(i > 1) {results[i] *= 100;}
-			resultsString[2][i+1] = Utils.doubleToString(results[i], 2);
-		}
-		
-		results = testModel("full_texts",fullTextsModelsPath + "\\model_fulltexts_train10_" + stemmerName);
-		resultsString[3][0] = "full_text_model10";
-		for (int i = 0; i < 7; i++) {
-			if(i > 1) {results[i] *= 100;}
-			resultsString[3][i+1] = Utils.doubleToString(results[i], 2);
-		}
-		
-		results = testModel("full_texts",fullTextsModelsPath + "\\model_fulltexts_train20_" + stemmerName);
-		resultsString[4][0] = "full_text_model20";
-		for (int i = 0; i < 7; i++) {
-			if(i > 1) {results[i] *= 100;}
-			resultsString[4][i+1] = Utils.doubleToString(results[i], 2);
-		}
-		
-		results = testModel("full_texts",fullTextsModelsPath + "\\model_fulltexts_train30_" + stemmerName);
-		resultsString[5][0] = "full_text_model30";
-		for (int i = 0; i < 7; i++) {
-			if(i > 1) {results[i] *= 100;}
-			resultsString[5][i+1] = Utils.doubleToString(results[i], 2);
-		}
-		
-		return resultsString;
-	}
-	
-	public static void buildAllModels() throws Exception {
-		
-		Stemmer stemmer = new PortugueseStemmer();
-		stemmerName = "std_orengo";
-		buildModel(stemmer,"abstracts",10);
-		buildModel(stemmer,"abstracts",20);
-		buildModel(stemmer,"abstracts",30);
-		buildModel(stemmer,"full_texts",10);
-		buildModel(stemmer,"full_texts",20);
-		buildModel(stemmer,"full_texts",30);
-		
-		File vocab = null;
-		String serialPath = "C:\\Users\\PC1\\git\\maui-pt\\data\\vocabulary\\TBCI-SKOS_pt.rdf_com.entopix.maui.vocab.VocabularyStore_Original_PortugueseStemmer.serialized";
-		
-		vocab = new File(serialPath);
-		vocab.delete();
-		
-		String[] stemOptions = {"-S",""};
-		
-		stemOptions[1] = "Savoy";
-		stemmer = new NewPortugueseStemmer(stemOptions);
-		stemmerName = "newpt_savoy";
-		buildModel(stemmer,"abstracts",10);
-		buildModel(stemmer,"abstracts",20);
-		buildModel(stemmer,"abstracts",30);
-		buildModel(stemmer,"full_texts",10);
-		buildModel(stemmer,"full_texts",20);
-		buildModel(stemmer,"full_texts",30);
-		vocab = new File(serialPath);
-		vocab.delete();
-		
-		stemOptions[1] = "Porter";
-		stemmer = new NewPortugueseStemmer(stemOptions);
-		stemmerName = "newpt_porter";
-		buildModel(stemmer,"abstracts",10);
-		buildModel(stemmer,"abstracts",20);
-		buildModel(stemmer,"abstracts",30);
-		buildModel(stemmer,"full_texts",10);
-		buildModel(stemmer,"full_texts",20);
-		buildModel(stemmer,"full_texts",30);
-		vocab = new File(serialPath);
-		vocab.delete();
-		
-		stemOptions[1] = "Orengo";
-		stemmer = new NewPortugueseStemmer(stemOptions);
-		stemmerName = "newpt_orengo";
-		buildModel(stemmer,"abstracts",10);
-		buildModel(stemmer,"abstracts",20);
-		buildModel(stemmer,"abstracts",30);
-		buildModel(stemmer,"full_texts",10);
-		buildModel(stemmer,"full_texts",20);
-		buildModel(stemmer,"full_texts",30);
-		vocab = new File(serialPath);
-		vocab.delete();
-		
-		stemmer = new LuceneBRStemmer();
-		stemmerName = "lucene_br";
-		buildModel(stemmer,"abstracts",10);
-		buildModel(stemmer,"abstracts",20);
-		buildModel(stemmer,"abstracts",30);
-		buildModel(stemmer,"full_texts",10);
-		buildModel(stemmer,"full_texts",20);
-		buildModel(stemmer,"full_texts",30);
-		vocab = new File(serialPath);
-		vocab.delete();
-		
-		stemmer = new LucenePTStemmer();
-		stemmerName = "lucene_orengo";
-		buildModel(stemmer,"abstracts",10);
-		buildModel(stemmer,"abstracts",20);
-		buildModel(stemmer,"abstracts",30);
-		buildModel(stemmer,"full_texts",10);
-		buildModel(stemmer,"full_texts",20);
-		buildModel(stemmer,"full_texts",30);
-		vocab = new File(serialPath);
-		vocab.delete();
-	}
-	
 	public static void runAllTests() throws Exception {
 		Instant start = Instant.now();
 		
 		buildAllModels();
 		
+		/*
 		stemmerName = "std_orengo";
 		String[][] matrix30docsPtStmr = testAllModels(30);
 		String[][] matrix60docsPtStmr = testAllModels(60);
@@ -335,7 +217,7 @@ public class StructuredTest {
 		printTestResults(30, matrix30docsPtStmr);
 		printTestResults(60, matrix60docsPtStmr);
 		
-		System.out.println("\n-NEWPT SAVOY STEMMER---");
+		System.out.println("\n---NEWPT SAVOY STEMMER---");
 		printTestResults(30, matrix30docsSavoy);
 		printTestResults(60, matrix60docsSavoy);
 		
@@ -354,12 +236,11 @@ public class StructuredTest {
 		System.out.println("\n---LUCENE ORENGO STEMMER---");
 		printTestResults(30, matrix30docsLuceneOrengo);
 		printTestResults(60, matrix60docsLuceneOrengo);
+		*/
 		
 		Instant finish = Instant.now();
-		
-		long timeElapsed = Duration.between(start, finish).toMinutes();
-		
-		System.out.println("Structured test duration: " + timeElapsed + " minutes.");
+		double timeElapsed = Duration.between(start, finish).toMillis()/1000;
+		System.out.println("Structured test duration: " + timeElapsed + " seconds.");
 	}
 
 }
