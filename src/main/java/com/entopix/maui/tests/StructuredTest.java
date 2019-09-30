@@ -21,7 +21,7 @@ import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.util.DataLoader;
 import com.entopix.maui.util.MauiDocument;
 import com.entopix.maui.util.MauiTopics;
-import com.entopix.maui.utils.Paths;
+import com.entopix.maui.utils.MauiFileUtils;
 
 import weka.core.Utils;
 /**
@@ -30,8 +30,8 @@ import weka.core.Utils;
  */
 public class StructuredTest {
 	
-	static String dataPath = Paths.getDataPath();
-	static String vocabPath = Paths.getVocabPath();
+	static String dataPath = MauiFileUtils.getDataPath();
+	static String vocabPath = MauiFileUtils.getVocabPath();
 	
 	static String abstractsDocsPath = dataPath + "\\docs\\corpusci\\abstracts";
 	static String fullTextsDocsPath = dataPath + "\\docs\\corpusci\\full_texts";
@@ -87,47 +87,57 @@ public class StructuredTest {
 		String[] resultString = new String[8];
 		resultString[0] = modelName;
 		int i;
-		for(i = 0 ; i < resultString.length ; i++) {
-			resultString[i+1] = Utils.doubleToString(results[i], 2);
+		for(i = 1 ; i < resultString.length ; i++) {
+			resultString[i] = Utils.doubleToString(results[i-1], 2);
 		}
 		return resultString;
 	}
-	
+	/**
+	 * Test all models, store the results in a matrix and print it.
+	 * @throws MauiFilterException
+	 */
 	public static void testAllModels() throws MauiFilterException {
-		List<String[]> resultsMatrix = new ArrayList<String[]>();
 		File modelsDir = new File(modelsPath);
-		File[] abstractsModelsList = Paths.filterFileList(modelsDir.listFiles(), "abstracts");
-		File[] fulltextsModelsList = Paths.filterFileList(modelsDir.listFiles(), "abstracts");
+		File[] abstractsModelsList = MauiFileUtils.filterFileList(modelsDir.listFiles(), "abstracts");
+		File[] fulltextsModelsList = MauiFileUtils.filterFileList(modelsDir.listFiles(), "abstracts");
 		String testDir = null;
 		
 		//ALL ABSTRACTS TESTS
+		List<String[]> abstractsResultsMatrix = new ArrayList<String[]>();
 
-		testDir = abstractsDocsPath + "//test30";
-		for(File f : abstractsModelsList) {
-			resultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
+		testDir = abstractsDocsPath + "\\test30";
+		abstractsResultsMatrix.add(new String[] {"\n---> Results based on 30 documents:\n"});
+		for(File model : abstractsModelsList) {
+			abstractsResultsMatrix.add(testModel(model.getAbsolutePath(), testDir));
 		}
 		
-		testDir = abstractsDocsPath + "//test60";
-		for(File f : abstractsModelsList) {
-			resultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
+		testDir = abstractsDocsPath + "\\test60";
+		abstractsResultsMatrix.add(new String[] {"\n---> Results based on 60 documents:\n"});
+		for(File model : abstractsModelsList) {
+			abstractsResultsMatrix.add(testModel(model.getAbsolutePath(), testDir));
 		}
 		
-		List<String[]> abstractsResultsMatrix = resultsMatrix;
-		resultsMatrix = new ArrayList<String[]>();
 		
-		//ALL ABSTRACTS TESTS
+		//ALL FULLTEXTS TESTS
+		List<String[]> fulltextsResultsMatrix = new ArrayList<String[]>();
 
-		testDir = fullTextsDocsPath + "//test30";
+		testDir = fullTextsDocsPath + "\\test30";
+		fulltextsResultsMatrix.add(new String[] {"\n---> Results based on 30 documents:\n"});
 		for(File f : fulltextsModelsList) {
-			resultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
+			fulltextsResultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
 		}
 		
-		testDir = fullTextsDocsPath + "//test60";
+		testDir = fullTextsDocsPath + "\\test60";
+		fulltextsResultsMatrix.add(new String[] {"\n---> Results based on 60 documents:\n"});
 		for(File f : fulltextsModelsList) {
-			resultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
+			fulltextsResultsMatrix.add(testModel(f.getAbsolutePath(), testDir));
 		}
 		
-		List<String[]> fulltextsResultsMatrix = resultsMatrix;
+		System.out.println("\n ---ABSTRACTS MODELS---");
+		printTestResults(abstractsResultsMatrix);
+		System.out.println("\n\n ---FULLTEXTS MODELS---");
+		printTestResults(fulltextsResultsMatrix);
+		System.out.println("\n");
 		
 	}
 	
@@ -148,7 +158,7 @@ public class StructuredTest {
 		};
 		
 		File[] dirList = new File(abstractsDocsPath).listFiles();
-		dirList = Paths.filterFileList(dirList, "train");
+		dirList = MauiFileUtils.filterFileList(dirList, "train");
 		
 		for(Stemmer s : stemmerList) {
 			for(File f : dirList) {
@@ -159,7 +169,7 @@ public class StructuredTest {
 		}
 		
 		dirList = new File(fullTextsDocsPath).listFiles();
-		dirList = Paths.filterFileList(dirList, "train");
+		dirList = MauiFileUtils.filterFileList(dirList, "train");
 		
 		for(Stemmer s : stemmerList) {
 			for(File f : dirList) {
@@ -170,77 +180,34 @@ public class StructuredTest {
 		}
 	}
 	
-	public static void printTestResults(int docsCount, String[][] resultsString) {
-		System.out.println("TEST RESULTS BASED ON "+ docsCount + " DOCUMENTS");
-		System.out.println("Model\t\t\tCorrect Keyphrases\t\tPrecision\t\t\tRecall\t\t\t\tF-Measure");
-		System.out.println("     \t\t\tAvg\t\tStdDev\t\tAvg\t\tStdDev\t\tAvg\t\tStdDev \n");
-		
-		for (int modelNumber = 0; modelNumber < resultsString.length; modelNumber++) {
-			for(int i = 0; i < resultsString[modelNumber].length; i++) {
-				if(i == 0)
-					System.out.print(resultsString[modelNumber][i] + "\t");
-				else 
-					System.out.print(resultsString[modelNumber][i] + "\t\t");
+	public static void printTestResults(List<String[]> matrix) {
+		for(String[] model : matrix) {
+			for(String value : model) {
+				double stringSize = value.length();
+				if(stringSize >= 51) System.out.print(value + "\t");
+				else if(stringSize >= 41) System.out.print(value + "\t\t");
+				else System.out.print(value + "\t\t\t");
+				
 			}
 			System.out.println();
 		}
-		System.out.println();
 	}
 	
-	public static void runAllTests() throws Exception {
+	public static void run(int testProgram) throws Exception {
+		
 		Instant start = Instant.now();
-		
-		buildAllModels();
-		
-		/*
-		stemmerName = "std_orengo";
-		String[][] matrix30docsPtStmr = testAllModels(30);
-		String[][] matrix60docsPtStmr = testAllModels(60);
-		stemmerName = "newpt_savoy";
-		String[][] matrix30docsSavoy = testAllModels(30);
-		String[][] matrix60docsSavoy = testAllModels(60);
-		stemmerName = "newpt_porter";
-		String[][] matrix30docsPorter = testAllModels(30);
-		String[][] matrix60docsPorter = testAllModels(60);
-		stemmerName = "newpt_orengo";
-		String[][] matrix30docsOrengo = testAllModels(30);
-		String[][] matrix60docsOrengo = testAllModels(60);
-		stemmerName = "lucene_br";
-		String[][] matrix30docsLuceneBR = testAllModels(30);
-		String[][] matrix60docsLuceneBR = testAllModels(60);
-		stemmerName = "lucene_orengo";
-		String[][] matrix30docsLuceneOrengo = testAllModels(30);
-		String[][] matrix60docsLuceneOrengo = testAllModels(60);
-		
-		
-		System.out.println("\n---STANDARD ORENGO STEMMER---");
-		printTestResults(30, matrix30docsPtStmr);
-		printTestResults(60, matrix60docsPtStmr);
-		
-		System.out.println("\n---NEWPT SAVOY STEMMER---");
-		printTestResults(30, matrix30docsSavoy);
-		printTestResults(60, matrix60docsSavoy);
-		
-		System.out.println("\n---NEWPT PORTER STEMMER---");
-		printTestResults(30, matrix30docsPorter);
-		printTestResults(60, matrix60docsPorter);
-		
-		System.out.println("\n---NEWPT ORENGO STEMMER---");
-		printTestResults(30, matrix30docsOrengo);
-		printTestResults(60, matrix60docsOrengo);
-		
-		System.out.println("\n---LUCENE BR STEMMER---");
-		printTestResults(30, matrix30docsLuceneBR);
-		printTestResults(60, matrix60docsLuceneBR);
-		
-		System.out.println("\n---LUCENE ORENGO STEMMER---");
-		printTestResults(30, matrix30docsLuceneOrengo);
-		printTestResults(60, matrix60docsLuceneOrengo);
-		*/
+		if(testProgram == 1) {
+			buildAllModels();
+			testAllModels();
+		} else {
+			testAllModels();
+		}
 		
 		Instant finish = Instant.now();
-		double timeElapsed = Duration.between(start, finish).toMillis()/1000;
-		System.out.println("Structured test duration: " + timeElapsed + " seconds.");
+		double seconds = (Duration.between(start, finish).toMillis()/1000);
+		int minutes = (int) seconds/60;
+		int remainingSec = (int) (seconds - (minutes*60));
+		System.out.println("Structured test duration: " + minutes + " minutes and " + remainingSec + " seconds.");
 	}
 
 }

@@ -23,7 +23,7 @@ import com.entopix.maui.util.Evaluator;
 import com.entopix.maui.util.MauiDocument;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
-import com.entopix.maui.utils.Paths;
+import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.UI;
 
 import weka.core.Utils;
@@ -48,7 +48,7 @@ public class StandaloneMain {
 	static Stopwords stopwords = new StopwordsPortuguese();
 	static Stemmer stemmer = new PortugueseStemmer();
 	
-	static String dataPath = Paths.getDataPath();
+	static String dataPath = MauiFileUtils.getDataPath();
 	static String abstractsPath = dataPath + "\\docs\\corpusci\\abstracts";
 	static String fullTextsPath = dataPath + "\\docs\\corpusci\\full_texts";
 	static String trainDir = fullTextsPath + "\\train30";
@@ -73,7 +73,7 @@ public class StandaloneMain {
 	 * @throws Exception
 	 */
 	public static void runWithArguments(String command, String[] args) throws Exception {
-		String dataPath = Paths.getDataPath();
+		String dataPath = MauiFileUtils.getDataPath();
 		switch (command) {
 		case "train":
 			MauiModelBuilder modelBuilder = new MauiModelBuilder();
@@ -163,12 +163,13 @@ public class StandaloneMain {
 	 * @throws Exception
 	 */
 	public static void runPTCi() throws Exception {
-		if (!Paths.exists(modelPath)) {
+		if (!MauiFileUtils.exists(modelPath)) {
 			//setupAndBuildModel();
 		}
 		
-		if (guiLanguage.equals("pt"))
+		if (guiLanguage.equals("pt")) {
 			runOptionsMenuPT();
+		}
 	}
 
 	private static void runOptionsMenuPT() throws Exception {
@@ -224,7 +225,7 @@ public class StandaloneMain {
 					System.out.println("Digite o caminho completo do diretório: ");
 					System.out.println("Opção: ");
 					input = scan.nextLine();
-					if (Paths.exists(input))
+					if (MauiFileUtils.exists(input))
 						trainDir = input;
 					else
 						System.out.println("O diretório '" + input + "' não foi encontrado.");
@@ -281,7 +282,7 @@ public class StandaloneMain {
 				case "2":
 					System.out.println("Digite o caminho completo do diretório: ");
 					input = scan.nextLine();
-					if  (Paths.exists(input)) {
+					if  (MauiFileUtils.exists(input)) {
 						testDir = input;
 						setupAndRunTopicExtractor();
 					} else {
@@ -317,7 +318,7 @@ public class StandaloneMain {
 				case "2":
 					System.out.println("Digite o caminho completo do arquivo de texto: ");
 					input = scan.nextLine();
-					if  (Paths.exists(input)) {
+					if  (MauiFileUtils.exists(input)) {
 						testFilePath = input;
 						runMauiWrapperOnFile();
 					} else {
@@ -333,7 +334,16 @@ public class StandaloneMain {
 				
 			//STRUCTURED TEST OPTION
 			case "5":
-				StructuredTest.runAllTests();
+				System.out.println("\n1 - Construir e testar todos os modelos");
+				System.out.println("2 - Testar modelos somente");
+				System.out.print("Opção : ");
+				input = scan.nextLine();
+				try {
+					StructuredTest.run(Integer.parseInt(input));
+				} catch(NumberFormatException e) {
+					System.out.println("Opção inválida.");
+					continue;
+				}
 				break;
 			
 			//ABOUT OPTION

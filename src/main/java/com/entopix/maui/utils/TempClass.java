@@ -12,7 +12,7 @@ import com.entopix.maui.tests.StemmerTest;
 @SuppressWarnings("unused")
 public class TempClass {
 	
-	private static String dataPath = Paths.getDataPath();
+	private static String dataPath = MauiFileUtils.getDataPath();
 	private static String testFilePath = dataPath + "\\docs\\corpusci\\full_texts\\test60\\Artigo32.txt";
 	private static String modelPath = dataPath + "\\models\\StemmerTestModel";
 	private static String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";

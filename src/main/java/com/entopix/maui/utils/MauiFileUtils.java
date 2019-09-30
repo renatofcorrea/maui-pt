@@ -3,12 +3,14 @@ package com.entopix.maui.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import org.apache.commons.io.FileUtils;
 /**
  * Provides paths to avoid path conflicts
  * @author Rahmon Jorge
  *
  */
-public class Paths {
+public class MauiFileUtils {
 	
 	private static String vocabPath = getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 	
