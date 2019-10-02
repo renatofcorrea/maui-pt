@@ -3,8 +3,6 @@ package com.entopix.maui.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import org.apache.commons.io.FileUtils;
 /**
  * Provides paths to avoid path conflicts
  * @author Rahmon Jorge
@@ -55,6 +53,20 @@ public class MauiFileUtils {
 		} else {
 			return true;
 		}
+	}
+	/**
+	 * Verifies if a folder is empty.
+	 * @param path
+	 * @return true if and only if the specified pathname is a directory and is empty.
+	 */
+	public static boolean isEmpty(String path) {
+		File file = new File(path);
+		if(file.isDirectory()) {
+			if(file.list().length == 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public static File[] filterFileList(File[] fileArray, String filterMethod) {
