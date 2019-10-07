@@ -59,12 +59,11 @@ public class TestUtils {
 			double avgRecall = Utils.mean(recallStatistics) * 100;
 			double stdDevRecall = Math.sqrt(Utils.variance(recallStatistics)) * 100;
 	
-			//F-Measure (%)
+			//F-Measure
 			double fMeasure = 0.0;
 			if (avgPrecision > 0 && avgRecall > 0) {
 				fMeasure = 2 * avgRecall * avgPrecision / (avgRecall + avgPrecision);
 			}
-			fMeasure *= 100;
 	
 			results = new double[] {avg, stdDev, avgPrecision, stdDevPrecision, avgRecall, stdDevRecall, fMeasure};
 		}

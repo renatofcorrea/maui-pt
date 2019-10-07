@@ -46,14 +46,14 @@ public class StandaloneMain {
 	static MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
 	static MauiFilter filter;
 	static Stopwords stopwords = new StopwordsPortuguese();
-	static Stemmer stemmer = new PortugueseStemmer();
+	static Stemmer stemmer = new NewPortugueseStemmer(new String[] {"-S","orengo"});
 	
 	static String dataPath = MauiFileUtils.getDataPath();
 	static String abstractsPath = dataPath + "\\docs\\corpusci\\abstracts";
-	static String fullTextsPath = dataPath + "\\docs\\corpusci\\full_texts";
+	static String fullTextsPath = dataPath + "\\docs\\corpusci\\fulltexts";
 	static String trainDir = fullTextsPath + "\\train30";
 	static String testDir = fullTextsPath + "\\test60";
-	static String testFilePath = dataPath + "\\docs\\corpusci\\full_texts\\test60\\Artigo32.txt";
+	static String testFilePath = dataPath + "\\docs\\corpusci\\fulltexts\\test60\\Artigo32.txt";
 	
 	static ModelDocType modelType = ModelDocType.FULLTEXTS;
 	static String modelsDir = dataPath + "\\models";
@@ -67,11 +67,6 @@ public class StandaloneMain {
 	static String language = "pt";
 	static String encoding = "UTF-8";
 	
-	/**
-	 * @param command 
-	 * @param args
-	 * @throws Exception
-	 */
 	public static void runWithArguments(String command, String[] args) throws Exception {
 		String dataPath = MauiFileUtils.getDataPath();
 		switch (command) {
@@ -159,9 +154,6 @@ public class StandaloneMain {
 		} // switch (command) end
 	} // runWithArguments end
 	
-	/**
-	 * @throws Exception
-	 */
 	public static void runPTCi() throws Exception {
 		if (!MauiFileUtils.exists(modelPath)) {
 			//setupAndBuildModel();
@@ -189,7 +181,7 @@ public class StandaloneMain {
 			input = scan.nextLine();
 			
 			switch (input) {
-			//TRAIN OPTION
+			//(1) TRAIN OPTION
 			case "1":
 				System.out.println();
 				System.out.println("Escolha o tipo de modelo: ");
@@ -223,7 +215,7 @@ public class StandaloneMain {
 				case "2":
 					System.out.println();
 					System.out.println("Digite o caminho completo do diretório: ");
-					System.out.println("Opção: ");
+					System.out.print("Opção: ");
 					input = scan.nextLine();
 					if (MauiFileUtils.exists(input))
 						trainDir = input;
@@ -253,14 +245,14 @@ public class StandaloneMain {
 				}
 				break;
 				
-			//DISPLAY MODELS OPTION
+			//(2) DISPLAY MODELS OPTION
 			case "2":
 				System.out.println();
 				chooseFileFromList(scan, "model");
 				System.out.println("\nModelo " + modelName + " selecionado.");
 				break;
 			
-			//TEST ON DIRECTORY OPTION
+			//(3) TEST ON DIRECTORY OPTION
 			case "3":
 				System.out.println("\nEscolha o modelo a ser utilizado ou aperte [enter] para usar o atual:");
 				System.out.println("Modelo Selecionado: " + modelName + "\n");
@@ -296,7 +288,7 @@ public class StandaloneMain {
 				}
 				break;
 				
-			//RUN ON FILE OPTION
+			//(4) RUN ON FILE OPTION
 			case "4":
 				System.out.println("\nEscolha o modelo a ser utilizado ou aperte [enter] para usar o atual: ");
 				System.out.println("Modelo Selecionado: " + modelName + "\n");
@@ -332,14 +324,14 @@ public class StandaloneMain {
 				}
 				break;
 				
-			//STRUCTURED TEST OPTION
+			//(5) STRUCTURED TEST OPTION
 			case "5":
 				if(MauiFileUtils.isEmpty(modelsDir)) {
 					StructuredTest.run(1);
 				} else {
 					System.out.println("\n1 - Construir e testar todos os modelos");
 					System.out.println("2 - Testar modelos somente");
-					System.out.print("Opção : ");
+					System.out.print("Opção: ");
 					input = scan.nextLine();
 					switch(input) {
 					case "1":
@@ -355,13 +347,13 @@ public class StandaloneMain {
 				}
 				break;
 			
-			//ABOUT OPTION
+			//(6) ABOUT OPTION
 			case "6":
 				UI.displayCredits();
 				System.out.println("Aperte [enter] para continuar ou 0 para sair.");
 				input = scan.nextLine();
-				if (input.equals("")) break;
-				else if (input.equals("0")) exit = true;
+				if(input.equals("")) break;
+				else if(input.equals("0")) exit = true;
 				break;
 				
 			//EXIT OPTION
@@ -410,8 +402,8 @@ public class StandaloneMain {
 		
 		System.out.println("Diretório atual: " + dir.getAbsolutePath());
 		UI.displayFileList(fileList);
-		if (dirType.equals("model")) System.out.print("Digite o número correspondente ao modelo: ");
-		else System.out.println("Opção: ");
+		if (dirType.equals("model")) System.out.print("Digite o número correspondente ao modelo ou aperte [enter para usar o atual]: ");
+		else System.out.print("Opção: ");
 		input = scan.nextLine();
 		
 		if (input.equals("") && dirType.equals("model")) { //User selected standard model

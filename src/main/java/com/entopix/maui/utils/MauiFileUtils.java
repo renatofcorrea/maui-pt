@@ -11,6 +11,7 @@ import java.util.ArrayList;
 public class MauiFileUtils {
 	
 	private static String vocabPath = getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf";
+	private static String modelsDirPath = getDataPath() + "\\models";
 	
 	public static final String getRootPath() {
 		try {
@@ -39,6 +40,14 @@ public class MauiFileUtils {
 	
 	public void setVocabPath(String path) {
 		vocabPath = path;
+	}
+	
+	public static String getModelsDirPath() {
+		return modelsDirPath;
+	}
+	
+	public void setModelsDirPath(String path) {
+		modelsDirPath = path;
 	}
 	
 	/**

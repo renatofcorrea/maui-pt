@@ -12,9 +12,12 @@ public class MauiModel {
 	private MauiFilter filter;
 	
 	public ModelDocType docType;
+	private String path;
 	
 	public MauiModel(String dirPath, String modelPath, Stemmer stemmer, String vocabPath, ModelDocType docType) throws MauiFilterException {
 		this.docType = docType;
+		this.path = modelPath;
+		
 		modelBuilder = new MauiModelBuilder();
 		modelBuilder.documentEncoding = "UTF-8";
 		modelBuilder.documentLanguage = "pt";
@@ -37,5 +40,9 @@ public class MauiModel {
 	public void saveModel() throws Exception {
 		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 		modelBuilder.saveModel(filter);
+	}
+	
+	public String getPath() {
+		return path;
 	}
 }
