@@ -1,5 +1,7 @@
 package com.entopix.maui.beans;
 
+import java.io.File;
+
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.main.MauiModelBuilder;
@@ -8,15 +10,16 @@ import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.util.DataLoader;
 
 public class MauiModel {
+	
 	private MauiModelBuilder modelBuilder;
 	private MauiFilter filter;
 	
-	public ModelDocType docType;
-	private String path;
+	private File file;
+	private ModelDocType docType;
 	
 	public MauiModel(String dirPath, String modelPath, Stemmer stemmer, String vocabPath, ModelDocType docType) throws MauiFilterException {
+		this.file = new File(modelPath);
 		this.docType = docType;
-		this.path = modelPath;
 		
 		modelBuilder = new MauiModelBuilder();
 		modelBuilder.documentEncoding = "UTF-8";
@@ -37,12 +40,17 @@ public class MauiModel {
 		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 	}
 	
+	public File getFile() {
+		return file;
+	}
+	
+	public ModelDocType ModelDocType() {
+		return docType;
+	}
+	
 	public void saveModel() throws Exception {
 		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
 		modelBuilder.saveModel(filter);
 	}
 	
-	public String getPath() {
-		return path;
-	}
 }

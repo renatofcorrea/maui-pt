@@ -6,16 +6,14 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
 import com.entopix.maui.beans.MauiModel;
 import com.entopix.maui.beans.ModelDocType;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.main.MauiTopicExtractor;
 import com.entopix.maui.stemmers.LuceneBRStemmer;
-import com.entopix.maui.stemmers.LuceneSavoyStemmer;
 import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
 import com.entopix.maui.stemmers.LuceneRSLPStemmer;
+import com.entopix.maui.stemmers.LuceneSavoyStemmer;
 import com.entopix.maui.stemmers.NewPortugueseStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
@@ -37,8 +35,6 @@ public class StructuredTest {
 	static String modelsPath = MauiFileUtils.getModelsDirPath();
 	static String stemmerName;
 	
-	static boolean deleteModelsAfterRun = false;
-	
 	static MauiModel buildModel(Stemmer stemmer, String trainDirPath) throws Exception {
 		ModelDocType modelType = ((trainDirPath.contains("abstracts") ? ModelDocType.ABSTRACTS : ModelDocType.FULLTEXTS));
 		
@@ -58,8 +54,7 @@ public class StructuredTest {
 		return model;
 	}
 	
-	public static void buildAllModels() throws Exception {
-		
+	public static List<MauiModel> buildModelsInDirectory(String trainDir) throws Exception {
 		String serialVocabPath = MauiFileUtils.getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf_com.entopix.maui.vocab.VocabularyStore_Original_PortugueseStemmer.serialized";
 		File vocab = null;
 		
@@ -74,39 +69,32 @@ public class StructuredTest {
 				new LuceneRSLPMinimalStemmer(),
 		};
 		
-		//Builds abstracts models
-		File[] dirList = new File(abstractsDocsPath).listFiles(); //check stemmerList array
-		dirList = MauiFileUtils.filterFileList(dirList, "train");
-		for(Stemmer s : stemmerList) {
-			for(File f : dirList) {
-				buildModel(s, f.getAbsolutePath());
-			}
-			vocab = new File(serialVocabPath);
-			vocab.delete();
-		}
+		List<MauiModel> modelList = new ArrayList<MauiModel>();
 		
-		//Builds fulltexts models
-		dirList = new File(fullTextsDocsPath).listFiles();
+		//Builds abstracts models
+		File[] dirList = new File(trainDir).listFiles(); //check stemmerList array
 		dirList = MauiFileUtils.filterFileList(dirList, "train");
 		for(Stemmer s : stemmerList) {
 			for(File f : dirList) {
-				buildModel(s, f.getAbsolutePath());
+				modelList.add(buildModel(s, f.getAbsolutePath()));
 			}
 			vocab = new File(serialVocabPath);
 			vocab.delete();
 		}
+		return modelList;
 	}
 	
 	/**
-	 * Tests a model precision, recall and f-measure, then return the results in a array of doubles.
+	 * Tests a model precision, recall and f-measure, then return the results in a array of strings.
 	 * @param modelPath
 	 * @param testDirPath
 	 * @throws MauiFilterException
 	 */
-	static double[] testModel(String modelPath, String testDirPath) throws MauiFilterException {
+	static String[] testModel(File model, String testDirPath) throws MauiFilterException {
+		//tests model
 		MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
 		topicExtractor.inputDirectoryName = testDirPath;
-		topicExtractor.modelName = modelPath;
+		topicExtractor.modelName = model.getPath();
 		topicExtractor.vocabularyName = vocabPath;
 		topicExtractor.vocabularyFormat = "skos";
 		topicExtractor.documentLanguage = "pt";
@@ -117,63 +105,48 @@ public class StructuredTest {
 		topicExtractor.loadModel();
 		List<MauiDocument> documents = DataLoader.loadTestDocuments(topicExtractor.inputDirectoryName);
 		List<MauiTopics> topics = topicExtractor.extractTopics(documents);
-		topicExtractor.printTopics(topics);
+		double[] results = TestUtils.evaluateTopics(topics);
 		
-		return TestUtils.evaluateTopics(topics);
+		//converts results to string and adds the model name to it
+		String[] array = new String[8];
+		array[0] = model.getName();
+		int i;
+		for(i = 0; i < results.length; i++) {
+			array[i+1] = String.format("%.2f", results[i]);
+		}
+		return array;
 	}
 	
 	/**
-	 * Tests a list of models, then return a matrix of objects, where each line contains the model name and its results.
+	 * Returns a List of arrays each containing a model name and its results.
 	 * @return 
 	 * @throws MauiFilterException 
 	 */
-	static List<Object[]> testModelList(File[] modelsList, String testDirPath) throws MauiFilterException {
+	public static List<String[]> testModelsList(List<MauiModel> list, String testDir) throws MauiFilterException {
+		List<String[]> matrix = new ArrayList<String[]>();
 		
-		List<Object[]> matrix = new ArrayList<Object[]>();
-		
-		double[] results;
-		Object[] newLine = new Object[8];
-		int i;
-		for(File model : modelsList) {
-			results = testModel(model.getAbsolutePath(), testDirPath);
-			newLine[0] = model.getName();
-			for(i = 1; i < 8; i++) {
-				newLine[i] = results[i-1];
-			}
-			results = null;
-			matrix.add(newLine);
-			newLine = new Object[8];
+		for(MauiModel m : list) {
+			matrix.add(testModel(m.getFile(), testDir));
 		}
 		return matrix;
 	}
 	
-	public static void testAllModels() throws MauiFilterException {
-		File modelsDir = new File(modelsPath);
-		File[] abstractsModelsList = MauiFileUtils.filterFileList(modelsDir.listFiles(), "abstracts");
-		File[] fulltextsModelsList = MauiFileUtils.filterFileList(modelsDir.listFiles(), "fulltexts");
-
-		//Tests all models
-		List<Object[]> abstractsResults30 = testModelList(abstractsModelsList, abstractsDocsPath + "\\test30");
-		List<Object[]> abstractsResults60 = testModelList(abstractsModelsList, abstractsDocsPath + "\\test60");
-
-		List<Object[]> fulltextsResults30 = testModelList(fulltextsModelsList, fullTextsDocsPath + "\\test30");
-		List<Object[]> fulltextsResults60 = testModelList(fulltextsModelsList, fullTextsDocsPath + "\\test60");
-		
-		
-		System.out.println("- ABSTRACTS -");
-		System.out.println("---> Test results based on 30 documents:");
-		printMatrix(formatMatrix(abstractsResults30));
-		System.out.println("---> Test results based on 60 documents:");
-		printMatrix(formatMatrix(abstractsResults60));
-		
-		System.out.println("- FULLTEXTS -");
-		System.out.println("---> Test results based on 30 documents:");
-		printMatrix(formatMatrix(fulltextsResults30));
-		System.out.println("---> Test results based on 60 documents:");
-		printMatrix(formatMatrix(fulltextsResults60));
-	}
-	
 	public static void printMatrix(List<String[]> matrix) {
+		
+		matrix = formatMatrix(matrix);
+		
+		//Prints header
+		String[] header = {"MODEL NAME","AVG KEY","STDEV KEY","AVG PRECISION","STDEV PRECISION","AVG RECALL","STDEV RECALL","F-MEASURE"};
+		for(String word : header) {
+			if(word.equals(header[0])) {
+				System.out.format("%-65s",word);
+			} else {
+				System.out.format("%-20s", word);
+			}
+		}
+		System.out.println();
+		
+		//Prints matrix
 		for(String[] model : matrix) {
 			for(String value : model) {
 				System.out.print(value);
@@ -182,38 +155,12 @@ public class StructuredTest {
 		}
 	}
 	
-	public static List<String[]> formatMatrix(List<Object[]> matrix) {
+	public static List<String[]> formatMatrix(List<String[]> matrix) {
+		
 		List<String[]> newMatrix = new ArrayList<String[]>();
 		
-		//Converts matrix of objects into matrix of strings
 		int i;
-		String[] newLine = new String[8];
-		for(Object[] line : matrix) {
-			for(i = 0; i < line.length; i++) {
-				if(line[i] instanceof Double) {
-					newLine[i] = String.format("%.2f", line[i]);
-				} else {
-					newLine[i] = line[i].toString();
-				}
-			}
-			newMatrix.add(newLine);
-			newLine = new String[8];
-		}
-		
-		//Builds header
-		String[] header = {"MODEL NAME","AVG KEY","STDEV KEY","AVG PRECISION","STDEV PRECISION","AVG RECALL","STDEV RECALL","F-MEASURE",""};
-		for(String word : header) {
-			if(word.equals(header[0])) {
-				word = String.format("%-65s",word);
-			} else {
-				word = String.format("%-20s", word);
-			}
-		}
-		header[8] = "\n";
-		newMatrix.add(0, header);
-		
-		//Formats
-		for(String[] line : newMatrix) {
+		for(String[] line : matrix) {
 			for(i = 0; i < line.length; i++) {
 				if(i > 0) {
 					line[i] = String.format("%-20s", line[i]);
@@ -221,32 +168,46 @@ public class StructuredTest {
 					line[i] = String.format("%-65s", line[i]);
 				}
 			}
+			newMatrix.add(line);
 		}
-		
 		return newMatrix;
 	}
 	
-	public static void run(int testProgram) throws Exception {
-		
-		deleteModelsAfterRun = false;
+	/**
+	 * Runs the structured test.
+	 * @param testProgram 1 for build and test all models and 2 to test only
+	 */
+	public static void run() throws Exception {
 		
 		Instant start = Instant.now();
-		if(testProgram == 1) {
-			buildAllModels();
-			testAllModels();
-		} else {
-			testAllModels();
-		}
+	
+		List<MauiModel> abstractsModels = buildModelsInDirectory(abstractsDocsPath);
+		List<MauiModel> fulltextsModels = buildModelsInDirectory(fullTextsDocsPath);
+
+		List<String[]> abstractsResults30 = testModelsList(abstractsModels, abstractsDocsPath + "\\test30");
+		List<String[]> abstractsResults60 = testModelsList(abstractsModels, abstractsDocsPath + "\\test60");
+
+		List<String[]> fulltextsResults30 = testModelsList(fulltextsModels, fullTextsDocsPath + "\\test30");
+		List<String[]> fulltextsResults60 = testModelsList(fulltextsModels, fullTextsDocsPath + "\\test60");
+		
+		System.out.println("- ABSTRACTS -");
+		System.out.println("---> Test results based on 30 documents:");
+		printMatrix(abstractsResults30);
+		System.out.println("---> Test results based on 60 documents:");
+		printMatrix(abstractsResults60);
+		
+		System.out.println("- FULLTEXTS -");
+		System.out.println("---> Test results based on 30 documents:");
+		printMatrix(fulltextsResults30);
+		System.out.println("---> Test results based on 60 documents:");
+		printMatrix(fulltextsResults60);
 		
 		Instant finish = Instant.now();
+		
 		double seconds = (Duration.between(start, finish).toMillis()/1000);
 		int minutes = (int) seconds/60;
 		int remainingSec = (int) (seconds - (minutes*60));
 		System.out.println("Structured test duration: " + minutes + " minutes and " + remainingSec + " seconds.");
-		
-		if(deleteModelsAfterRun) {
-			FileUtils.cleanDirectory(new File(modelsPath));
-		}
 	}
 
 }

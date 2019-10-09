@@ -326,25 +326,7 @@ public class StandaloneMain {
 				
 			//(5) STRUCTURED TEST OPTION
 			case "5":
-				if(MauiFileUtils.isEmpty(modelsDir)) {
-					StructuredTest.run(1);
-				} else {
-					System.out.println("\n1 - Construir e testar todos os modelos");
-					System.out.println("2 - Testar modelos somente");
-					System.out.print("Opção: ");
-					input = scan.nextLine();
-					switch(input) {
-					case "1":
-						StructuredTest.run(1);
-						break;
-					case "2":
-						StructuredTest.run(2);
-						break;
-					default:
-						System.out.println("Opção Inválida.");
-						continue;
-					}
-				}
+				StructuredTest.run();
 				break;
 			
 			//(6) ABOUT OPTION

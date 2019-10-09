@@ -1,25 +1,27 @@
 package com.entopix.maui.tests;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
+import com.entopix.maui.beans.MauiModel;
+import com.entopix.maui.stemmers.NewPortugueseStemmer;
+import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.utils.MauiFileUtils;
 
+@SuppressWarnings("unused")
 public class TempClass {
 	
 	public static void main(String[] args) throws Exception {
-		/*
+		//BUILD
 		Stemmer stemmer = new NewPortugueseStemmer(new String[] {"-S","orengo"});
-		String trainDirPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\train30";
+		String trainDir = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\train30";
+		String testDir = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\test60";
 		
-		MauiModel model = StructuredTest.buildModel(stemmer, trainDirPath);
-		*/
+		MauiModel model = StructuredTest.buildModel(stemmer, trainDir);
 		
-		String modelPath = "C:\\Users\\PC1\\git\\maui-pt\\data\\models\\model_NewPortugueseStemmer_orengo_fulltexts_train30";
+		String[] results = StructuredTest.testModel(model.getFile(), testDir);
 		
-		String testDirPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\test60";
-		double[] results = StructuredTest.testModel(modelPath, testDirPath);
-		
-		for(int i = 0;i < results.length;i++) {
-			System.out.format("%.2f", results[i]);
-			System.out.println();
-		}
+		System.out.println(Arrays.toString(results));
 	}
 }
