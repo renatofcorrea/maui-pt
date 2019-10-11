@@ -14,7 +14,7 @@ import com.entopix.maui.stemmers.LuceneBRStemmer;
 import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
 import com.entopix.maui.stemmers.LuceneRSLPStemmer;
 import com.entopix.maui.stemmers.LuceneSavoyStemmer;
-import com.entopix.maui.stemmers.NewPortugueseStemmer;
+import com.entopix.maui.stemmers.WekaStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
@@ -37,14 +37,14 @@ public class StructuredTest {
 	
 	static MauiModel buildModel(Stemmer stemmer, String trainDirPath) throws Exception {
 		ModelDocType modelType = ((trainDirPath.contains("abstracts") ? ModelDocType.ABSTRACTS : ModelDocType.FULLTEXTS));
+		File trainDir = new File(trainDirPath);
 		
 		//Formats model name
 		String modelName = null;
-		if(stemmer instanceof NewPortugueseStemmer) {
-			NewPortugueseStemmer newptstemmer = (NewPortugueseStemmer) stemmer;
-			modelName = "model_NewPortugueseStemmer_" + newptstemmer.type + "_" + modelType.getName() + "_" + new File(trainDirPath).getName();
+		if(stemmer instanceof WekaStemmer) { //warning: the static stemmer while calling this method has to be properly set to match the one used on model.
+			modelName = "model_" + stemmer.getClass().getSimpleName() + "_" + WekaStemmer.staticStemmer.getStemmer().toString() + "_" + modelType.getName() + "_" + trainDir.getName();
 		} else {
-			modelName = "model_" + stemmer.getClass().getSimpleName() + "_" + modelType.getName() + "_" + new File(trainDirPath).getName();
+			modelName = "model_" + stemmer.getClass().getSimpleName() + "_" + modelType.getName() + "_" + trainDir.getName();
 		}
 		
 		//Builds model
@@ -54,15 +54,12 @@ public class StructuredTest {
 		return model;
 	}
 	
-	public static List<MauiModel> buildModelsInDirectory(String trainDir) throws Exception {
+	public static List<MauiModel> buildModels(String trainDir) throws Exception {
 		String serialVocabPath = MauiFileUtils.getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf_com.entopix.maui.vocab.VocabularyStore_Original_PortugueseStemmer.serialized";
 		File vocab = null;
 		
 		Stemmer[] stemmerList = {
 				new PortugueseStemmer(),
-				new NewPortugueseStemmer(new String[] {"-S","orengo"}),
-				new NewPortugueseStemmer(new String[] {"-S","savoy"}),
-				new NewPortugueseStemmer(new String[] {"-S","porter"}),
 				new LuceneRSLPStemmer(),
 				new LuceneBRStemmer(),
 				new LuceneSavoyStemmer(),
@@ -70,10 +67,10 @@ public class StructuredTest {
 		};
 		
 		List<MauiModel> modelList = new ArrayList<MauiModel>();
-		
-		//Builds abstracts models
-		File[] dirList = new File(trainDir).listFiles(); //check stemmerList array
+		File[] dirList = new File(trainDir).listFiles();
 		dirList = MauiFileUtils.filterFileList(dirList, "train");
+		
+		//Builds models on normal stemmers
 		for(Stemmer s : stemmerList) {
 			for(File f : dirList) {
 				modelList.add(buildModel(s, f.getAbsolutePath()));
@@ -81,6 +78,38 @@ public class StructuredTest {
 			vocab = new File(serialVocabPath);
 			vocab.delete();
 		}
+		
+		//Builds models on WekaStemmers
+		Stemmer stemmer = WekaStemmer.getInstance();
+		WekaStemmer.setOptions("Orengo");
+	
+		for(File f : dirList) {
+			modelList.add(buildModel(stemmer, f.getAbsolutePath()));
+		}
+		
+		vocab = new File(serialVocabPath);
+		vocab.delete();
+		
+		WekaStemmer.setOptions("Porter");
+		stemmer = WekaStemmer.getInstance();
+		for(File f : dirList) {
+			modelList.add(buildModel(stemmer, f.getAbsolutePath()));
+		}
+		
+		vocab = new File(serialVocabPath);
+		vocab.delete();
+		
+		WekaStemmer.setOptions("Savoy");
+		stemmer = WekaStemmer.getInstance();
+		for(File f : dirList) {
+			modelList.add(buildModel(stemmer, f.getAbsolutePath()));
+		}
+		
+		vocab = new File(serialVocabPath);
+		vocab.delete();
+		
+		WekaStemmer.staticStemmer = null;
+		
 		return modelList;
 	}
 	
@@ -181,8 +210,8 @@ public class StructuredTest {
 		
 		Instant start = Instant.now();
 	
-		List<MauiModel> abstractsModels = buildModelsInDirectory(abstractsDocsPath);
-		List<MauiModel> fulltextsModels = buildModelsInDirectory(fullTextsDocsPath);
+		List<MauiModel> abstractsModels = buildModels(abstractsDocsPath);
+		List<MauiModel> fulltextsModels = buildModels(fullTextsDocsPath);
 
 		List<String[]> abstractsResults30 = testModelsList(abstractsModels, abstractsDocsPath + "\\test30");
 		List<String[]> abstractsResults60 = testModelsList(abstractsModels, abstractsDocsPath + "\\test60");
@@ -195,6 +224,8 @@ public class StructuredTest {
 		printMatrix(abstractsResults30);
 		System.out.println("---> Test results based on 60 documents:");
 		printMatrix(abstractsResults60);
+		
+		System.out.println();
 		
 		System.out.println("- FULLTEXTS -");
 		System.out.println("---> Test results based on 30 documents:");

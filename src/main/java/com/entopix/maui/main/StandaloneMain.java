@@ -12,7 +12,6 @@ import org.apache.commons.io.FileUtils;
 import com.entopix.maui.beans.ModelDocType;
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
-import com.entopix.maui.stemmers.NewPortugueseStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
@@ -46,7 +45,7 @@ public class StandaloneMain {
 	static MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
 	static MauiFilter filter;
 	static Stopwords stopwords = new StopwordsPortuguese();
-	static Stemmer stemmer = new NewPortugueseStemmer(new String[] {"-S","orengo"});
+	static Stemmer stemmer = new PortugueseStemmer();
 	
 	static String dataPath = MauiFileUtils.getDataPath();
 	static String abstractsPath = dataPath + "\\docs\\corpusci\\abstracts";
@@ -83,8 +82,7 @@ public class StandaloneMain {
 			modelBuilder.serialize = false; //true
 			if (modelBuilder.documentLanguage.equals("pt")) {
 				modelBuilder.stopwords = new StopwordsPortuguese();
-				String[] opt = {"-S","Orengo"};
-				modelBuilder.stemmer = new NewPortugueseStemmer(opt); //use standard
+				modelBuilder.stemmer = new PortugueseStemmer();
 			} else {
 				modelBuilder.stopwords = (Stopwords) Class.forName(Utils.getOption('s', args)).newInstance();
 				modelBuilder.stemmer = (Stemmer) Class.forName(Utils.getOption('t', args)).newInstance();

@@ -3,8 +3,6 @@ package com.entopix.maui.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-
-import com.entopix.maui.beans.MauiModel;
 /**
  * Provides paths to avoid path conflicts
  * @author Rahmon Jorge

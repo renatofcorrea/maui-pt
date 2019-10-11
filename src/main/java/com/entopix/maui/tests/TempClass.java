@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.entopix.maui.beans.MauiModel;
-import com.entopix.maui.stemmers.NewPortugueseStemmer;
+import com.entopix.maui.stemmers.WekaStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.utils.MauiFileUtils;
 
@@ -13,8 +13,8 @@ import com.entopix.maui.utils.MauiFileUtils;
 public class TempClass {
 	
 	public static void main(String[] args) throws Exception {
-		//BUILD
-		Stemmer stemmer = new NewPortugueseStemmer(new String[] {"-S","orengo"});
+		Stemmer stemmer = WekaStemmer.getInstance();
+		WekaStemmer.setOptions("Orengo");
 		String trainDir = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\train30";
 		String testDir = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\test60";
 		
