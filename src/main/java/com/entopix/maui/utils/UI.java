@@ -1,6 +1,8 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
+import java.time.Duration;
+import java.time.Instant;
 
 public class UI {
 	public static void displayFileList(File[] fileList) {
@@ -40,5 +42,12 @@ public class UI {
 		System.out.println("MAUI original criado por Alyona Medelyan");
 		System.out.println("-------------------------//-------------------------");
 		System.out.println();
+	}
+	
+	public static void showElapsedTime(Instant start, Instant finish) {
+		double seconds = (Duration.between(start, finish).toMillis()/1000);
+		int minutes = (int) seconds/60;
+		int remainingSec = (int) (seconds - (minutes*60));
+		System.out.println(minutes + " minutes and " + remainingSec + " seconds.");
 	}
 }

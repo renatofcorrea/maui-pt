@@ -18,10 +18,10 @@ public class TempClass {
 		String trainDir = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\train30";
 		String testDir = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\test60";
 		
-		MauiModel model = StructuredTest.buildModel(stemmer, trainDir);
+		//MauiModel model = StructuredTest.buildModel(stemmer, trainDir);
 		
-		String[] results = StructuredTest.testModel(model.getFile(), testDir);
+		//String[] results = StructuredTest.testModel(model.getFile(), testDir);
 		
-		System.out.println(Arrays.toString(results));
+		//System.out.println(Arrays.toString(results));
 	}
 }

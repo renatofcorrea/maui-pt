@@ -1,0 +1,5 @@
+stemmers
+stemmer
+maui
+rahmon
+jorge

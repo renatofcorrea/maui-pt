@@ -1,7 +1,6 @@
 package com.entopix.maui.tests;
 
 import java.io.File;
-import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,14 +13,17 @@ import com.entopix.maui.stemmers.LuceneBRStemmer;
 import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
 import com.entopix.maui.stemmers.LuceneRSLPStemmer;
 import com.entopix.maui.stemmers.LuceneSavoyStemmer;
-import com.entopix.maui.stemmers.WekaStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
+import com.entopix.maui.stemmers.WekaStemmer;
+import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.util.DataLoader;
 import com.entopix.maui.util.MauiDocument;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MauiFileUtils;
+import com.entopix.maui.utils.UI;
+import com.entopix.maui.vocab.Vocabulary;
 /**
  * Performs a structured test comparing models made with abstracts and full texts, made with 10 to 30 documents.
  * @author Rahmon Jorge
@@ -33,30 +35,31 @@ public class StructuredTest {
 	static String abstractsDocsPath = dataPath + "\\docs\\corpusci\\abstracts";
 	static String fullTextsDocsPath = dataPath + "\\docs\\corpusci\\fulltexts";
 	static String modelsPath = MauiFileUtils.getModelsDirPath();
-	static String stemmerName;
 	
-	static MauiModel buildModel(Stemmer stemmer, String trainDirPath) throws Exception {
-		ModelDocType modelType = ((trainDirPath.contains("abstracts") ? ModelDocType.ABSTRACTS : ModelDocType.FULLTEXTS));
-		File trainDir = new File(trainDirPath);
+	static Stopwords stopwords = new StopwordsPortuguese();
+	static String vocabFormat = "skos";
+	static String language = "pt";
+	static String encoding = "UTF-8";
+	
+	static MauiModel buildModel(Stemmer stemmer, File trainDir) throws Exception {
+		ModelDocType modelType = ((trainDir.getAbsolutePath().contains("abstracts") ? ModelDocType.ABSTRACTS : ModelDocType.FULLTEXTS));
 		
 		//Formats model name
 		String modelName = null;
 		if(stemmer instanceof WekaStemmer) { //warning: the static stemmer while calling this method has to be properly set to match the one used on model.
-			modelName = "model_" + stemmer.getClass().getSimpleName() + "_" + WekaStemmer.staticStemmer.getStemmer().toString() + "_" + modelType.getName() + "_" + trainDir.getName();
+			modelName = "model_" + modelType.getName() + "_" + stemmer.getClass().getSimpleName() + "_" + WekaStemmer.staticStemmer.getStemmer().toString() + "_" + trainDir.getName();
 		} else {
-			modelName = "model_" + stemmer.getClass().getSimpleName() + "_" + modelType.getName() + "_" + trainDir.getName();
+			modelName = "model_" + modelType.getName() + "_" + stemmer.getClass().getSimpleName() + "_" + trainDir.getName();
 		}
 		
 		//Builds model
 		String modelPath = modelsPath + "\\" + modelName;
-		MauiModel model = new MauiModel(trainDirPath, modelPath, stemmer, vocabPath, modelType);
+		MauiModel model = new MauiModel(trainDir.getAbsolutePath(), modelPath, stemmer, stopwords, vocabPath, "skos", "UTF-8", "pt", modelType);
 		model.saveModel();
 		return model;
 	}
 	
 	public static List<MauiModel> buildModels(String trainDir) throws Exception {
-		String serialVocabPath = MauiFileUtils.getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf_com.entopix.maui.vocab.VocabularyStore_Original_PortugueseStemmer.serialized";
-		File vocab = null;
 		
 		Stemmer[] stemmerList = {
 				new PortugueseStemmer(),
@@ -73,40 +76,29 @@ public class StructuredTest {
 		//Builds models on normal stemmers
 		for(Stemmer s : stemmerList) {
 			for(File f : dirList) {
-				modelList.add(buildModel(s, f.getAbsolutePath()));
+				modelList.add(buildModel(s, f));
 			}
-			vocab = new File(serialVocabPath);
-			vocab.delete();
 		}
+		
 		
 		//Builds models on WekaStemmers
 		Stemmer stemmer = WekaStemmer.getInstance();
 		WekaStemmer.setOptions("Orengo");
-	
 		for(File f : dirList) {
-			modelList.add(buildModel(stemmer, f.getAbsolutePath()));
+			modelList.add(buildModel(stemmer, f));
 		}
-		
-		vocab = new File(serialVocabPath);
-		vocab.delete();
 		
 		WekaStemmer.setOptions("Porter");
 		stemmer = WekaStemmer.getInstance();
 		for(File f : dirList) {
-			modelList.add(buildModel(stemmer, f.getAbsolutePath()));
+			modelList.add(buildModel(stemmer, f));
 		}
-		
-		vocab = new File(serialVocabPath);
-		vocab.delete();
 		
 		WekaStemmer.setOptions("Savoy");
 		stemmer = WekaStemmer.getInstance();
 		for(File f : dirList) {
-			modelList.add(buildModel(stemmer, f.getAbsolutePath()));
+			modelList.add(buildModel(stemmer, f));
 		}
-		
-		vocab = new File(serialVocabPath);
-		vocab.delete();
 		
 		WekaStemmer.staticStemmer = null;
 		
@@ -115,11 +107,8 @@ public class StructuredTest {
 	
 	/**
 	 * Tests a model precision, recall and f-measure, then return the results in a array of strings.
-	 * @param modelPath
-	 * @param testDirPath
-	 * @throws MauiFilterException
 	 */
-	static String[] testModel(File model, String testDirPath) throws MauiFilterException {
+	static String[] testModel(File model, String testDirPath, Stemmer stemmer) throws MauiFilterException {
 		//tests model
 		MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
 		topicExtractor.inputDirectoryName = testDirPath;
@@ -131,7 +120,22 @@ public class StructuredTest {
 		topicExtractor.serialize = true;
 		topicExtractor.stopwords = new StopwordsPortuguese();
 		topicExtractor.stemmer = new PortugueseStemmer();
+		
 		topicExtractor.loadModel();
+		
+		Vocabulary vocab = new Vocabulary();
+		vocab.initializeVocabulary(vocabPath, vocabFormat);
+		vocab.setReorder(false);
+		vocab.setSerialize(true);
+		vocab.setEncoding(encoding);
+		vocab.setLanguage(language);
+		vocab.setStemmer(stemmer);
+		vocab.setStopwords(stopwords);
+		vocab.setVocabularyName(vocabPath);
+		topicExtractor.setVocabulary(vocab);
+		
+		
+		
 		List<MauiDocument> documents = DataLoader.loadTestDocuments(topicExtractor.inputDirectoryName);
 		List<MauiTopics> topics = topicExtractor.extractTopics(documents);
 		double[] results = TestUtils.evaluateTopics(topics);
@@ -155,7 +159,7 @@ public class StructuredTest {
 		List<String[]> matrix = new ArrayList<String[]>();
 		
 		for(MauiModel m : list) {
-			matrix.add(testModel(m.getFile(), testDir));
+			matrix.add(testModel(m.getFile(), testDir, m.getStemmer()));
 		}
 		return matrix;
 	}
@@ -207,26 +211,26 @@ public class StructuredTest {
 	 * @param testProgram 1 for build and test all models and 2 to test only
 	 */
 	public static void run() throws Exception {
-		
 		Instant start = Instant.now();
-	
+		
+		Instant buildStart = Instant.now();
 		List<MauiModel> abstractsModels = buildModels(abstractsDocsPath);
 		List<MauiModel> fulltextsModels = buildModels(fullTextsDocsPath);
-
+		Instant buildEnd = Instant.now();
+		
+		Instant testStart = Instant.now();
 		List<String[]> abstractsResults30 = testModelsList(abstractsModels, abstractsDocsPath + "\\test30");
 		List<String[]> abstractsResults60 = testModelsList(abstractsModels, abstractsDocsPath + "\\test60");
-
 		List<String[]> fulltextsResults30 = testModelsList(fulltextsModels, fullTextsDocsPath + "\\test30");
 		List<String[]> fulltextsResults60 = testModelsList(fulltextsModels, fullTextsDocsPath + "\\test60");
+		Instant testEnd = Instant.now();
 		
 		System.out.println("- ABSTRACTS -");
 		System.out.println("---> Test results based on 30 documents:");
 		printMatrix(abstractsResults30);
 		System.out.println("---> Test results based on 60 documents:");
 		printMatrix(abstractsResults60);
-		
 		System.out.println();
-		
 		System.out.println("- FULLTEXTS -");
 		System.out.println("---> Test results based on 30 documents:");
 		printMatrix(fulltextsResults30);
@@ -235,10 +239,15 @@ public class StructuredTest {
 		
 		Instant finish = Instant.now();
 		
-		double seconds = (Duration.between(start, finish).toMillis()/1000);
-		int minutes = (int) seconds/60;
-		int remainingSec = (int) (seconds - (minutes*60));
-		System.out.println("Structured test duration: " + minutes + " minutes and " + remainingSec + " seconds.");
+		System.out.print("Model building duration: ");
+		UI.showElapsedTime(buildStart, buildEnd);
+		System.out.println();
+		System.out.print("Model testing duration: ");
+		UI.showElapsedTime(testStart, testEnd);
+		System.out.print("Total Duration: ");
+		UI.showElapsedTime(start, finish);
+		
 	}
+
 
 }

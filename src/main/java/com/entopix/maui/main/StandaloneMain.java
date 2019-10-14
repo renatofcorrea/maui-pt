@@ -24,6 +24,7 @@ import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.UI;
+import com.entopix.maui.vocab.Vocabulary;
 
 import weka.core.Utils;
 
@@ -55,7 +56,7 @@ public class StandaloneMain {
 	static String testFilePath = dataPath + "\\docs\\corpusci\\fulltexts\\test60\\Artigo32.txt";
 	
 	static ModelDocType modelType = ModelDocType.FULLTEXTS;
-	static String modelsDir = dataPath + "\\models";
+	static String modelsDir = MauiFileUtils.getModelsDirPath();
 	static String modelName = "model_fulltexts_train30";
 	static String modelPath = modelsDir + "\\" + modelName;
 	
@@ -466,11 +467,23 @@ public class StandaloneMain {
 		modelBuilder.minPhraseLength = 1;
 		modelBuilder.serialize = true;
 
+		Vocabulary vocab = new Vocabulary();
+		vocab.setReorder(false);
+		vocab.setSerialize(true);
+		vocab.setEncoding(encoding);
+		vocab.setLanguage(language);
+		vocab.setStemmer(stemmer);
+		vocab.setStopwords(stopwords);
+		vocab.setVocabularyName(vocabPath);
+		vocab.initializeVocabulary(vocabPath, vocabFormat);
+		modelBuilder.setVocabulary(vocab);
+		
 		modelBuilder.setPositionsFeatures(false);
 		modelBuilder.setKeyphrasenessFeature(false);
 		modelBuilder.setThesaurusFeatures(false);
-
+		
 		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
+		
 		System.out.println("Modelo '" + modelName + "' construído. Salvando modelo...");
 		modelBuilder.saveModel(filter);
 		System.out.println("Modelo salvo em " + modelPath);
@@ -503,7 +516,20 @@ public class StandaloneMain {
 		topicExtractor.documentEncoding = encoding;
 		topicExtractor.cutOffTopicProbability = 0.12;
 		topicExtractor.serialize = true;
+		
 		topicExtractor.loadModel();
+		
+		Vocabulary vocab = new Vocabulary();
+		vocab.initializeVocabulary(vocabPath, vocabFormat);
+		vocab.setReorder(false);
+		vocab.setSerialize(true);
+		vocab.setEncoding(encoding);
+		vocab.setLanguage(language);
+		vocab.setStemmer(stemmer);
+		vocab.setStopwords(stopwords);
+		vocab.setVocabularyName(vocabPath);
+		topicExtractor.setVocabulary(vocab);
+		
 		List<MauiDocument> documents = DataLoader.loadTestDocuments(testDir);
 		List<MauiTopics> topics = topicExtractor.extractTopics(documents);
 		topicExtractor.printTopics(topics);
