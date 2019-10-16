@@ -14,6 +14,7 @@ import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
+import com.entopix.maui.stemmers.WekaStemmerOrengo;
 import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.tests.StructuredTest;
@@ -46,7 +47,7 @@ public class StandaloneMain {
 	static MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
 	static MauiFilter filter;
 	static Stopwords stopwords = new StopwordsPortuguese();
-	static Stemmer stemmer = new PortugueseStemmer();
+	static Stemmer stemmer = new WekaStemmerOrengo();
 	
 	static String dataPath = MauiFileUtils.getDataPath();
 	static String abstractsPath = dataPath + "\\docs\\corpusci\\abstracts";
@@ -66,6 +67,8 @@ public class StandaloneMain {
 	static int numTopicsToExtract = 10;
 	static String language = "pt";
 	static String encoding = "UTF-8";
+	static boolean serialize = true;
+	static boolean reorder = false;
 	
 	public static void runWithArguments(String command, String[] args) throws Exception {
 		String dataPath = MauiFileUtils.getDataPath();
@@ -244,14 +247,14 @@ public class StandaloneMain {
 				}
 				break;
 				
-			//(2) DISPLAY MODELS OPTION
+			// 2 - DISPLAY MODELS OPTION
 			case "2":
 				System.out.println();
 				chooseFileFromList(scan, "model");
 				System.out.println("\nModelo " + modelName + " selecionado.");
 				break;
 			
-			//(3) TEST ON DIRECTORY OPTION
+			// 3 - TEST ON DIRECTORY OPTION
 			case "3":
 				System.out.println("\nEscolha o modelo a ser utilizado ou aperte [enter] para usar o atual:");
 				System.out.println("Modelo Selecionado: " + modelName + "\n");
@@ -287,7 +290,7 @@ public class StandaloneMain {
 				}
 				break;
 				
-			//(4) RUN ON FILE OPTION
+			// 4 - RUN ON FILE OPTION
 			case "4":
 				System.out.println("\nEscolha o modelo a ser utilizado ou aperte [enter] para usar o atual: ");
 				System.out.println("Modelo Selecionado: " + modelName + "\n");
@@ -323,12 +326,12 @@ public class StandaloneMain {
 				}
 				break;
 				
-			//(5) STRUCTURED TEST OPTION
+			// 5 - STRUCTURED TEST OPTION
 			case "5":
 				StructuredTest.run();
 				break;
 			
-			//(6) ABOUT OPTION
+			// 6 - ABOUT OPTION
 			case "6":
 				UI.displayCredits();
 				System.out.println("Aperte [enter] para continuar ou 0 para sair.");
@@ -492,17 +495,28 @@ public class StandaloneMain {
 	private static void runMauiWrapperOnFile() throws IOException, MauiFilterException {
 		File document = new File(testFilePath);
 		String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
+		
+		Vocabulary vocab = new Vocabulary();
+		vocab.setReorder(false);
+		vocab.setSerialize(true);
+		vocab.setEncoding(encoding);
+		vocab.setLanguage(language);
+		vocab.setStemmer(stemmer);
+		vocab.setStopwords(stopwords);
+		vocab.setVocabularyName(vocabPath);
+		vocab.initializeVocabulary(vocabPath, vocabFormat);
 
 		MauiWrapper mauiWrapper = null;
 
-		mauiWrapper = new MauiWrapper(modelPath, vocabPath, vocabFormat, stopwords, stemmer, language);
+		//mauiWrapper = new MauiWrapper(modelPath, vocabPath, vocabFormat, stopwords, stemmer, language);
+		mauiWrapper = new MauiWrapper(vocab, DataLoader.loadModel(modelPath));
 		mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, language);
 
 		ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, numTopicsToExtract);
 		for  (Topic keyword : keywords) {
 			System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
 		}
-		//TODO Not writing .maui file because keywords were stored in List<Topic> instead of List<MauiTopics>
+		//TODO Not writing .maui file because keywords are stored in List<Topic> instead of List<MauiTopics>
 	}
 
 	private static void setupAndRunTopicExtractor() throws MauiFilterException {
@@ -517,18 +531,18 @@ public class StandaloneMain {
 		topicExtractor.cutOffTopicProbability = 0.12;
 		topicExtractor.serialize = true;
 		
-		topicExtractor.loadModel();
-		
 		Vocabulary vocab = new Vocabulary();
-		vocab.initializeVocabulary(vocabPath, vocabFormat);
-		vocab.setReorder(false);
-		vocab.setSerialize(true);
+		vocab.setReorder(reorder);
+		vocab.setSerialize(serialize);
 		vocab.setEncoding(encoding);
 		vocab.setLanguage(language);
 		vocab.setStemmer(stemmer);
 		vocab.setStopwords(stopwords);
 		vocab.setVocabularyName(vocabPath);
+		vocab.initializeVocabulary(vocabPath, vocabFormat);
+		
 		topicExtractor.setVocabulary(vocab);
+		topicExtractor.loadModel();
 		
 		List<MauiDocument> documents = DataLoader.loadTestDocuments(testDir);
 		List<MauiTopics> topics = topicExtractor.extractTopics(documents);

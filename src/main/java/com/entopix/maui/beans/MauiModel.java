@@ -7,7 +7,6 @@ import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.main.MauiModelBuilder;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
-import com.entopix.maui.tests.StructuredTest;
 import com.entopix.maui.util.DataLoader;
 import com.entopix.maui.vocab.Vocabulary;
 /**
