@@ -3,3 +3,5 @@ stemmer
 maui
 rahmon
 jorge
+avg
+docs

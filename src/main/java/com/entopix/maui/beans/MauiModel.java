@@ -1,81 +1,47 @@
 package com.entopix.maui.beans;
 
-import java.io.File;
-
-import com.entopix.maui.filters.MauiFilter;
-import com.entopix.maui.filters.MauiFilter.MauiFilterException;
-import com.entopix.maui.main.MauiModelBuilder;
 import com.entopix.maui.stemmers.Stemmer;
-import com.entopix.maui.stopwords.Stopwords;
-import com.entopix.maui.util.DataLoader;
-import com.entopix.maui.vocab.Vocabulary;
 /**
- * This class is a reference to a maui model file. It is used to identify model properties and helps managing groups of models.
+ * This class is a reference to a maui model file. It is used to wrap the model properties. Useful when managing groups of models.
  * @author PC1
  *
  */
 public class MauiModel {
 	
-	private File file;
+	private String name;
+	private String path;
 	private Stemmer stemmer;
 	private ModelDocType docType;
+	private String trainDirPath;
 	
-	private MauiModelBuilder modelBuilder;
-	private MauiFilter filter;
-	
-	public MauiModel(String dirPath, String modelPath, Stemmer stemmer, Stopwords stopwords, String vocabPath, String vocabFormat, String encoding, String language, ModelDocType docType) throws MauiFilterException {
-		this.file = new File(modelPath);
+	public MauiModel(String name, String path, Stemmer stemmer, ModelDocType docType, String trainDirPath) {
+		this.name = name;
+		this.path = path;
 		this.stemmer = stemmer;
 		this.docType = docType;
-		
-		modelBuilder = new MauiModelBuilder();
-		modelBuilder.documentEncoding = encoding;
-		modelBuilder.documentLanguage = language;
-		modelBuilder.inputDirectoryName = dirPath;
-		modelBuilder.maxPhraseLength = 5;
-		modelBuilder.minNumOccur = 2;
-		modelBuilder.minPhraseLength = 1;
-		modelBuilder.modelName = modelPath;
-		modelBuilder.serialize = true;
-		modelBuilder.stemmer = stemmer;
-		modelBuilder.stopwords = stopwords;
-		
-		Vocabulary vocab = new Vocabulary();
-		vocab.setReorder(false);
-		vocab.setSerialize(true);
-		vocab.setEncoding(encoding);
-		vocab.setLanguage(language);
-		vocab.setStemmer(stemmer);
-		vocab.setStopwords(stopwords);
-		vocab.setVocabularyName(vocabPath);
-		vocab.initializeVocabulary(vocabPath, vocabFormat);
-		modelBuilder.setVocabulary(vocab);
-		
-		modelBuilder.setPositionsFeatures(false);
-		modelBuilder.setKeyphrasenessFeature(false);
-		modelBuilder.setThesaurusFeatures(false);
-		
-		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
+		this.trainDirPath = trainDirPath;
 	}
-	
-	public File getFile() {
-		return file;
+
+	public String getName() {
+		return name;
 	}
-	
-	/**
-	 * @return A instance of the stemmer class used to build this model.
-	 */
+
+	public String getPath() {
+		return path;
+	}
+
 	public Stemmer getStemmer() {
 		return stemmer;
 	}
-	
+
 	public ModelDocType getDocType() {
 		return docType;
 	}
-	
-	public void saveModel() throws Exception {
-		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(modelBuilder.inputDirectoryName));
-		modelBuilder.saveModel(filter);
+
+	public String getTrainDirPath() {
+		return trainDirPath;
 	}
+	
+	
 	
 }

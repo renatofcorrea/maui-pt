@@ -45,14 +45,13 @@ public class StructuredTest {
 	static boolean serialize = true;
 	static boolean reorder = false;
 	
-	private static MauiModel buildModel(Stemmer stemmer, File trainDir) throws Exception {
+	static MauiModel buildModel(Stemmer stemmer, File trainDir) throws Exception {
 		ModelDocType modelType = ((trainDir.getAbsolutePath().contains("abstracts") ? ModelDocType.ABSTRACTS : ModelDocType.FULLTEXTS));
 		String modelName = "model_" + modelType.getName() + "_" + stemmer.getClass().getSimpleName() + "_" + trainDir.getName();
 		
 		String modelPath = modelsPath + "\\" + modelName;
-		MauiModel model = new MauiModel(trainDir.getAbsolutePath(), modelPath, stemmer, stopwords, vocabPath, "skos", "UTF-8", "pt", modelType);
-		model.saveModel();
-		return model;
+		//MauiModel model = new MauiModel(trainDir.getAbsolutePath(), modelPath, stemmer, stopwords, vocabPath, "skos", "UTF-8", "pt", modelType);
+		return null;
 	}
 	
 	public static List<MauiModel> buildModels(String trainDir) throws Exception {
@@ -108,7 +107,7 @@ static String[] testModel(File model, String testDirPath, Stemmer stemmer, boole
 		topicExtractor.cutOffTopicProbability = 0.12;
 		topicExtractor.serialize = true;
 		topicExtractor.stopwords = new StopwordsPortuguese();
-		topicExtractor.stemmer = new PortugueseStemmer();
+		topicExtractor.stemmer = stemmer;
 		
 		//setup vocabulary
 		Vocabulary vocab = new Vocabulary();
@@ -148,8 +147,7 @@ static String[] testModel(File model, String testDirPath, Stemmer stemmer, boole
 		List<String[]> matrix = new ArrayList<String[]>();
 		
 		for(MauiModel m : list) {
-			//set wekastemmers options individually
-			matrix.add(testModel(m.getFile(), testDir, m.getStemmer(), reorder, serialize));
+			matrix.add(testModel(new File(m.getPath()), testDir, m.getStemmer(), reorder, serialize));
 		}
 		return matrix;
 	}
