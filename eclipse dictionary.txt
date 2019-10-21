@@ -5,3 +5,6 @@ rahmon
 jorge
 avg
 docs
+configs
+keyphrases
+fulltexts

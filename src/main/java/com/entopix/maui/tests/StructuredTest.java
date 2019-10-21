@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.entopix.maui.beans.MauiModel;
 import com.entopix.maui.beans.ModelDocType;
+import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.main.MauiTopicExtractor;
 import com.entopix.maui.stemmers.LuceneBRStemmer;
@@ -45,57 +46,7 @@ public class StructuredTest {
 	static boolean serialize = true;
 	static boolean reorder = false;
 	
-	static MauiModel buildModel(Stemmer stemmer, File trainDir) throws Exception {
-		ModelDocType modelType = ((trainDir.getAbsolutePath().contains("abstracts") ? ModelDocType.ABSTRACTS : ModelDocType.FULLTEXTS));
-		String modelName = "model_" + modelType.getName() + "_" + stemmer.getClass().getSimpleName() + "_" + trainDir.getName();
-		
-		String modelPath = modelsPath + "\\" + modelName;
-		//MauiModel model = new MauiModel(trainDir.getAbsolutePath(), modelPath, stemmer, stopwords, vocabPath, "skos", "UTF-8", "pt", modelType);
-		return null;
-	}
-	
-	public static List<MauiModel> buildModels(String trainDir) throws Exception {
-		
-		Stemmer[] stemmerList = {
-				new PortugueseStemmer(),
-				new LuceneRSLPStemmer(),
-				new LuceneBRStemmer(),
-				new LuceneSavoyStemmer(),
-				new LuceneRSLPMinimalStemmer(),
-		};
-		
-		List<MauiModel> modelList = new ArrayList<MauiModel>();
-		File[] dirList = new File(trainDir).listFiles();
-		dirList = MauiFileUtils.filterFileList(dirList, "train");
-		
-		//Builds models on normal stemmers
-		for(Stemmer s : stemmerList) {
-			for(File f : dirList) {
-				modelList.add(buildModel(s, f));
-			}
-		}
-		
-		
-		//Builds models on WekaStemmers
-		Stemmer stemmer = new WekaStemmerOrengo();
-		for(File f : dirList) {
-			modelList.add(buildModel(stemmer, f));
-		}
-		
-		stemmer = new WekaStemmerPorter();
-		for(File f : dirList) {
-			modelList.add(buildModel(stemmer, f));
-		}
-		
-		stemmer = new WekaStemmerSavoy();
-		for(File f : dirList) {
-			modelList.add(buildModel(stemmer, f));
-		}
-		
-		return modelList;
-	}
-	
-static String[] testModel(File model, String testDirPath, Stemmer stemmer, boolean reorder, boolean serialize) throws MauiFilterException {
+	private static String[] testModel(File model, String testDirPath, Stemmer stemmer, boolean reorder, boolean serialize) throws MauiFilterException {
 		
 		//setup topic extractor
 		MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
@@ -124,9 +75,8 @@ static String[] testModel(File model, String testDirPath, Stemmer stemmer, boole
 		topicExtractor.loadModel();
 		
 		//get topics and evaluate
-		List<MauiDocument> documents = DataLoader.loadTestDocuments(topicExtractor.inputDirectoryName);
-		List<MauiTopics> topics = topicExtractor.extractTopics(documents); //something wrong with topic extractor
-		double[] results = TestUtils.evaluateTopics(topics);
+		List<MauiTopics> topics = topicExtractor.extractTopics(DataLoader.loadTestDocuments(topicExtractor.inputDirectoryName)); //something wrong with topic extractor
+		double[] results = MauiCore.evaluateTopics(topics);
 		
 		//converts results to string and adds the model name to it
 		String[] array = new String[8];
@@ -199,7 +149,7 @@ static String[] testModel(File model, String testDirPath, Stemmer stemmer, boole
 	 * @param testProgram 1 for build and test all models and 2 to test only
 	 */
 	public static void run() throws Exception {
-		
+		/*
 		Instant buildStart = Instant.now();
 		List<MauiModel> abstractsModels = buildModels(abstractsDocsPath);
 		List<MauiModel> fulltextsModels = buildModels(fullTextsDocsPath);
@@ -230,7 +180,7 @@ static String[] testModel(File model, String testDirPath, Stemmer stemmer, boole
 		UI.showElapsedTime(testStart, testEnd);
 		System.out.print("Total Duration: ");
 		UI.showElapsedTime(buildStart, buildEnd);
-		
+		*/
 	}
 
 

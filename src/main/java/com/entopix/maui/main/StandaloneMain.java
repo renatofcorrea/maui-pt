@@ -10,8 +10,10 @@ import java.util.Scanner;
 import org.apache.commons.io.FileUtils;
 
 import com.entopix.maui.beans.ModelDocType;
+import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
+import com.entopix.maui.stemmers.LuceneBRStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stemmers.WekaStemmerOrengo;
@@ -43,11 +45,8 @@ import weka.core.Utils;
 public class StandaloneMain {
 	
 	static String guiLanguage = "pt";
-	static MauiModelBuilder modelBuilder = new MauiModelBuilder();
-	static MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
-	static MauiFilter filter;
 	static Stopwords stopwords = new StopwordsPortuguese();
-	static Stemmer stemmer = new WekaStemmerOrengo();
+	static Stemmer stemmer = new LuceneBRStemmer();
 	
 	static String dataPath = MauiFileUtils.getDataPath();
 	static String abstractsPath = dataPath + "\\docs\\corpusci\\abstracts";
@@ -239,11 +238,11 @@ public class StandaloneMain {
 				input = scan.nextLine();
 				if (input.equals("")) {
 					modelPath = modelsDir + "\\" + modelName;
-					setupAndBuildModel();
+					MauiCore.setupAndBuildModel(trainDir, modelPath, vocabFormat, vocabPath, stemmer, stopwords, language, encoding);
 				} else {
 					modelName = input;
 					modelPath = modelsDir + "\\" + modelName;
-					setupAndBuildModel();
+					MauiCore.setupAndBuildModel(trainDir, modelPath, vocabFormat, vocabPath, stemmer, stopwords, language, encoding);
 				}
 				break;
 				
@@ -271,21 +270,24 @@ public class StandaloneMain {
 				switch (input) {
 				case "1":
 					chooseFileFromList(scan, "test");
-					setupAndRunTopicExtractor();
+					MauiCore.setupAndRunTopicExtractor(testDir, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, 0.12, true, true);
+					//setupAndRunTopicExtractor();
 					break;
 				case "2":
 					System.out.println("Digite o caminho completo do diretório: ");
 					input = scan.nextLine();
 					if  (MauiFileUtils.exists(input)) {
 						testDir = input;
-						setupAndRunTopicExtractor();
+						MauiCore.setupAndRunTopicExtractor(testDir, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, 0.12, true, true);
+						//setupAndRunTopicExtractor();
 					} else {
 						System.out.println("ERRO: O diretório " + input + " não foi encontrado.");
 						continue;
 					}
 					break;
 				case "":
-					setupAndRunTopicExtractor();
+					MauiCore.setupAndRunTopicExtractor(testDir, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, 0.12, true, true);
+					//setupAndRunTopicExtractor();
 					break;
 				}
 				break;
@@ -456,7 +458,21 @@ public class StandaloneMain {
 		return newArray.toArray(new File[newArray.size()]);
 	}
 	
-	static void setupAndBuildModel() throws Exception {
+	static Vocabulary setupVocab() {
+		Vocabulary vocab = new Vocabulary();
+		vocab.setReorder(false);
+		vocab.setSerialize(true);
+		vocab.setEncoding(encoding);
+		vocab.setLanguage(language);
+		vocab.setStemmer(stemmer);
+		vocab.setStopwords(stopwords);
+		vocab.setVocabularyName(vocabPath);
+		vocab.initializeVocabulary(vocabPath, vocabFormat);
+		return vocab;
+	}
+	
+	private static void setupAndBuildModel() throws Exception {
+		MauiModelBuilder modelBuilder = new MauiModelBuilder();
 		modelBuilder.inputDirectoryName = trainDir;
 		modelBuilder.modelName = modelPath;
 		modelBuilder.vocabularyFormat = vocabFormat;
@@ -470,22 +486,13 @@ public class StandaloneMain {
 		modelBuilder.minPhraseLength = 1;
 		modelBuilder.serialize = true;
 
-		Vocabulary vocab = new Vocabulary();
-		vocab.setReorder(false);
-		vocab.setSerialize(true);
-		vocab.setEncoding(encoding);
-		vocab.setLanguage(language);
-		vocab.setStemmer(stemmer);
-		vocab.setStopwords(stopwords);
-		vocab.setVocabularyName(vocabPath);
-		vocab.initializeVocabulary(vocabPath, vocabFormat);
+		Vocabulary vocab = setupVocab();
 		modelBuilder.setVocabulary(vocab);
-		
 		modelBuilder.setPositionsFeatures(false);
 		modelBuilder.setKeyphrasenessFeature(false);
 		modelBuilder.setThesaurusFeatures(false);
 		
-		filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
+		MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
 		
 		System.out.println("Modelo '" + modelName + "' construído. Salvando modelo...");
 		modelBuilder.saveModel(filter);
@@ -516,40 +523,9 @@ public class StandaloneMain {
 		for  (Topic keyword : keywords) {
 			System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
 		}
-		//TODO Not writing .maui file because keywords are stored in List<Topic> instead of List<MauiTopics>
+		//Not writing .maui file because keywords are stored in List<Topic> instead of List<MauiTopics>
 	}
 
-	private static void setupAndRunTopicExtractor() throws MauiFilterException {
-		topicExtractor.inputDirectoryName = testDir;
-		topicExtractor.modelName = modelPath;
-		topicExtractor.vocabularyName = vocabPath;
-		topicExtractor.vocabularyFormat = vocabFormat;
-		topicExtractor.stemmer = stemmer;
-		topicExtractor.stopwords = stopwords;
-		topicExtractor.documentLanguage = language;
-		topicExtractor.documentEncoding = encoding;
-		topicExtractor.cutOffTopicProbability = 0.12;
-		topicExtractor.serialize = true;
-		
-		Vocabulary vocab = new Vocabulary();
-		vocab.setReorder(reorder);
-		vocab.setSerialize(serialize);
-		vocab.setEncoding(encoding);
-		vocab.setLanguage(language);
-		vocab.setStemmer(stemmer);
-		vocab.setStopwords(stopwords);
-		vocab.setVocabularyName(vocabPath);
-		vocab.initializeVocabulary(vocabPath, vocabFormat);
-		
-		topicExtractor.setVocabulary(vocab);
-		topicExtractor.loadModel();
-		
-		List<MauiDocument> documents = DataLoader.loadTestDocuments(testDir);
-		List<MauiTopics> topics = topicExtractor.extractTopics(documents);
-		topicExtractor.printTopics(topics);
-		Evaluator.evaluateTopics(topics);
-	}
-	
 	public static void main(String[] args) throws Exception {
 		if (args == null || args.length == 0) {
 			UI.printPTCIMessage("pt");
