@@ -8,3 +8,6 @@ docs
 configs
 keyphrases
 fulltexts
+pathfile
+filepath
+pt

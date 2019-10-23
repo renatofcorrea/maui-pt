@@ -1,12 +1,27 @@
 package com.entopix.maui.core;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.main.MauiModelBuilder;
 import com.entopix.maui.main.MauiTopicExtractor;
+import com.entopix.maui.main.MauiWrapper;
+import com.entopix.maui.stemmers.LuceneBRStemmer;
+import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
+import com.entopix.maui.stemmers.LuceneRSLPStemmer;
+import com.entopix.maui.stemmers.LuceneSavoyStemmer;
+import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
+import com.entopix.maui.stemmers.WekaStemmerOrengo;
+import com.entopix.maui.stemmers.WekaStemmerPorter;
+import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.util.DataLoader;
@@ -27,16 +42,35 @@ public class MauiCore {
 	//Standard Objects
 	public static Stopwords stopwords = new StopwordsPortuguese();
 	
+	//Additional Objects
+	private static Stemmer[] stemmerList = {
+			new PortugueseStemmer(),
+			new LuceneRSLPStemmer(),
+			new LuceneBRStemmer(),
+			new LuceneSavoyStemmer(),
+			new LuceneRSLPMinimalStemmer(),
+			new WekaStemmerOrengo(),
+			new WekaStemmerPorter(),
+			new WekaStemmerSavoy(),
+	};
+	
 	//Standard TopicExtractor configs
+	public static int numTopicsToExtract = 10;
 	public static double cutOffTopicProbability = 0.12;
-	public static boolean teSerialize = true;
+	public static boolean topicExtractorSerialize = true;
 	
 	//Standard Vocabulary configs
 	public static String vocabFormat = "skos";
+	public static boolean vocabSerialize = true;
+	public static boolean vocabReorder = false;
 	
 	//Standard General configs
 	public static String encoding = "UTF-8";
 	public static String language = "pt";
+	
+	public static Stemmer[] getStemmerList() {
+		return stemmerList;
+	}
 	
 	public static Vocabulary setupVocab(String vocabPath, Stemmer stemmer, Stopwords stopwords) {
 		return setupVocab(vocabPath, vocabFormat, encoding, language, stemmer, stopwords, false, true);
@@ -84,17 +118,59 @@ public class MauiCore {
 		modelBuilder.saveModel(filter);
 	}
 	
+	public static List<MauiTopics> setupAndRunTopicExtractor(String modelPath, String runDir, Stemmer stemmer, boolean printTopics) throws MauiFilterException {
+		return setupAndRunTopicExtractor(runDir, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, cutOffTopicProbability, topicExtractorSerialize, printTopics);
+	}
+	
+	public static List<MauiTopics> setupAndRunTopicExtractor(String runDir, String modelPath, String vocabPath, String vocabFormat, Stemmer stemmer, Stopwords stopwords, String language, String encoding, double cutOffTopicProbability, boolean serialize, boolean printTopics) throws MauiFilterException {
+		MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
+		topicExtractor.inputDirectoryName = runDir;
+		topicExtractor.modelName = modelPath;
+		topicExtractor.vocabularyName = vocabPath;
+		topicExtractor.vocabularyFormat = vocabFormat;
+		topicExtractor.stemmer = stemmer;
+		topicExtractor.stopwords = stopwords;
+		topicExtractor.documentLanguage = language;
+		topicExtractor.documentEncoding = encoding;
+		topicExtractor.cutOffTopicProbability = 0.12;
+		topicExtractor.serialize = true;
+		
+		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
+		topicExtractor.setVocabulary(vocab);
+		topicExtractor.loadModel();
+		
+		List<MauiTopics> topics = topicExtractor.extractTopics(DataLoader.loadTestDocuments(runDir));
+		if (printTopics) {
+			topicExtractor.printTopics(topics);
+			Evaluator.evaluateTopics(topics);
+		}
+		
+		return topics;
+	}
+	
+	public static void runMauiWrapperOnFile(File document, String modelPath, Stemmer stemmer) throws IOException, MauiFilterException {
+		String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
+		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
+		
+		MauiWrapper mauiWrapper = null;
+		mauiWrapper = new MauiWrapper(vocab, DataLoader.loadModel(modelPath));
+		mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, language);
+
+		ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, numTopicsToExtract);
+		for  (Topic keyword : keywords) {
+			System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
+		}
+		//Not writing .maui file because keywords are stored in List<Topic> instead of List<MauiTopics>
+	}
+	
 	/**
 	 * @return The test results in a array of size 7 in the format: [avgKey, stdDevKey, avgPrecision (%), stdDevPrecision (%), avgRecall (%), stdDevRecall (%), fMeasure]
 	 */
 	public static double[] evaluateTopics(List<MauiTopics> allDocumentsTopics) {
-		
 		double[] results = null;
-	
 		double[] correctStatistics = new double[allDocumentsTopics.size()];
 		double[] precisionStatistics = new double[allDocumentsTopics.size()];
 		double[] recallStatistics = new double[allDocumentsTopics.size()];
-	
 		int i = 0;
 		for (MauiTopics documentTopics : allDocumentsTopics) {
 			double numExtracted = documentTopics.getTopics().size(), numCorrect = 0;
@@ -137,39 +213,8 @@ public class MauiCore {
 			if (avgPrecision > 0 && avgRecall > 0) {
 				fMeasure = 2 * avgRecall * avgPrecision / (avgRecall + avgPrecision);
 			}
-	
 			results = new double[] {avg, stdDev, avgPrecision, stdDevPrecision, avgRecall, stdDevRecall, fMeasure};
 		}
 		return results;
-	}
-	
-	public static List<MauiTopics> setupAndRunTopicExtractor(String modelPath, String runDir, Stemmer stemmer, boolean printTopics) throws MauiFilterException {
-		return setupAndRunTopicExtractor(runDir, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, cutOffTopicProbability, teSerialize, printTopics);
-	}
-	
-	public static List<MauiTopics> setupAndRunTopicExtractor(String runDir, String modelPath, String vocabPath, String vocabFormat, Stemmer stemmer, Stopwords stopwords, String language, String encoding, double cutOffTopicProbability, boolean serialize, boolean printTopics) throws MauiFilterException {
-		MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
-		topicExtractor.inputDirectoryName = runDir;
-		topicExtractor.modelName = modelPath;
-		topicExtractor.vocabularyName = vocabPath;
-		topicExtractor.vocabularyFormat = vocabFormat;
-		topicExtractor.stemmer = stemmer;
-		topicExtractor.stopwords = stopwords;
-		topicExtractor.documentLanguage = language;
-		topicExtractor.documentEncoding = encoding;
-		topicExtractor.cutOffTopicProbability = 0.12;
-		topicExtractor.serialize = true;
-		
-		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
-		topicExtractor.setVocabulary(vocab);
-		topicExtractor.loadModel();
-		
-		List<MauiTopics> topics = topicExtractor.extractTopics(DataLoader.loadTestDocuments(runDir));
-		if (printTopics) {
-			topicExtractor.printTopics(topics);
-			Evaluator.evaluateTopics(topics);
-		}
-		
-		return topics;
 	}
 }

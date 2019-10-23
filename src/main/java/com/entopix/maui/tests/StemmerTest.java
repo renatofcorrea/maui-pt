@@ -39,7 +39,7 @@ public class StemmerTest {
     	
     }
 	
-	public static void main(String[] args) {
+	public static void testCompoundWords(Stemmer stemmer) {
 		System.out.println(stemmer.stemString("ciência da informação"));
 		System.out.println(stemmer.stemString("cientista da informação"));
 		System.out.println(stemmer.stemString("pesquisa pesquisadores"));
@@ -53,5 +53,9 @@ public class StemmerTest {
 		System.out.println(stemmer.stemString("soc socialmente"));
 		System.out.println(stemmer.stemString("soc sociais"));
 		System.out.println(stemmer.stemString("informação informacional"));
+	}
+	
+	public static void main(String[] args) {
+		
 	}
 }

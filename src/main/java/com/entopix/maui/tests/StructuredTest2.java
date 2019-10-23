@@ -76,44 +76,38 @@ public class StructuredTest2 {
 	
 	public static void runAllTests() throws Exception {
 		
-		Stemmer[] stemmers = {
-				new PortugueseStemmer(),
-				new LuceneRSLPStemmer(),
-				new LuceneBRStemmer(),
-				new LuceneSavoyStemmer(),
-				new LuceneRSLPMinimalStemmer(),
-				new WekaStemmerOrengo(),
-				new WekaStemmerPorter(),
-				new WekaStemmerSavoy(),
-		};
+		Stemmer[] stemmers = MauiCore.getStemmerList();
 		
-		List<ArrayList<String[]>> matrixes = new ArrayList<ArrayList<String[]>>();
+		List<ArrayList<String[]>> abstractsMatrixes = new ArrayList<ArrayList<String[]>>();
+		List<ArrayList<String[]>> fulltextsMatrixes = new ArrayList<ArrayList<String[]>>();
 		File[] trainFolders = null;
-		
+
 		Instant start = Instant.now();
-		
-		//abstracts tests
+		/*
 		trainFolders = MauiFileUtils.filterFileList(abstractsDir.listFiles(), "train");
-		matrixes.add((ArrayList<String[]>) runTest(trainFolders, abstractsDir.getPath() + "//test30", stemmers));
-		matrixes.add((ArrayList<String[]>) runTest(trainFolders, abstractsDir.getPath() + "//test60", stemmers));
+		abstractsMatrixes.add((ArrayList<String[]>) runTest(trainFolders, abstractsDir.getPath() + "//test30", stemmers));
+		abstractsMatrixes.add((ArrayList<String[]>) runTest(trainFolders, abstractsDir.getPath() + "//test60", stemmers));
 		
-		//fulltexts tests
 		trainFolders = MauiFileUtils.filterFileList(fullTextsDir.listFiles(), "train");
-		matrixes.add((ArrayList<String[]>) runTest(trainFolders, fullTextsDir.getPath() + "//test30", stemmers));
-		matrixes.add((ArrayList<String[]>) runTest(trainFolders, fullTextsDir.getPath() + "//test60", stemmers));
-		
+		fulltextsMatrixes.add((ArrayList<String[]>) runTest(trainFolders, fullTextsDir.getPath() + "//test30", stemmers));
+		fulltextsMatrixes.add((ArrayList<String[]>) runTest(trainFolders, fullTextsDir.getPath() + "//test60", stemmers));
+		*/
 		Instant finish = Instant.now();
 		
+		int sortingIndex = 7;
+		
+		System.out.println("\n--- STRUCTURED TEST RESULTS ---");
+		System.out.println("Models are sorted by: " + MauiPTUtils.header[sortingIndex]);
 		System.out.println("\n- ABSTRACTS -");
 		System.out.println("\n---> Test results based on 30 documents: ");
-		MauiPTUtils.printMatrix(matrixes.get(0));
+		MauiPTUtils.printMatrix(MauiPTUtils.sort(abstractsMatrixes.get(0), sortingIndex));
 		System.out.println("\n---> Test results based on 60 documents: ");
-		MauiPTUtils.printMatrix(matrixes.get(1));
+		MauiPTUtils.printMatrix(MauiPTUtils.sort(abstractsMatrixes.get(1), sortingIndex));
 		System.out.println("\n\n- FULLTEXTS -");
 		System.out.println("\n---> Test results based on 30 documents: ");
-		MauiPTUtils.printMatrix(matrixes.get(2));
+		MauiPTUtils.printMatrix(MauiPTUtils.sort(fulltextsMatrixes.get(0), sortingIndex));
 		System.out.println("\n---> Test results based on 60 documents: ");
-		MauiPTUtils.printMatrix(matrixes.get(3));
+		MauiPTUtils.printMatrix(MauiPTUtils.sort(fulltextsMatrixes.get(1), sortingIndex));
 		
 		System.out.print("Structured Test Duration: ");
 		UI.showElapsedTime(start, finish);

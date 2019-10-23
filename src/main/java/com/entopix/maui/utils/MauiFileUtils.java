@@ -3,10 +3,11 @@ package com.entopix.maui.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+
+import com.entopix.maui.main.StandaloneMain;
 /**
- * Provides paths to avoid path conflicts
+ * Provides paths to avoid path conflicts and methods for managing and processing files.
  * @author Rahmon Jorge
- *
  */
 public class MauiFileUtils {
 	
@@ -63,6 +64,7 @@ public class MauiFileUtils {
 			return true;
 		}
 	}
+	
 	/**
 	 * Verifies if a folder is empty.
 	 * @param path
@@ -71,11 +73,15 @@ public class MauiFileUtils {
 	public static boolean isEmpty(String path) {
 		File file = new File(path);
 		if(file.isDirectory()) {
-			if(file.list().length == 0) {
-				return true;
-			}
+			if(file.list().length == 0) return true;
 		}
 		return false;
+	}
+	
+	public static void displayFileList(File[] fileList) {
+		for (int i = 0; i < fileList.length; i++) {
+			System.out.println(i+1 + " - " + fileList[i].getName());
+		}
 	}
 	
 	public static File[] filterFileList(File[] fileArray, String filterMethod) {
@@ -87,5 +93,13 @@ public class MauiFileUtils {
 			}
 		}
 		return newArray.toArray(new File[newArray.size()]);
+	}
+	
+	public static File chooseFileFromList(File[] fileList) {
+		int fileChoice;
+		displayFileList(fileList);
+		System.out.print("Opção: ");
+		fileChoice = StandaloneMain.scan.nextInt();
+		return fileList[fileChoice - 1];
 	}
 }
