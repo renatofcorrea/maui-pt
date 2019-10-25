@@ -29,6 +29,7 @@ import com.entopix.maui.util.Evaluator;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.MauiFileUtils;
+import com.entopix.maui.utils.UI;
 import com.entopix.maui.vocab.Vocabulary;
 
 import weka.core.Utils;
@@ -36,8 +37,8 @@ import weka.core.Utils;
 public class MauiCore {
 	
 	//Standard Paths
-	public static String modelsPath = MauiFileUtils.getModelsDirPath();
-	public static String vocabPath = MauiFileUtils.getVocabPath();
+	public static final String modelsPath = MauiFileUtils.getModelsDirPath();
+	public static final String vocabPath = MauiFileUtils.getVocabPath();
 	
 	//Standard Objects
 	public static Stopwords stopwords = new StopwordsPortuguese();
@@ -116,6 +117,8 @@ public class MauiCore {
 		
 		MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
 		modelBuilder.saveModel(filter);
+		
+		UI.showModelBuilt();
 	}
 	
 	public static List<MauiTopics> setupAndRunTopicExtractor(String modelPath, String runDir, Stemmer stemmer, boolean printTopics) throws MauiFilterException {

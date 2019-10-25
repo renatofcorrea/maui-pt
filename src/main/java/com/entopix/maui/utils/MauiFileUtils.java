@@ -3,6 +3,7 @@ package com.entopix.maui.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import com.entopix.maui.main.StandaloneMain;
 /**
@@ -67,21 +68,53 @@ public class MauiFileUtils {
 	
 	/**
 	 * Verifies if a folder is empty.
+	 * @param dir
+	 * @return true if and onlu if the specified file is a directory and is empty.
+	 */
+	public static boolean isEmpty(File dir) {
+		if (dir.isDirectory()) {
+			if (dir.listFiles().length == 0) return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Verifies if a folder is empty.
 	 * @param path
 	 * @return true if and only if the specified pathname is a directory and is empty.
 	 */
-	public static boolean isEmpty(String path) {
-		File file = new File(path);
+	public static boolean isEmpty(String dirPath) {
+		File file = new File(dirPath);
 		if(file.isDirectory()) {
 			if(file.list().length == 0) return true;
 		}
 		return false;
 	}
 	
+	public static void displayDirContent(File dir) {
+		displayFileList(dir.listFiles());
+	}
+	
+	public static void displayDirContent(String dirPath) {
+		displayFileList(new File(dirPath).listFiles());
+	}
+	
 	public static void displayFileList(File[] fileList) {
 		for (int i = 0; i < fileList.length; i++) {
 			System.out.println(i+1 + " - " + fileList[i].getName());
 		}
+	}
+	
+	public static File[] filterFileList(String dirPath, String filterMethod) {
+		File[] fileArray = new File(dirPath).listFiles();
+		ArrayList<File> newArray = new ArrayList<File>();
+		
+		for(File f : fileArray) {
+			if(f.getName().contains(filterMethod)) {
+				newArray.add(f);
+			}
+		}
+		return newArray.toArray(new File[newArray.size()]);
 	}
 	
 	public static File[] filterFileList(File[] fileArray, String filterMethod) {
@@ -95,11 +128,16 @@ public class MauiFileUtils {
 		return newArray.toArray(new File[newArray.size()]);
 	}
 	
+	public static File chooseFileFromDirectory(String dirPath) {
+		return chooseFileFromList(new File(dirPath).listFiles());
+	}
+	
 	public static File chooseFileFromList(File[] fileList) {
 		int fileChoice;
-		displayFileList(fileList);
+		displayFileList(fileList); //TODO: display relative pathname to user
 		System.out.print("Opção: ");
-		fileChoice = StandaloneMain.scan.nextInt();
+		fileChoice = StandaloneMain.SCAN.nextInt();
+		StandaloneMain.SCAN.nextLine(); //debug purposes
 		return fileList[fileChoice - 1];
 	}
 }

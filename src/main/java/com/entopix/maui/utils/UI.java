@@ -44,6 +44,10 @@ public class UI {
 		}
 	}
 	
+	public static void showModelBuilt() {
+		System.out.println("Modelo construído com sucesso.");
+	}
+	
 	public static void showElapsedTime(Instant start, Instant finish) {
 		double seconds = (Duration.between(start, finish).toMillis()/1000);
 		int minutes = (int) seconds/60;

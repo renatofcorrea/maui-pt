@@ -9,11 +9,9 @@ import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
 
-import com.entopix.maui.beans.ModelDocType;
 import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
-import com.entopix.maui.stemmers.LuceneBRStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
@@ -27,16 +25,17 @@ import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.MauiPTUtils;
 import com.entopix.maui.utils.UI;
-import com.entopix.maui.vocab.Vocabulary;
 
 import weka.core.Utils;
 
 /**
  * StandaloneMain - allows us to run the train or test options in the single standalone,
  * as well as run Maui on a single file or a single text string.
- *
- *
+ * 
  * Passes on all but the first option.
+ * 
+ * Warning: models with names that does not contain "abstracts" or "fulltexts" in its names WILL
+ * break some parts of the program when using the interactive menu.
  *
  * @author Richard Vowles - https://google.com/+RichardVowles, Alyona Medelyan - medelyan@gmail.com
  * @author Renato Correa
@@ -44,30 +43,33 @@ import weka.core.Utils;
  */
 public class StandaloneMain {
 	
-	//Initialization & configuration
-	public static Scanner scan = new Scanner(System.in);
-	static Stopwords stopwords = new StopwordsPortuguese();
-	static Stemmer stemmer = new LuceneBRStemmer();
-	static ModelDocType modelType = ModelDocType.FULLTEXTS;
-	static String guiLanguage = "pt";
-	static String language = "pt";
-	static String encoding = "UTF-8";
-	static String vocabFormat = "skos";
-	static int numTopicsToExtract = 10;
-	static boolean serialize = true;
-	static boolean reorder = false;
+	//User I/O
+	public static final Scanner SCAN = new Scanner(System.in);
+	private static String input;
 	
-	//Paths & Names
-	static String dataPath = MauiFileUtils.getDataPath();
-	static String abstractsPath = dataPath + "\\docs\\corpusci\\abstracts";
-	static String fullTextsPath = dataPath + "\\docs\\corpusci\\fulltexts";
-	static String trainDirPath = fullTextsPath + "\\train30";
-	static String testDir = fullTextsPath + "\\test60";
-	static String testFilePath = dataPath + "\\docs\\corpusci\\fulltexts\\test60\\Artigo32.txt";
-	static String vocabPath = dataPath + "\\vocabulary\\TBCI-SKOS_pt.rdf";
-	static String modelsDir = MauiFileUtils.getModelsDirPath();
-	static String modelName = MauiPTUtils.generateModelName(trainDirPath, stemmer);
-	static String modelPath = modelsDir + "\\" + modelName;
+	//Model config
+	private static final int ABSTRACTS = 0;
+	private static final int FULLTEXTS = 1;
+	private static final File MODELS_DIR = new File(MauiFileUtils.getModelsDirPath());
+	
+	private static int modelType = -1;
+	private static File model = null;
+	
+	//TopicExtractor & ModelBuilder config
+	private static Stopwords stopwords = new StopwordsPortuguese();
+	private static Stemmer stemmer = null;
+	private static String guiLanguage = "pt";
+	private static String language = "pt";
+	private static String encoding = "UTF-8";
+	private static String vocabFormat = "skos";
+	
+	//Paths
+	private static final String ABS_PATH = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\abstracts";
+	private static final String FTS_PATH = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts";
+	private static String vocabPath = MauiFileUtils.getVocabPath();
+	private static String trainDirPath = null;
+	private static String testDirPath = null;
+	private static String testTxtDocPath = null; //urgently change this path to file
 	
 	public static void runWithArguments(String command, String[] args) throws Exception {
 		String dataPath = MauiFileUtils.getDataPath();
@@ -160,164 +162,233 @@ public class StandaloneMain {
 			runOptionsMenuPT();
 		}
 	}
-
+	
+	private static void runModelBuilder() throws Exception {
+		MauiCore.setupAndBuildModel(trainDirPath, model.getPath(), vocabFormat, vocabPath, stemmer, stopwords, language, encoding);
+	}
+	
+	private static void runTopicExtractor() throws MauiFilterException {
+		MauiCore.setupAndRunTopicExtractor(testDirPath, model.getPath(), vocabPath, vocabFormat, stemmer, stopwords, language, encoding, 0.12, true, true);
+	}
+	
+	private static void initConfigs() throws Exception {
+		//Sets model from file if it exists
+		if (!MauiFileUtils.isEmpty(MODELS_DIR)) {
+			model = MODELS_DIR.listFiles()[0];
+			updateModelType();
+			updatePaths();
+		}
+		//Creates a new model
+		else {
+			trainDirPath = FTS_PATH + "\\train30";
+			testDirPath = FTS_PATH + "\\test60";
+			testTxtDocPath = testDirPath + "\\Artigo32.txt";
+			stemmer = new PortugueseStemmer();
+			
+			String modelName = MauiPTUtils.generateModelName(trainDirPath, stemmer);
+			model = new File(MODELS_DIR.getPath() + "\\" + modelName);
+			modelType = FULLTEXTS;
+			runModelBuilder();
+		}
+	}
+	
+	private static void updateModelType() {
+		modelType = (model.getName().contains("abstracts") ? ABSTRACTS : FULLTEXTS);
+	}
+	
+	private static void setModelName(String name) {
+		model = new File(MODELS_DIR + "\\" + name);
+	}
+	
+	/**
+	 * Updates standard paths based on the document type of the model.
+	 */
+	private static void updatePaths() {
+		trainDirPath = (modelType == ABSTRACTS ? ABS_PATH + "\\train30" : FTS_PATH + "\\train30");
+		testDirPath = (modelType == ABSTRACTS ? ABS_PATH + "\\test60" : FTS_PATH + "\\test60");
+		testTxtDocPath = testDirPath + "\\Artigo32.txt";
+	}
+	
+	private static void trainModelOption() throws Exception {
+		System.out.println("\nEscolha o tipo de modelo: ");
+		System.out.println("1 - Resumos");
+		System.out.println("2 - Textos Completos");
+		System.out.print("Opção: ");
+		input = SCAN.nextLine();
+		if (input.equals("1")) modelType = ABSTRACTS;
+		else if (input.equals("2")) modelType = FULLTEXTS;
+		else {
+			UI.showInvalidOptionMessage();
+			return;
+		}
+		updatePaths();
+		System.out.println("\nDiretório de Treinamento: " + trainDirPath);
+		System.out.println("Deseja alterar o diretório de treinamento?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("Opção: ");
+		input = SCAN.nextLine();
+		if (input.equals("1")) {
+			System.out.println("\n1 - Escolher da lista");
+			System.out.println("2 - Diretório customizado");
+			System.out.print("Opção: ");
+			input = SCAN.nextLine();
+			switch (input) {
+			case "1":
+				String browsingDir = (modelType == ABSTRACTS ? ABS_PATH : FTS_PATH);
+				File trainDir = MauiFileUtils.chooseFileFromList(MauiFileUtils.filterFileList(browsingDir, "train"));
+				trainDirPath = trainDir.getPath();
+				break;
+			case "2":
+				System.out.println("\nDigite o caminho completo do diretório: ");
+				System.out.print("Opção: ");
+				input = SCAN.nextLine();
+				if (MauiFileUtils.exists(input)) trainDirPath = input;
+				else UI.showDirectoryNotFoundMessage(input);
+				break;
+			default:
+				UI.showInvalidOptionMessage();
+				return;
+			}
+		}
+		System.out.println("\nNome do modelo: " + model.getName());
+		System.out.println("Deseja alterar o nome do modelo?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("Opção: ");
+		input = SCAN.nextLine();
+		if (input.equals("1")) {
+			System.out.print("Novo nome: ");
+			if (!input.equals("")) setModelName(input);
+			else {
+				UI.showInvalidOptionMessage();
+				return;
+			}
+		}
+		runModelBuilder();
+	}
+	
+	private static void selectModelOption() {
+		System.out.println("\nModelo Selecionado: " +  model.getName());
+		model = MauiFileUtils.chooseFileFromList(MODELS_DIR.listFiles());
+		updateModelType();
+		updatePaths();
+	}
+	
+	private static void testModelOption() throws MauiFilterException {
+		System.out.println("\nModelo Atual: " + model.getName());
+		System.out.println("Deseja alterar o modelo para o teste?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("Opção: ");
+		input = SCAN.nextLine();
+		if (input.equals("1")) selectModelOption();
+		else if (!input.equals("")) {
+			UI.showInvalidOptionMessage();
+			return;
+		}
+		System.out.println("\nDiretório de teste: " + testDirPath);
+		System.out.println("Deseja alterar o diretório de teste?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("Opção: ");
+		input = SCAN.nextLine();
+		if (input.equals("1")) {
+			System.out.println("\n1 - Escolher da lista");
+			System.out.println("2 - Diretório customizado");
+			System.out.print("Opção: ");
+			input = SCAN.nextLine();
+			switch (input) {
+			case "1":
+				String browsingDir = (modelType == ABSTRACTS ? ABS_PATH : FTS_PATH);
+				File testDir = MauiFileUtils.chooseFileFromList(MauiFileUtils.filterFileList(browsingDir, "test"));
+				testDirPath = testDir.getPath();
+				runTopicExtractor();
+				break;
+			case "2":
+				System.out.print("\nDigite o caminho completo do diretório: ");
+				input = SCAN.nextLine();
+				if (MauiFileUtils.exists(input)) {
+					testDirPath = input;
+					runTopicExtractor();
+				} else {
+					UI.showDirectoryNotFoundMessage(input);
+					return;
+				}
+				break;
+			}
+		} else if (input.equals("")) runTopicExtractor();
+	}
+	
+	private static void runModelOption() throws IOException, MauiFilterException {
+		System.out.println("\nModelo Atual: " + model.getName());
+		System.out.println("Deseja alterar o modelo para o teste?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("Opção: ");
+		input = SCAN.nextLine();
+		if (input.equals("1")) selectModelOption();
+		else if (!input.equals("")) {
+			UI.showInvalidOptionMessage();
+			return;
+		}
+		
+		System.out.println("\n Arquivo Selecionado: " + testTxtDocPath);
+		System.out.println("Deseja alterar o arquivo para o teste?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("Opção: ");
+		if (input.equals("1")) {
+			System.out.println("\n1 - Escolher da lista");
+			System.out.println("2 - Arquivo customizado");
+			System.out.print("Opção: ");
+			input = SCAN.nextLine();
+			switch (input) {
+			case "1":
+				String browsingDir = (modelType == ABSTRACTS ? ABS_PATH : FTS_PATH);
+				browsingDir += "\\train60"; 
+				File document = MauiFileUtils.chooseFileFromDirectory(browsingDir);
+				testTxtDocPath = document.getPath();
+				break;
+			case "2":
+				System.out.println("Digite o caminho completo do arquivo de texto: ");
+				input = SCAN.nextLine();
+				if (MauiFileUtils.exists(input)) {
+					testTxtDocPath = input;
+				} else {
+					UI.showDirectoryNotFoundMessage(input);
+					return;
+				}
+				break;
+			}
+			MauiCore.runMauiWrapperOnFile(new File(testTxtDocPath), model.getPath(), stemmer);
+		}
+	}
+	
 	private static void runOptionsMenuPT() throws Exception {
+		
+		initConfigs();
+		
 		String input;
 		boolean exit = false;
 		while (!exit) {
 			UI.displayMainMenu();
 			System.out.print("Opção: ");
-			input = scan.nextLine();
+			input = SCAN.nextLine();
 			
 			switch (input) {
-			// TRAIN MODEL
 			case "1":
-				System.out.println();
-				System.out.println("Escolha o tipo de modelo: ");
-				System.out.println("1 - Resumos");
-				System.out.println("2 - Textos Completos");
-				System.out.print("Opção: ");
-				input = scan.nextLine();
-				switch(input) {
-				case "1":
-					modelType = ModelDocType.ABSTRACTS;
-					break;
-				case "2":
-					modelType = ModelDocType.FULLTEXTS;
-					break;
-				default:
-					UI.showInvalidOptionMessage();
-					continue;
-				}
-				trainDirPath = (modelType.equals(ModelDocType.ABSTRACTS) ? abstractsPath + "\\train30" : trainDirPath);
-				System.out.println("\nDiretório de Treinamento: " + trainDirPath);
-				System.out.println("Deseja alterar o diretório de treinamento?");
-				System.out.println("1 - Sim");
-				System.out.println("[Enter] - Não");
-				System.out.print("Opção: ");
-				input = scan.nextLine();
-				if (input.equals("1")) {
-					System.out.println("\n1 - Escolher da lista");
-					System.out.println("2 - Diretório customizado");
-					System.out.print("Opção: ");
-					System.out.println();
-					input = scan.nextLine();
-					switch (input) {
-					case "1":
-						String browsingDir = (modelType.equals(ModelDocType.ABSTRACTS) ? abstractsPath : fullTextsPath);
-						File[] trainDirList = MauiFileUtils.filterFileList(new File(browsingDir).listFiles(), "train");
-						File trainDirChosen = MauiFileUtils.chooseFileFromList(trainDirList);
-						trainDirPath = trainDirChosen.getPath();
-						break;
-					case "2":
-						System.out.println("\nDigite o caminho completo do diretório: ");
-						System.out.print("Opção: ");
-						input = scan.nextLine();
-						if (MauiFileUtils.exists(input)) trainDirPath = input;
-						else UI.showDirectoryNotFoundMessage(input);
-						break;
-					default:
-						UI.showInvalidOptionMessage();
-						continue;
-					}
-				}
-				
-				modelName = MauiPTUtils.generateModelName(trainDirPath, stemmer);
-				System.out.println("\nNome do modelo: " + modelName);
-				System.out.println("Deseja alterar o nome do modelo?");
-				System.out.println("1 - Sim");
-				System.out.println("[Enter] - Não");
-				System.out.print("Opção: ");
-				input = scan.nextLine(); //scan being ignored
-				if (input.equals("1")) {
-					System.out.print("Novo nome: ");
-					if (!input.equals("")) {
-						modelName = input;
-					} else {
-						UI.showInvalidOptionMessage();
-						continue;
-					}
-				}
-				modelPath = modelsDir + "\\" + modelName;
-				MauiCore.setupAndBuildModel(trainDirPath, modelPath, vocabFormat, vocabPath, stemmer, stopwords, language, encoding);
-				break; //end of train option
-				
-			// DISPLAY MODELS
+				trainModelOption();
+				break;
 			case "2":
-				System.out.println();
-				chooseFileFromList("model");
-				System.out.println("\nModelo " + modelName + " selecionado.");
+				selectModelOption();
 				break;
-			
-			// TEST ON DIRECTORY
 			case "3":
-				System.out.println("\nEscolha o modelo a ser utilizado ou aperte [enter] para usar o atual:");
-				System.out.println("Atual: " + modelName + "\n");
-				chooseFileFromList("model");
-				
-				System.out.println("\nEscolha o  diretório de teste ou aperte [enter] para usar o atual.");
-				testDir = (modelType.equals(ModelDocType.ABSTRACTS) ? abstractsPath + "\\test60" : fullTextsPath + "\\test60");
-				System.out.println("Atual: " + testDir);
-				System.out.println("1 - Escolher da lista");
-				System.out.println("2 - Diretório customizado");
-				System.out.print("Opção: ");
-				input = scan.nextLine();
-				switch (input) {
-				case "1":
-					chooseFileFromList("test");
-					MauiCore.setupAndRunTopicExtractor(testDir, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, 0.12, true, true);
-					break;
-				case "2":
-					System.out.println("Digite o caminho completo do diretório: ");
-					input = scan.nextLine();
-					if (MauiFileUtils.exists(input)) {
-						testDir = input;
-						MauiCore.setupAndRunTopicExtractor(testDir, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, 0.12, true, true);
-					} else {
-						UI.showDirectoryNotFoundMessage(input);
-						continue;
-					}
-					break;
-				case "":
-					MauiCore.setupAndRunTopicExtractor(testDir, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, 0.12, true, true);
-					break;
-				}
+				testModelOption();
 				break;
-				
 			// RUN ON FILE
 			case "4":
-				System.out.println("\nEscolha o modelo a ser utilizado ou aperte [enter] para usar o atual: ");
-				System.out.println("Atual: " + modelName + "\n");
-				chooseFileFromList("model");
-				
-				System.out.println("\nEscolha o arquivo (.txt) ou aperte [enter] para usar o atual: ");
-				testFilePath = (modelType.equals(ModelDocType.ABSTRACTS) ? abstractsPath + "\\test60\\Artigo32.txt" : fullTextsPath + "\\test60\\Artigo32.txt");
-				System.out.println("Arquivo selecionado: " + testFilePath);
-				System.out.println("1 - Escolher da lista");
-				System.out.println("2 - Arquivo customizado");
-				System.out.print("Opção: ");
-				input = scan.nextLine();
-				switch (input) {
-				case "1":
-					chooseFileFromList("run");
-					MauiCore.runMauiWrapperOnFile(new File(testFilePath), modelPath, stemmer);
-					//runMauiWrapperOnFile();
-					break;
-				case "2":
-					System.out.println("Digite o caminho completo do arquivo de texto: ");
-					input = scan.nextLine();
-					if (MauiFileUtils.exists(input)) {
-						testFilePath = input;
-						//runMauiWrapperOnFile();
-					} else {
-						UI.showDirectoryNotFoundMessage(input);
-						continue;
-					}
-					break;
-				case "":
-					//runMauiWrapperOnFile();
-					break;
-				}
+				runModelOption();
 				break;
 				
 			// STRUCTURED TEST
@@ -329,7 +400,7 @@ public class StandaloneMain {
 			case "6":
 				UI.displayCredits();
 				System.out.println("Aperte [enter] para continuar ou 0 para sair.");
-				input = scan.nextLine();
+				input = SCAN.nextLine();
 				if (input.equals("")) break;
 				else if (input.equals("0")) exit = true;
 				break;
@@ -343,105 +414,7 @@ public class StandaloneMain {
 				break;
 			}
 		}
-		scan.close();
-	}
-
-	public static void chooseFileFromList(String dirType) {
-		String input, fileChoice;
-		File dir = null;
-		File[] fileList = null;
-		
-		//Set model browsing directory
-		if (dirType.equals("model")) {
-			dir = new File(modelsDir);
-		} else {
-			if (modelType.equals(ModelDocType.ABSTRACTS)) {
-				dir = new File(abstractsPath);
-			} else if (modelType.equals(ModelDocType.FULLTEXTS)) {
-				dir = new File(fullTextsPath);
-			} else {
-				System.out.println("ERRO: Tipo de Modelo Inválido.");
-				return;
-			}
-		}
-		
-		
-		fileList = dir.listFiles();
-		
-		if (dirType.equals("train") || dirType.equals("test") || dirType.equals("model")) {
-			fileList = filterFileList(fileList, dirType);
-		} else {
-			System.out.println("ERRO: Tipo do diretório inválido");
-		}
-		
-		System.out.println("Diretório atual: " + dir.getAbsolutePath());
-		MauiFileUtils.displayFileList(fileList);
-		if (dirType.equals("model")) System.out.print("Digite o número correspondente ao modelo ou aperte [enter para usar o atual]: ");
-		else System.out.print("Opção: ");
-		input = scan.nextLine();
-		
-		if (input.equals("") && dirType.equals("model")) return; //User selected standard model
-		
-		fileChoice = fileList[Integer.parseInt(input)-1].getAbsolutePath(); //OBS: Files are displayed starting with 1, but array starts with 0
-		
-		switch(dirType) {
-		case "train":
-			trainDirPath = fileChoice;
-			break;
-		case "test":
-			testDir = fileChoice;
-			break;
-		case "model":
-			modelPath = fileChoice;
-			modelName = new File(modelPath).getName();
-			if (modelName.contains("abstracts")) modelType = ModelDocType.ABSTRACTS;
-			else if (modelName.contains("fulltexts")) modelType = ModelDocType.FULLTEXTS;
-			break;
-		case "run":
-			File txtFileFolder = new File(fileChoice);
-			fileList = txtFileFolder.listFiles();
-			fileList = filterFileList(fileList, ".txt");
-			
-			System.out.println("Diretório atual: " + txtFileFolder.getAbsolutePath());
-			MauiFileUtils.displayFileList(fileList);
-			System.out.print("Opção: ");
-			input = scan.nextLine();
-			
-			testFilePath = fileList[Integer.parseInt(input)-1].getAbsolutePath(); //WARNING: Files are displayed starting with 1, but array starts with 0
-			break;
-		}
-	}
-
-	private static File[] filterFileList(File[] array, String filterMethod) {
-		ArrayList<File> newArray = new ArrayList<File>();
-		
-		switch(filterMethod) {
-		case ".txt":
-			for (File f : array) {
-				if (f.getName().endsWith(".txt"))
-					newArray.add(f);
-			}
-			break;
-		case "train":
-			for (File f : array) {
-				if (f.getName().startsWith("train"))
-					newArray.add(f);
-			}
-			break;
-		case "test":
-			for (File f : array) {
-				if (f.getName().startsWith("test"))
-					newArray.add(f);
-			}
-			break;
-		case "model":
-			for (File f : array) {
-				if (!f.isDirectory())
-					newArray.add(f);
-			}
-		}
-		
-		return newArray.toArray(new File[newArray.size()]);
+		SCAN.close();
 	}
 
 	public static void main(String[] args) throws Exception {

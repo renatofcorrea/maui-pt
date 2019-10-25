@@ -11,10 +11,10 @@ public class MauiModel {
 	private String name;
 	private String path;
 	private Stemmer stemmer;
-	private ModelDocType docType;
+	private int docType;
 	private String trainDirPath;
 	
-	public MauiModel(String name, String path, Stemmer stemmer, ModelDocType docType, String trainDirPath) {
+	public MauiModel(String name, String path, Stemmer stemmer, int docType, String trainDirPath) {
 		this.name = name;
 		this.path = path;
 		this.stemmer = stemmer;
@@ -34,7 +34,7 @@ public class MauiModel {
 		return stemmer;
 	}
 
-	public ModelDocType getDocType() {
+	public int getDocType() {
 		return docType;
 	}
 
