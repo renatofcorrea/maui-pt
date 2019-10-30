@@ -69,6 +69,7 @@ public class MauiCore {
 	public static String encoding = "UTF-8";
 	public static String language = "pt";
 	
+	
 	public static Stemmer[] getStemmerList() {
 		return stemmerList;
 	}
@@ -91,6 +92,10 @@ public class MauiCore {
 	}
 	
 	public static void setupAndBuildModel(String modelPath, String trainDir, Stemmer stemmer) throws Exception {
+		setupAndBuildModel(trainDir, modelPath, vocabFormat, vocabPath, stemmer, stopwords, language, encoding);
+	}
+	
+	public static void setupAndBuildModel(String trainDir, String modelPath, String vocabFormat, String vocabPath, Stemmer stemmer, Stopwords stopwords, String language) throws Exception {
 		setupAndBuildModel(trainDir, modelPath, vocabFormat, vocabPath, stemmer, stopwords, language, encoding);
 	}
 	
@@ -118,7 +123,7 @@ public class MauiCore {
 		MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
 		modelBuilder.saveModel(filter);
 		
-		UI.showModelBuilt();
+		UI.showModelBuilt(new File(modelPath).getName());
 	}
 	
 	public static List<MauiTopics> setupAndRunTopicExtractor(String modelPath, String runDir, Stemmer stemmer, boolean printTopics) throws MauiFilterException {
@@ -135,8 +140,8 @@ public class MauiCore {
 		topicExtractor.stopwords = stopwords;
 		topicExtractor.documentLanguage = language;
 		topicExtractor.documentEncoding = encoding;
-		topicExtractor.cutOffTopicProbability = 0.12;
-		topicExtractor.serialize = true;
+		topicExtractor.cutOffTopicProbability = cutOffTopicProbability;
+		topicExtractor.serialize = serialize;
 		
 		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
 		topicExtractor.setVocabulary(vocab);
@@ -151,11 +156,15 @@ public class MauiCore {
 		return topics;
 	}
 	
-	public static void runMauiWrapperOnFile(File document, String modelPath, Stemmer stemmer) throws IOException, MauiFilterException {
-		String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
-		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
-		
+	public static List<Topic> runMauiWrapperOnFile(File document, String modelPath, Stemmer stemmer) throws IOException, MauiFilterException {
+		return runMauiWrapperOnFile(modelPath, document, encoding, stemmer, stopwords, vocabPath, language, numTopicsToExtract);
+	}
+	
+	public static List<Topic> runMauiWrapperOnFile(String modelPath, File document, String encoding, Stemmer stemmer, Stopwords stopwords, String vocabPath, String language, int numTopicsToExtract) throws IOException, MauiFilterException {
 		MauiWrapper mauiWrapper = null;
+		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
+		String documentText = FileUtils.readFileToString(document, Charset.forName("UTF-8"));
+		
 		mauiWrapper = new MauiWrapper(vocab, DataLoader.loadModel(modelPath));
 		mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, language);
 
@@ -164,6 +173,7 @@ public class MauiCore {
 			System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
 		}
 		//Not writing .maui file because keywords are stored in List<Topic> instead of List<MauiTopics>
+		return keywords;
 	}
 	
 	/**

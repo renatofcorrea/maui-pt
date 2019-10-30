@@ -133,11 +133,12 @@ public class MauiFileUtils {
 	}
 	
 	public static File chooseFileFromList(File[] fileList) {
+		if (fileList == null) throw new NullPointerException();
 		int fileChoice;
-		displayFileList(fileList); //TODO: display relative pathname to user
+		displayFileList(fileList);
 		System.out.print("Opção: ");
 		fileChoice = StandaloneMain.SCAN.nextInt();
-		StandaloneMain.SCAN.nextLine(); //debug purposes
+		StandaloneMain.SCAN.nextLine();
 		return fileList[fileChoice - 1];
 	}
 }

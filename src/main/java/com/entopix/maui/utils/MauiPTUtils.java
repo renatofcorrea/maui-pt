@@ -5,15 +5,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.entopix.maui.stemmers.LuceneBRStemmer;
-import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
-import com.entopix.maui.stemmers.LuceneRSLPStemmer;
-import com.entopix.maui.stemmers.LuceneSavoyStemmer;
-import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
-import com.entopix.maui.stemmers.WekaStemmerOrengo;
-import com.entopix.maui.stemmers.WekaStemmerPorter;
-import com.entopix.maui.stemmers.WekaStemmerSavoy;
 
 /**
  * Provides useful methods to dealing with result matrixes, arrays and models.
@@ -24,7 +16,7 @@ public class MauiPTUtils {
 	public static String[] header = {"MODEL NAME","AVG KEY","STDEV KEY","AVG PRECISION","STDEV PRECISION","AVG RECALL","STDEV RECALL","F-MEASURE"};
 	
 	/**
-	 * Takes a model name and its test results, then formats it on a array of strings to be used on a result matrix.
+	 * Takes a model name and its test results, then formats it on a array of strings.
 	 * @param modelName
 	 * @param arr An array containing the test results.
 	 * @return The array in the format [model_name, testresult1, testresult2, ... , testresultN].
@@ -41,10 +33,7 @@ public class MauiPTUtils {
 		return s;
 	}
 	
-	/**
-	 * Prints a formatted result matrix with a header.
-	 * @param matrix
-	 */
+	/** Prints a formatted result matrix with a header. */
 	public static void printMatrix(List<String[]> matrix) {
 		//Builds and prints headers
 		for (String word : header) {
@@ -70,7 +59,7 @@ public class MauiPTUtils {
 	 * @param trainDir
 	 * @param stemmer
 	 * @return The generated model name.
-	 * @throws Exception When the training filepath of the model does not contain 'abstracts' or 'fulltexts' to generate modelname
+	 * @throws Exception When the training filepath of the model does not contain 'abstracts' or 'fulltexts' to generate the model name
 	 */
 	public static String generateModelName(String trainDir, Stemmer stemmer) {
 		String name = "model_";
@@ -83,13 +72,15 @@ public class MauiPTUtils {
 			new Exception("The training filepath of the model does not contain 'abstracts' or 'fulltexts' to generate modelname").printStackTrace();
 		}
 		
-		name += stemmer.getClass().getSimpleName().toLowerCase() + "_";
+		name += stemmer.getClass().getSimpleName() + "_";
 		
 		name += new File(trainDir).getName();
 		
 		return name;
 	}
 	
+	/** Sorts a List of String arrays according to the value in the specified index.
+	 * The value is defined by the parseDouble method.*/
 	public static List<String[]> sort(List<String[]> matrix, int sortingIndex) throws ParseException {
 		
 		List<String[]> sortedMatrix = new ArrayList<String[]>();
@@ -111,5 +102,14 @@ public class MauiPTUtils {
 			highestValue = 0;
 		}
 		return sortedMatrix;
+	}
+	
+	/** Finds the Nth occurrence of a substring on a string. */
+	public static int ordinalIndexOf(String str, String substr, int n) {
+	    int pos = -1;
+	    do {
+	        pos = str.indexOf(substr, pos + 1);
+	    } while (n-- > 0 && pos != -1);
+	    return pos;
 	}
 }

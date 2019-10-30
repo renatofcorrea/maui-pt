@@ -15,3 +15,5 @@ richard
 vowles
 alyona
 medelyan
+dir
+vocab

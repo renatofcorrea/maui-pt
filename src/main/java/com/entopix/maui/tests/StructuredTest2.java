@@ -9,15 +9,7 @@ import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.filters.MauiFilter;
 import com.entopix.maui.main.MauiModelBuilder;
 import com.entopix.maui.main.MauiTopicExtractor;
-import com.entopix.maui.stemmers.LuceneBRStemmer;
-import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
-import com.entopix.maui.stemmers.LuceneRSLPStemmer;
-import com.entopix.maui.stemmers.LuceneSavoyStemmer;
-import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
-import com.entopix.maui.stemmers.WekaStemmerOrengo;
-import com.entopix.maui.stemmers.WekaStemmerPorter;
-import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.util.MauiTopics;
@@ -52,9 +44,7 @@ public class StructuredTest2 {
 	static boolean serialize = true;
 	static boolean reorder = false;
 	
-	/**
-	 * @return A List where each line contains a model name and its test results.
-	 */
+	/** @return A List where each line contains a model name and its test results. */
 	private static List<String[]> runTest(File[] trainFolders, String testDir, Stemmer[] stemmers) throws Exception {
 		List<String[]> matrix = new ArrayList<String[]>();
 		String[] result;
@@ -83,7 +73,7 @@ public class StructuredTest2 {
 		File[] trainFolders = null;
 
 		Instant start = Instant.now();
-		/*
+		
 		trainFolders = MauiFileUtils.filterFileList(abstractsDir.listFiles(), "train");
 		abstractsMatrixes.add((ArrayList<String[]>) runTest(trainFolders, abstractsDir.getPath() + "//test30", stemmers));
 		abstractsMatrixes.add((ArrayList<String[]>) runTest(trainFolders, abstractsDir.getPath() + "//test60", stemmers));
@@ -91,7 +81,7 @@ public class StructuredTest2 {
 		trainFolders = MauiFileUtils.filterFileList(fullTextsDir.listFiles(), "train");
 		fulltextsMatrixes.add((ArrayList<String[]>) runTest(trainFolders, fullTextsDir.getPath() + "//test30", stemmers));
 		fulltextsMatrixes.add((ArrayList<String[]>) runTest(trainFolders, fullTextsDir.getPath() + "//test60", stemmers));
-		*/
+		
 		Instant finish = Instant.now();
 		
 		int sortingIndex = 7;
