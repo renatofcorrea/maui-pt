@@ -2,12 +2,12 @@ package com.entopix.maui.tests;
 
 import com.entopix.maui.stemmers.LuceneBRStemmer;
 import com.entopix.maui.stemmers.Stemmer;
-import com.entopix.maui.stemmers.WekaStemmerOrengo;
 
 import ptstemmer.support.PTStemmerUtilities;
 
 public class StemmerTest {
 	
+	@SuppressWarnings("unused")
 	private static final Stemmer stemmer = new LuceneBRStemmer();
 	
 	public static boolean matchstemform(Stemmer stemmer, String singular, String plural) {

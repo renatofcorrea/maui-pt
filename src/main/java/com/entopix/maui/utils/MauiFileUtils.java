@@ -3,7 +3,6 @@ package com.entopix.maui.utils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import com.entopix.maui.main.StandaloneMain;
 /**
@@ -26,16 +25,10 @@ public class MauiFileUtils {
 	
 	public static final String getDataPath() {
 		String rootPath = getRootPath();
-		if(rootPath.endsWith("maui-pt")) {
-			return rootPath + "\\data";
-		} else {
-			return rootPath + "\\";
-		}
+		if(rootPath.endsWith("maui-pt")) return rootPath + "\\data";
+		else return rootPath + "\\";
 	}
 	
-	/**
-	 * Standard: data/vocabulary/TBCI-SKOS_pt.rdf
-	 */
 	public static String getVocabPath() {
 		return vocabPath;
 	}
@@ -52,11 +45,7 @@ public class MauiFileUtils {
 		modelsDirPath = path;
 	}
 	
-	/**
-	 * Verifies if a file path exists.
-	 * @param path
-	 * @return
-	 */
+	/** Verifies if a file path exists. */
 	public static boolean exists(String path) {
 		File file = new File(path);
 		if (!file.exists()) {
@@ -69,7 +58,7 @@ public class MauiFileUtils {
 	/**
 	 * Verifies if a folder is empty.
 	 * @param dir
-	 * @return true if and onlu if the specified file is a directory and is empty.
+	 * @return true if and only if the specified file is a directory and is empty.
 	 */
 	public static boolean isEmpty(File dir) {
 		if (dir.isDirectory()) {
@@ -85,8 +74,8 @@ public class MauiFileUtils {
 	 */
 	public static boolean isEmpty(String dirPath) {
 		File file = new File(dirPath);
-		if(file.isDirectory()) {
-			if(file.list().length == 0) return true;
+		if (file.isDirectory()) {
+			if (file.list().length == 0) return true;
 		}
 		return false;
 	}
@@ -109,10 +98,8 @@ public class MauiFileUtils {
 		File[] fileArray = new File(dirPath).listFiles();
 		ArrayList<File> newArray = new ArrayList<File>();
 		
-		for(File f : fileArray) {
-			if(f.getName().contains(filterMethod)) {
-				newArray.add(f);
-			}
+		for (File f : fileArray) {
+			if (f.getName().contains(filterMethod)) newArray.add(f);
 		}
 		return newArray.toArray(new File[newArray.size()]);
 	}
@@ -120,10 +107,8 @@ public class MauiFileUtils {
 	public static File[] filterFileList(File[] fileArray, String filterMethod) {
 		ArrayList<File> newArray = new ArrayList<File>();
 		
-		for(File f : fileArray) {
-			if(f.getName().contains(filterMethod)) {
-				newArray.add(f);
-			}
+		for (File f : fileArray) {
+			if (f.getName().contains(filterMethod)) newArray.add(f);
 		}
 		return newArray.toArray(new File[newArray.size()]);
 	}

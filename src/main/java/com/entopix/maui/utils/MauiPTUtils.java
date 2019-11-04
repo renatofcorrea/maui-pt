@@ -69,7 +69,7 @@ public class MauiPTUtils {
 		} else if (trainDir.contains("fulltexts")) {
 			name += "fulltexts_";
 		} else {
-			new Exception("The training filepath of the model does not contain 'abstracts' or 'fulltexts' to generate modelname").printStackTrace();
+			new Exception("The training filepath of the model does not contain 'abstracts' or 'fulltexts' to generate modelname").printStackTrace(); //TODO
 		}
 		
 		name += stemmer.getClass().getSimpleName() + "_";

@@ -43,7 +43,7 @@ public class MauiCore {
 	//Standard Objects
 	public static Stopwords stopwords = new StopwordsPortuguese();
 	
-	//Additional Objects
+	//Stemmer Objects
 	private static Stemmer[] stemmerList = {
 			new PortugueseStemmer(),
 			new LuceneRSLPStemmer(),
@@ -99,7 +99,7 @@ public class MauiCore {
 		setupAndBuildModel(trainDir, modelPath, vocabFormat, vocabPath, stemmer, stopwords, language, encoding);
 	}
 	
-	public static void setupAndBuildModel(String trainDir, String modelPath, String vocabFormat, String vocabPath, Stemmer stemmer, Stopwords stopwords, String language, String encoding) throws Exception {
+	public static MauiFilter setupAndBuildModel(String trainDir, String modelPath, String vocabFormat, String vocabPath, Stemmer stemmer, Stopwords stopwords, String language, String encoding) throws Exception {
 		MauiModelBuilder modelBuilder = new MauiModelBuilder();
 		modelBuilder.inputDirectoryName = trainDir;
 		modelBuilder.modelName = modelPath;
@@ -124,6 +124,8 @@ public class MauiCore {
 		modelBuilder.saveModel(filter);
 		
 		UI.showModelBuilt(new File(modelPath).getName());
+		
+		return filter;
 	}
 	
 	public static List<MauiTopics> setupAndRunTopicExtractor(String modelPath, String runDir, Stemmer stemmer, boolean printTopics) throws MauiFilterException {
@@ -177,9 +179,9 @@ public class MauiCore {
 	}
 	
 	/**
-	 * @return The test results in a array of size 7 in the format: [avgKey, stdDevKey, avgPrecision (%), stdDevPrecision (%), avgRecall (%), stdDevRecall (%), fMeasure]
+	 * @return The test results in a array in the format: [avgKey, stdDevKey, avgPrecision (%), stdDevPrecision (%), avgRecall (%), stdDevRecall (%), fMeasure]
 	 */
-	public static double[] evaluateTopics(List<MauiTopics> allDocumentsTopics) {
+	public static double[] classicEvaluateTopics(List<MauiTopics> allDocumentsTopics) { //TODO: check if topics stemmed
 		double[] results = null;
 		double[] correctStatistics = new double[allDocumentsTopics.size()];
 		double[] precisionStatistics = new double[allDocumentsTopics.size()];
@@ -229,5 +231,9 @@ public class MauiCore {
 			results = new double[] {avg, stdDev, avgPrecision, stdDevPrecision, avgRecall, stdDevRecall, fMeasure};
 		}
 		return results;
+	}
+
+	public static void customExtractTopics() {
+		
 	}
 }

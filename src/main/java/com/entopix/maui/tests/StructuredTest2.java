@@ -56,7 +56,7 @@ public class StructuredTest2 {
 				modelPath = modelsPath + "\\" + modelName;
 				MauiCore.setupAndBuildModel(modelPath, trainDir.getPath(), stemmer);
 				topics = MauiCore.setupAndRunTopicExtractor(modelPath, testDir, stemmer, false);
-				result = MauiPTUtils.formatArray(modelName, MauiCore.evaluateTopics(topics));
+				result = MauiPTUtils.formatArray(modelName, MauiCore.classicEvaluateTopics(topics));
 				
 				matrix.add(result);
 			}
