@@ -15,7 +15,9 @@ public class LuceneBRStemmer extends Stemmer {
 	private class BRStemmer extends BrazilianStemmer {
 		@Override
 		public String stem(String str) {
-			return super.stem(str);
+			String stm = super.stem(str);
+			if (stm == null) return "";
+			else return stm;
 		}
 	}
 

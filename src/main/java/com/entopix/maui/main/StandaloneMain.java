@@ -11,7 +11,6 @@ import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
-import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.tests.StructuredTest2;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.MauiPTUtils;
@@ -34,13 +33,10 @@ import weka.core.Utils;
  */
 public class StandaloneMain {
 	
-	// User I/O //
 	public static final Scanner SCAN = new Scanner(System.in);
 	
 	private static String input;
 	
-	
-	// Model setup //
 	/** The models directory. Can be set using MauiFileUtils.setModelsDirPath */
 	private static final File MODELS_DIR = new File(MauiFileUtils.getModelsDirPath());
 	
@@ -56,31 +52,15 @@ public class StandaloneMain {
 	
 	private static File testDoc = null;
 	
-	
-	// TopicExtractor, ModelBuilder and MauiWrapper setup //
-	private static Stopwords stopwords = new StopwordsPortuguese();
-	
 	private static Stemmer stemmer = null;
 	
-	private static String language = "pt";
+	/* PATHS */
 	
-	private static String encoding = "UTF-8";
-	
-	private static String vocabFormat = "skos";
-	
-	private static boolean serialize = true;
-	
-	private static double cutOffTopicProbability = 0.12;
-	
-	
-	// Paths //
 	/** Path to the abstracts documents folder. */
 	private static final String ABS_PATH = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\abstracts";
 	
 	/** Path to the full texts documents folder. */
 	private static final String FTS_PATH = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts";
-	
-	private static String vocabPath = MauiFileUtils.getVocabPath();
 	
 	private static String trainDirPath = null;
 	
@@ -108,11 +88,15 @@ public class StandaloneMain {
 	}
 	
 	private static void runModelBuilder() throws Exception {
-		MauiCore.setupAndBuildModel(trainDirPath, model.getPath(), vocabFormat, vocabPath, stemmer, stopwords, language, encoding);
+		MauiCore.setupAndBuildModel(trainDirPath, model.getPath(), stemmer);
 	}
 	
 	private static void runTopicExtractor() throws MauiFilterException {
-		MauiCore.setupAndRunTopicExtractor(testDirPath, model.getPath(), vocabPath, vocabFormat, stemmer, stopwords, language, encoding, cutOffTopicProbability, serialize, true);
+		MauiCore.setupAndRunTopicExtractor(model.getPath(), testDirPath, stemmer, false);
+	}
+	
+	private static void runMauiWrapper() throws IOException, MauiFilterException {
+		MauiCore.runMauiWrapperOnFile(testDoc, model.getPath(), stemmer);
 	}
 	
 	/** Updates the modelType and stemmer based on model name */
@@ -306,7 +290,7 @@ public class StandaloneMain {
 				break;
 			}
 		}
-		MauiCore.runMauiWrapperOnFile(testDoc, model.getPath(), stemmer);
+		runMauiWrapper();
 	}
 
 	private static void deleteModelsOption() throws IOException {
@@ -322,11 +306,13 @@ public class StandaloneMain {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		//RUNNING WITH NO ARGUMENTS
+		
+		/* RUNNING WITH NO ARGUMENTS */
+		
 		if (args == null || args.length == 0) {
 		
-			UI.instructUser(language);
-			UI.printPTCIMessage(language);
+			UI.instructUser("pt");
+			UI.printPTCIMessage("pt");
 			
 			//Sets model from file if it exists
 			if (!MauiFileUtils.isEmpty(MODELS_DIR)) {
@@ -362,7 +348,7 @@ public class StandaloneMain {
 				else if (input.equals("3")) testModelOption();
 				else if (input.equals("4")) runModelOption();
 				else if (input.equals("5")) deleteModelsOption();
-				else if (input.equals("6")) StructuredTest2.runAllTests();
+				else if (input.equals("6")) StructuredTest2.runAllTests(true, false);
 				else if (input.equals("7")) {
 					UI.displayCredits();
 					System.out.println("Aperte [enter] para continuar ou 0 para sair.");
@@ -375,7 +361,8 @@ public class StandaloneMain {
 			SCAN.close();
 		}
 		
-		//RUNNING WITH ARGUMENTS
+		/* RUNNING WITH ARGUMENTS */
+		
 		else {
 			String command = args[0].toLowerCase(); 
 			if ((!command.equals("train") && !command.equals("test") && !command.equals("run"))) {

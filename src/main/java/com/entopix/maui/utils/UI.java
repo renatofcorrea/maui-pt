@@ -1,8 +1,5 @@
 package com.entopix.maui.utils;
 
-import java.time.Duration;
-import java.time.Instant;
-
 public class UI {
 	
 	public static void displayCredits() {
@@ -28,13 +25,6 @@ public class UI {
 	
 	public static void showModelBuilt(String modelName) {
 		System.out.println("Modelo " + modelName + " construído com sucesso.");
-	}
-	
-	public static void showElapsedTime(Instant start, Instant finish) {
-		double seconds = (Duration.between(start, finish).toMillis()/1000);
-		int minutes = (int) seconds/60;
-		int remainingSec = (int) (seconds - (minutes*60));
-		System.out.println(minutes + " minutes and " + remainingSec + " seconds.");
 	}
 	
 	public static void showInvalidOptionMessage() {

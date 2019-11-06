@@ -1,0 +1,117 @@
+
+--- STRUCTURED TEST RESULTS ---
+Models are sorted by: F-MEASURE
+
+- ABSTRACTS -
+
+---> Test results based on 30 documents: 
+MODEL NAME                                                       AVG KEY             STDEV KEY           AVG PRECISION       STDEV PRECISION     AVG RECALL          STDEV RECALL        F-MEASURE           
+model_abstracts_LuceneRSLPMinimalStemmer_train10                 3,13                1,59                49,12               22,97               29,40               16,09               36,78               
+model_abstracts_WekaStemmerSavoy_train10                         3,40                1,52                42,39               18,20               31,90               15,55               36,41               
+model_abstracts_WekaStemmerSavoy_train20                         3,40                1,50                42,21               18,31               31,87               15,17               36,32               
+model_abstracts_WekaStemmerPorter_train20                        3,17                1,26                46,21               21,67               29,60               12,87               36,09               
+model_abstracts_PortugueseStemmer_train10                        3,37                1,47                42,14               18,81               31,53               14,80               36,07               
+model_abstracts_PortugueseStemmer_train20                        3,27                1,53                42,47               18,95               30,60               15,40               35,57               
+model_abstracts_LuceneRSLPStemmer_train20                        3,27                1,44                42,39               19,72               30,61               14,45               35,55               
+model_abstracts_WekaStemmerSavoy_train30                         3,27                1,55                42,47               19,31               30,56               15,55               35,54               
+model_abstracts_LuceneBRStemmer_train10                          2,90                1,32                51,39               19,35               26,89               12,59               35,31               
+model_abstracts_LuceneRSLPStemmer_train30                        3,47                1,41                37,78               16,18               32,44               14,26               34,90               
+model_abstracts_LuceneBRStemmer_train30                          3,33                1,35                39,69               18,03               31,10               13,27               34,87               
+model_abstracts_LuceneRSLPStemmer_train10                        3,47                1,59                37,78               17,80               32,27               15,38               34,81               
+model_abstracts_LuceneSavoyStemmer_train10                       3,17                1,56                41,77               21,93               29,67               15,65               34,69               
+model_abstracts_LuceneRSLPMinimalStemmer_train30                 3,13                1,57                41,10               19,89               29,38               15,89               34,26               
+model_abstracts_LuceneSavoyStemmer_train30                       3,17                1,46                40,46               19,05               29,61               14,67               34,20               
+model_abstracts_LuceneSavoyStemmer_train20                       3,13                1,41                40,82               19,63               29,31               14,23               34,12               
+model_abstracts_WekaStemmerOrengo_train10                        2,97                1,43                43,98               18,19               27,73               14,37               34,01               
+model_abstracts_LuceneRSLPMinimalStemmer_train20                 3,07                1,39                41,40               18,62               28,68               13,66               33,89               
+model_abstracts_WekaStemmerPorter_train30                        3,13                1,31                39,37               16,70               29,34               13,29               33,62               
+model_abstracts_WekaStemmerOrengo_train30                        3,23                1,38                37,00               16,44               30,29               13,98               33,31               
+model_abstracts_PortugueseStemmer_train30                        3,17                1,58                37,31               19,71               29,49               15,65               32,95               
+model_abstracts_WekaStemmerOrengo_train20                        2,33                1,47                64,68               31,39               21,63               13,98               32,42               
+model_abstracts_LuceneBRStemmer_train20                          2,77                1,33                42,71               23,80               25,47               12,21               31,91               
+model_abstracts_WekaStemmerPorter_train10                        2,60                1,52                43,07               26,72               23,97               14,22               30,80               
+
+---> Test results based on 60 documents: 
+MODEL NAME                                                       AVG KEY             STDEV KEY           AVG PRECISION       STDEV PRECISION     AVG RECALL          STDEV RECALL        F-MEASURE           
+model_abstracts_LuceneRSLPStemmer_train20                        3,20                1,40                44,64               19,01               28,42               13,59               34,73               
+model_abstracts_PortugueseStemmer_train10                        3,20                1,38                42,10               18,38               28,40               13,41               33,92               
+model_abstracts_WekaStemmerSavoy_train20                         3,15                1,42                43,05               19,59               27,96               14,06               33,90               
+model_abstracts_WekaStemmerSavoy_train30                         3,08                1,44                44,45               20,12               27,35               14,26               33,87               
+model_abstracts_WekaStemmerPorter_train20                        2,92                1,36                46,40               22,52               26,09               13,22               33,40               
+model_abstracts_LuceneRSLPMinimalStemmer_train10                 2,77                1,56                51,10               25,17               24,73               15,38               33,33               
+model_abstracts_WekaStemmerSavoy_train10                         3,12                1,46                41,72               19,92               27,71               14,36               33,30               
+model_abstracts_LuceneBRStemmer_train30                          3,20                1,49                39,67               17,72               28,43               14,06               33,12               
+model_abstracts_LuceneBRStemmer_train10                          2,77                1,35                51,20               19,80               24,45               12,51               33,10               
+model_abstracts_LuceneRSLPStemmer_train30                        3,30                1,46                37,29               16,44               29,27               13,91               32,80               
+model_abstracts_WekaStemmerOrengo_train10                        2,92                1,44                44,44               18,74               25,78               13,71               32,63               
+model_abstracts_PortugueseStemmer_train20                        3,07                1,36                40,79               18,13               27,16               13,51               32,61               
+model_abstracts_LuceneRSLPStemmer_train10                        3,27                1,52                36,96               16,99               29,05               14,70               32,53               
+model_abstracts_WekaStemmerPorter_train30                        3,03                1,46                40,51               18,83               26,99               13,79               32,40               
+model_abstracts_LuceneSavoyStemmer_train10                       2,93                1,51                42,43               21,77               26,09               14,79               32,31               
+model_abstracts_PortugueseStemmer_train30                        3,15                1,51                38,08               19,01               27,85               14,37               32,17               
+model_abstracts_LuceneRSLPMinimalStemmer_train20                 2,88                1,42                43,15               20,44               25,60               13,67               32,13               
+model_abstracts_LuceneSavoyStemmer_train20                       2,92                1,43                42,08               20,61               25,91               14,02               32,07               
+model_abstracts_WekaStemmerOrengo_train30                        3,15                1,47                37,58               16,96               27,93               13,83               32,04               
+model_abstracts_LuceneSavoyStemmer_train30                       2,92                1,43                41,54               20,31               25,90               13,93               31,90               
+model_abstracts_LuceneRSLPMinimalStemmer_train30                 2,80                1,55                43,43               21,36               24,92               15,07               31,67               
+model_abstracts_LuceneBRStemmer_train20                          2,73                1,44                43,08               21,83               24,06               12,82               30,88               
+model_abstracts_WekaStemmerOrengo_train20                        2,12                1,30                68,04               32,56               18,75               12,37               29,40               
+model_abstracts_WekaStemmerPorter_train10                        2,47                1,48                44,72               28,19               21,84               13,59               29,35               
+
+
+- FULLTEXTS -
+
+---> Test results based on 30 documents: 
+MODEL NAME                                                       AVG KEY             STDEV KEY           AVG PRECISION       STDEV PRECISION     AVG RECALL          STDEV RECALL        F-MEASURE           
+model_fulltexts_LuceneBRStemmer_train30                          4,40                1,19                47,68               12,52               40,51               11,32               43,80               
+model_fulltexts_LuceneRSLPStemmer_train30                        4,37                1,10                44,70               11,40               40,40               11,52               42,44               
+model_fulltexts_WekaStemmerPorter_train30                        4,30                1,26                43,79               12,73               39,80               12,32               41,70               
+model_fulltexts_WekaStemmerSavoy_train20                         4,23                1,07                43,95               11,55               39,11               10,71               41,39               
+model_fulltexts_WekaStemmerOrengo_train10                        4,30                1,24                43,00               12,36               39,73               12,63               41,30               
+model_fulltexts_LuceneBRStemmer_train20                          4,20                1,13                43,76               11,91               38,88               11,65               41,18               
+model_fulltexts_LuceneRSLPStemmer_train20                        4,27                1,20                42,81               12,01               39,10               11,08               40,87               
+model_fulltexts_LuceneRSLPMinimalStemmer_train30                 4,23                1,19                42,48               11,94               39,32               12,51               40,84               
+model_fulltexts_WekaStemmerSavoy_train10                         4,20                1,13                42,47               10,97               39,02               12,27               40,67               
+model_fulltexts_WekaStemmerSavoy_train30                         4,17                1,12                42,07               11,12               38,46               10,90               40,18               
+model_fulltexts_WekaStemmerOrengo_train30                        4,03                1,03                42,88               13,20               37,56               11,47               40,04               
+model_fulltexts_WekaStemmerPorter_train10                        4,10                1,16                41,57               11,92               37,92               11,52               39,66               
+model_fulltexts_LuceneRSLPMinimalStemmer_train20                 4,10                1,16                41,15               11,57               38,14               12,69               39,59               
+model_fulltexts_PortugueseStemmer_train30                        4,10                1,21                41,00               12,13               37,96               11,98               39,42               
+model_fulltexts_PortugueseStemmer_train10                        4,07                1,39                41,31               14,70               37,64               13,40               39,39               
+model_fulltexts_PortugueseStemmer_train20                        4,07                1,41                40,85               14,29               37,86               14,54               39,30               
+model_fulltexts_WekaStemmerOrengo_train20                        3,97                1,03                41,00               10,43               37,07               12,25               38,94               
+model_fulltexts_LuceneSavoyStemmer_train30                       4,00                1,11                40,00               11,14               37,48               13,04               38,70               
+model_fulltexts_WekaStemmerPorter_train20                        3,97                1,10                40,35               11,35               36,73               11,57               38,45               
+model_fulltexts_LuceneRSLPStemmer_train10                        3,97                1,50                39,96               15,02               35,92               12,77               37,83               
+model_fulltexts_LuceneBRStemmer_train10                          3,80                1,30                39,42               13,43               35,10               12,66               37,14               
+model_fulltexts_LuceneSavoyStemmer_train20                       3,80                1,16                38,00               11,57               35,23               12,17               36,56               
+model_fulltexts_LuceneRSLPMinimalStemmer_train10                 3,10                1,30                38,92               16,85               28,19               11,58               32,70               
+model_fulltexts_LuceneSavoyStemmer_train10                       2,83                1,49                29,06               14,53               25,75               12,98               27,30               
+
+---> Test results based on 60 documents: 
+MODEL NAME                                                       AVG KEY             STDEV KEY           AVG PRECISION       STDEV PRECISION     AVG RECALL          STDEV RECALL        F-MEASURE           
+model_fulltexts_LuceneBRStemmer_train30                          4,38                1,46                49,36               15,89               38,30               12,75               43,13               
+model_fulltexts_LuceneRSLPStemmer_train30                        4,42                1,34                46,98               14,00               38,76               12,99               42,47               
+model_fulltexts_WekaStemmerSavoy_train30                         4,35                1,31                45,06               14,83               37,93               11,94               41,19               
+model_fulltexts_WekaStemmerPorter_train30                        4,30                1,42                44,67               14,37               37,69               12,89               40,88               
+model_fulltexts_WekaStemmerOrengo_train30                        4,17                1,38                45,12               16,20               36,61               12,76               40,42               
+model_fulltexts_LuceneBRStemmer_train20                          4,25                1,30                43,99               12,97               37,14               12,24               40,28               
+model_fulltexts_PortugueseStemmer_train20                        4,28                1,57                43,47               15,88               37,49               14,35               40,26               
+model_fulltexts_WekaStemmerSavoy_train20                         4,20                1,35                44,02               13,74               36,76               12,49               40,06               
+model_fulltexts_LuceneRSLPMinimalStemmer_train30                 4,22                1,44                42,58               14,25               36,98               13,78               39,58               
+model_fulltexts_WekaStemmerOrengo_train20                        4,12                1,37                42,82               13,70               36,00               13,06               39,12               
+model_fulltexts_WekaStemmerSavoy_train10                         4,15                1,19                42,18               11,95               36,45               11,90               39,11               
+model_fulltexts_LuceneSavoyStemmer_train30                       4,17                1,47                42,00               14,32               36,55               14,06               39,09               
+model_fulltexts_WekaStemmerOrengo_train10                        4,18                1,31                41,83               13,08               36,58               12,37               39,03               
+model_fulltexts_PortugueseStemmer_train30                        4,12                1,40                42,19               13,98               36,04               12,88               38,87               
+model_fulltexts_LuceneRSLPMinimalStemmer_train20                 4,10                1,37                41,87               13,59               35,98               13,18               38,70               
+model_fulltexts_WekaStemmerPorter_train10                        4,08                1,38                41,52               13,76               35,92               13,26               38,52               
+model_fulltexts_LuceneRSLPStemmer_train20                        4,12                1,28                41,41               12,60               35,94               12,01               38,48               
+model_fulltexts_PortugueseStemmer_train10                        4,03                1,47                41,26               15,25               35,18               13,18               37,98               
+model_fulltexts_WekaStemmerPorter_train20                        4,02                1,38                40,99               14,28               35,05               12,65               37,79               
+model_fulltexts_LuceneSavoyStemmer_train20                       4,02                1,30                40,53               12,84               34,96               11,64               37,54               
+model_fulltexts_LuceneBRStemmer_train10                          3,88                1,44                40,17               13,96               33,95               13,04               36,80               
+model_fulltexts_LuceneRSLPStemmer_train10                        3,95                1,60                39,81               16,07               34,07               14,11               36,72               
+model_fulltexts_LuceneRSLPMinimalStemmer_train10                 3,15                1,49                42,59               21,23               27,38               12,96               33,33               
+model_fulltexts_LuceneSavoyStemmer_train10                       3,00                1,58                30,90               15,73               25,91               13,83               28,19               
+Structured Test Duration: 2 minutes and 46 seconds.

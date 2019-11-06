@@ -2,6 +2,8 @@ package com.entopix.maui.utils;
 
 import java.io.File;
 import java.text.ParseException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,5 +113,12 @@ public class MauiPTUtils {
 	        pos = str.indexOf(substr, pos + 1);
 	    } while (n-- > 0 && pos != -1);
 	    return pos;
+	}
+	
+	public static String elapsedTime(Instant start, Instant finish) {
+		double seconds = (Duration.between(start, finish).toMillis()/1000);
+		int minutes = (int) seconds/60;
+		int remainingSec = (int) (seconds - (minutes*60));
+		return minutes + " minutes and " + remainingSec + " seconds.";
 	}
 }
