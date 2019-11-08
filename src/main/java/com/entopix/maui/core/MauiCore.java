@@ -37,11 +37,10 @@ import weka.core.Utils;
 public class MauiCore {
 	
 	//Standard Paths
-	public static final String MODELS_PATH = MauiFileUtils.getModelsDirPath();
-	public static final String VOCAB_PATH = MauiFileUtils.getVocabPath();
+	private static final String VOCAB_PATH = MauiFileUtils.getVocabPath();
 	
 	//Standard Objects
-	public static Stopwords stopwords = new StopwordsPortuguese();
+	private static Stopwords stopwords = new StopwordsPortuguese();
 	private static MauiModelBuilder modelBuilder = new MauiModelBuilder();
 	
 	//Stemmer Objects
@@ -57,38 +56,42 @@ public class MauiCore {
 	};
 	
 	//Standard ModelBuilder configs
-	static int minNumOccur = 2;
-	static int maxPhraseLength = 5;
-	static int minPhraseLength = 1;
-	static boolean modelBuilderSerialize = true;
+	private static int minOccur = 2;
+	private static int maxPhraseLength = 5;
+	private static int minPhraseLength = 1;
+	private static boolean modelBuilderSerialize = true;
 	
 	//Standard TopicExtractor configs
-	public static int numTopicsToExtract = 10;
-	public static double cutOffTopicProbability = 0.12;
-	public static boolean topicExtractorSerialize = true;
+	private static int numTopicsToExtract = 10;
+	private static double cutOffTopicProbability = 0.12;
+	private static boolean topicExtractorSerialize = true;
 	
 	//Standard Vocabulary configs
-	public static String vocabFormat = "skos";
-	public static boolean vocabSerialize = true;
-	public static boolean vocabReorder = false;
+	private static String vocabFormat = "skos";
+	private static boolean vocabSerialize = true;
+	private static boolean vocabReorder = false;
 	
 	//Standard General configs
-	public static String encoding = "UTF-8";
-	public static String language = "pt";
+	private static String encoding = "UTF-8";
+	private static String language = "pt";
 	
 	
 	public static Stemmer[] getStemmerList() {
 		return stemmerList;
 	}
 	
-	public static Vocabulary setupVocab(String vocabPath, Stemmer stemmer, Stopwords stopwords) {
-		return setupVocab(vocabPath, vocabFormat, encoding, language, stemmer, stopwords, false, true);
+	public static void setMinOccur(int n) {
+		minOccur = n;
 	}
 	
-	public static Vocabulary setupVocab(String vocabPath, String vocabFormat, String encoding, String language, Stemmer stemmer, Stopwords stopwords, boolean reorder, boolean serialize) {
+	public static double getCutOffTopicProbability() {
+		return cutOffTopicProbability;
+	}
+	
+	public static Vocabulary setupVocab(String vocabPath, Stemmer stemmer, Stopwords stopwords) {
 		Vocabulary vocab = new Vocabulary();
-		vocab.setReorder(reorder);
-		vocab.setSerialize(serialize);
+		vocab.setReorder(vocabReorder);
+		vocab.setSerialize(vocabSerialize);
 		vocab.setEncoding(encoding);
 		vocab.setLanguage(language);
 		vocab.setStemmer(stemmer);
@@ -111,16 +114,20 @@ public class MauiCore {
 		modelBuilder.stopwords = stopwords;
 		modelBuilder.documentLanguage = language;
 		modelBuilder.documentEncoding = encoding;
-		modelBuilder.minNumOccur = minNumOccur;
+		modelBuilder.minNumOccur = minOccur;
 		modelBuilder.maxPhraseLength = maxPhraseLength;
 		modelBuilder.minPhraseLength = minPhraseLength;
 		modelBuilder.serialize = modelBuilderSerialize;
 
 		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
 		modelBuilder.setVocabulary(vocab);
+		modelBuilder.setBasicFeatures(true);
+		modelBuilder.setFrequencyFeatures(false); //std: true
+		modelBuilder.setLengthFeature(true);
 		modelBuilder.setPositionsFeatures(false);
 		modelBuilder.setKeyphrasenessFeature(false);
 		modelBuilder.setThesaurusFeatures(false);
+		modelBuilder.setWikipediaFeatures(false);
 		
 		MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDir));
 		modelBuilder.saveModel(filter);

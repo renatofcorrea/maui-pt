@@ -1,7 +1,10 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import com.entopix.maui.main.StandaloneMain;
@@ -125,5 +128,11 @@ public class MauiFileUtils {
 		fileChoice = StandaloneMain.SCAN.nextInt();
 		StandaloneMain.SCAN.nextLine();
 		return fileList[fileChoice - 1];
+	}
+	
+	public static void printOnFile(String s, String filePath) throws IOException {
+		PrintWriter pw = new PrintWriter(new FileWriter(filePath));
+		pw.print(s);
+		pw.close();
 	}
 }

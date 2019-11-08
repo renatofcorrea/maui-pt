@@ -1,13 +1,7 @@
 package com.entopix.maui.tests;
 
-import com.entopix.maui.stemmers.LuceneBRStemmer;
-import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
-import com.entopix.maui.stemmers.LuceneRSLPStemmer;
-import com.entopix.maui.stemmers.LuceneSavoyStemmer;
 import com.entopix.maui.stemmers.Stemmer;
-import com.entopix.maui.stemmers.WekaStemmerOrengo;
 import com.entopix.maui.stemmers.WekaStemmerPorter;
-import com.entopix.maui.stemmers.WekaStemmerSavoy;
 
 import ptstemmer.support.PTStemmerUtilities;
 

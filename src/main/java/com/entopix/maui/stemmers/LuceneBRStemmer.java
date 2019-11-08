@@ -16,8 +16,11 @@ public class LuceneBRStemmer extends Stemmer {
 		@Override
 		public String stem(String str) {
 			String stm = super.stem(str);
-			if (stm == null) return "";
-			else return stm;
+			if (stm == null) {
+				return "";
+			} else {
+				return stm;
+			}
 		}
 	}
 

@@ -15,8 +15,6 @@ import com.entopix.maui.stemmers.Stemmer;
  */
 public class MauiPTUtils {
 	
-	public static String[] header = {"MODEL NAME","AVG KEY","STDEV KEY","AVG PRECISION","STDEV PRECISION","AVG RECALL","STDEV RECALL","F-MEASURE"};
-	
 	/**
 	 * Takes a model name and its test results, then formats it on a array of strings.
 	 * @param modelName
@@ -35,25 +33,25 @@ public class MauiPTUtils {
 		return s;
 	}
 	
-	/** Prints a formatted result matrix with a header. */
-	public static void printMatrix(List<String[]> matrix) {
-		//Builds and prints headers
-		for (String word : header) {
-			if (word.equals(header[0])) {
-				System.out.format("%-65s",word);
-			} else {
-				System.out.format("%-20s", word);
-			}
+	public static String formatHeader(String[] header) {
+		String h = "";
+		h += String.format("%-65s", header[0]);
+		int i;
+		for (i = 1; i < header.length; i++) {
+			h += String.format("%-20s", header[i]);
 		}
-		System.out.println();
-		
-		//Prints matrix values
+		return h;
+	}
+	
+	public static String matrixToString(String header, List<String[]> matrix) {
+		String s = header + "\n";
 		for(String[] model : matrix) {
 			for(String value : model) {
-				System.out.print(value);
+				s += value;
 			}
-			System.out.println();
+			s += "\n";
 		}
+		return s;
 	}
 	
 	/**

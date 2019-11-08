@@ -79,7 +79,7 @@ public class StandaloneMain {
 		boolean serialize = Boolean.parseBoolean(Utils.getOption('z', args));
 		int numTopicsToExtract = Integer.parseInt(Utils.getOption('n', args));
 		
-		double cutOffTopicProbability = MauiCore.cutOffTopicProbability;
+		double cutOffTopicProbability = MauiCore.getCutOffTopicProbability();
 		
 		if (command.equals("train")) MauiCore.setupAndBuildModel(documentsPath, modelPath, vocabFormat, vocabPath, stemmer, stopwords, language);
 		else if (command.equals("test")) MauiCore.setupAndRunTopicExtractor(documentsPath, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, cutOffTopicProbability, serialize, true);
@@ -92,7 +92,7 @@ public class StandaloneMain {
 	}
 	
 	private static void runTopicExtractor() throws MauiFilterException {
-		MauiCore.setupAndRunTopicExtractor(model.getPath(), testDirPath, stemmer, false);
+		MauiCore.setupAndRunTopicExtractor(model.getPath(), testDirPath, stemmer, true);
 	}
 	
 	private static void runMauiWrapper() throws IOException, MauiFilterException {
@@ -348,7 +348,7 @@ public class StandaloneMain {
 				else if (input.equals("3")) testModelOption();
 				else if (input.equals("4")) runModelOption();
 				else if (input.equals("5")) deleteModelsOption();
-				else if (input.equals("6")) StructuredTest2.runAllTests(true, false);
+				else if (input.equals("6")) StructuredTest2.runAllTests();
 				else if (input.equals("7")) {
 					UI.displayCredits();
 					System.out.println("Aperte [enter] para continuar ou 0 para sair.");
