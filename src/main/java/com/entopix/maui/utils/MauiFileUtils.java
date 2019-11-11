@@ -1,7 +1,6 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -132,7 +131,7 @@ public class MauiFileUtils {
 	
 	public static void printOnFile(String s, String filePath) throws IOException {
 		PrintWriter pw = new PrintWriter(new FileWriter(filePath));
-		pw.print(s);
+		pw.printf(s);
 		pw.close();
 	}
 }

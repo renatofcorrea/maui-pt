@@ -1,10 +1,8 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
-import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.entopix.maui.stemmers.Stemmer;
@@ -24,11 +22,9 @@ public class MauiPTUtils {
 	 */
 	public static String[] formatArray(String modelName, double[] arr) {
 		String[] s = new String[arr.length + 1];
-		s[0] = String.format("%-65s", modelName);
-		int i;
-		for (i = 0; i < arr.length; i++) {
+		s[0] = modelName;
+		for (int i = 0; i < arr.length; i++) {
 			s[i+1] = String.format("%.2f", arr[i]);
-			s[i+1] = String.format("%-20s", s[i+1]);
 		}
 		return s;
 	}
@@ -77,31 +73,6 @@ public class MauiPTUtils {
 		name += new File(trainDir).getName();
 		
 		return name;
-	}
-	
-	/** Sorts a List of String arrays according to the value in the specified index.
-	 * The value is defined by the parseDouble method.*/
-	public static List<String[]> sort(List<String[]> matrix, int sortingIndex) throws ParseException {
-		
-		List<String[]> sortedMatrix = new ArrayList<String[]>();
-		
-		double highestValue = Double.parseDouble(matrix.get(0)[sortingIndex].replace(",", "."));
-		double current;
-		int highestValueIndex = 0;
-		
-		while (!matrix.isEmpty()) {
-			for (String[] line : matrix) {
-				current  = Double.parseDouble(line[sortingIndex].replace(",", "."));
-				if (current > highestValue) {
-					highestValue = current;
-					highestValueIndex = matrix.indexOf(line);
-				}
-			}
-			sortedMatrix.add(matrix.get(highestValueIndex));
-			matrix.remove(highestValueIndex);
-			highestValue = 0;
-		}
-		return sortedMatrix;
 	}
 	
 	/** Finds the Nth occurrence of a substring on a string. */

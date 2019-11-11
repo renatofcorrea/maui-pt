@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -26,6 +27,7 @@ import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.util.DataLoader;
 import com.entopix.maui.util.Evaluator;
+import com.entopix.maui.util.MauiDocument;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.MauiFileUtils;
@@ -80,8 +82,8 @@ public class MauiCore {
 		return stemmerList;
 	}
 	
-	public static void setMinOccur(int n) {
-		minOccur = n;
+	public static void setMinOccur(int min) {
+		minOccur = min;
 	}
 	
 	public static double getCutOffTopicProbability() {
@@ -240,5 +242,29 @@ public class MauiCore {
 			results = new double[] {avg, stdDev, avgPrecision, stdDevPrecision, avgRecall, stdDevRecall, fMeasure};
 		}
 		return results;
+	}
+	
+	public static void newEvaluateTopics(String docsPath, List<MauiTopics> extractedTopicsList) throws MauiFilterException {
+		//loads manual topics
+		List<MauiDocument> docs = DataLoader.loadTestDocuments(docsPath);
+		int docIndex = 0;
+		MauiDocument document = docs.get(docIndex);
+		List<String> manualTopics = Arrays.asList(document.getTopicsString().split("\n"));
+		
+		//converts maui topics to string list
+		List<String> extractedTopics = new ArrayList<String>();
+		for (Topic t : extractedTopicsList.get(docIndex).getTopics()) {
+			extractedTopics.add(t.getTitle());
+		}
+		
+		int correct = 0;
+		
+		for (String topic : extractedTopics) {
+			if (manualTopics.contains(topic)) {
+				correct++;
+			}
+		}
+		
+		System.out.println("Correct topics count: " + correct);
 	}
 }
