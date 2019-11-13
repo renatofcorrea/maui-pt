@@ -8,8 +8,15 @@ import org.apache.commons.io.FileUtils;
 
 import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
+import com.entopix.maui.stemmers.LuceneBRStemmer;
+import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
+import com.entopix.maui.stemmers.LuceneRSLPStemmer;
+import com.entopix.maui.stemmers.LuceneSavoyStemmer;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
+import com.entopix.maui.stemmers.WekaStemmerOrengo;
+import com.entopix.maui.stemmers.WekaStemmerPorter;
+import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.tests.StructuredTest2;
 import com.entopix.maui.utils.MauiFileUtils;
@@ -54,6 +61,17 @@ public class StandaloneMain {
 	
 	private static Stemmer stemmer = null;
 	
+	private static Stemmer[] stemmerList = {
+			new PortugueseStemmer(),
+			new LuceneRSLPStemmer(),
+			new LuceneBRStemmer(),
+			new LuceneSavoyStemmer(),
+			new LuceneRSLPMinimalStemmer(),
+			new WekaStemmerOrengo(),
+			new WekaStemmerPorter(),
+			new WekaStemmerSavoy(),
+	};
+	
 	/* PATHS */
 	
 	/** Path to the abstracts documents folder. */
@@ -65,6 +83,8 @@ public class StandaloneMain {
 	private static String trainDirPath = null;
 	
 	private static String testDirPath = null;
+	
+	/* END OF PATHS */
 	
 	public static void runWithArguments(String command, String[] args) throws Exception {
 		String dataPath = MauiFileUtils.getDataPath();
@@ -79,24 +99,59 @@ public class StandaloneMain {
 		boolean serialize = Boolean.parseBoolean(Utils.getOption('z', args));
 		int numTopicsToExtract = Integer.parseInt(Utils.getOption('n', args));
 		
-		double cutOffTopicProbability = MauiCore.getCutOffTopicProbability();
-		
-		if (command.equals("train")) MauiCore.setupAndBuildModel(documentsPath, modelPath, vocabFormat, vocabPath, stemmer, stopwords, language);
-		else if (command.equals("test")) MauiCore.setupAndRunTopicExtractor(documentsPath, modelPath, vocabPath, vocabFormat, stemmer, stopwords, language, encoding, cutOffTopicProbability, serialize, true);
-		else if (command.equals("run")) MauiCore.runMauiWrapperOnFile(modelPath, new File(documentsPath), vocabFormat, stemmer, stopwords, vocabPath, language, numTopicsToExtract);
+		if (command.equals("train")) {
+			MauiCore.setTrainDirPath(documentsPath);
+			MauiCore.setModelPath(modelPath);
+			MauiCore.setVocabFormat(vocabFormat);
+			MauiCore.setStemmer(stemmer);
+			MauiCore.setStopwords(stopwords);
+			MauiCore.setLanguage(language);
+			MauiCore.buildModel();
+		}
+		else if (command.equals("test")) {
+			MauiCore.setTestDirPath(documentsPath);
+			MauiCore.setModelPath(modelPath);
+			MauiCore.setVocabPath(vocabPath);
+			MauiCore.setVocabFormat(vocabFormat);
+			MauiCore.setStemmer(stemmer);
+			MauiCore.setStopwords(stopwords);
+			MauiCore.setLanguage(language);
+			MauiCore.setEncoding(encoding);
+			MauiCore.setTopicExtractorSerialize(serialize);
+			MauiCore.runTopicExtractor();
+		}
+		else if (command.equals("run")) {
+			MauiCore.setModelPath(modelPath);
+			MauiCore.setTestDocFile(new File(documentsPath));
+			MauiCore.setStemmer(stemmer);
+			MauiCore.setStopwords(stopwords);
+			MauiCore.setVocabPath(vocabPath);
+			MauiCore.setLanguage(language);
+			MauiCore.setNumTopicsToExtract(numTopicsToExtract);
+			MauiCore.runMauiWrapperOnFile();
+		}
 		else throw new Exception("Invalid command");
 	}
 	
 	private static void runModelBuilder() throws Exception {
-		MauiCore.setupAndBuildModel(trainDirPath, model.getPath(), stemmer);
+		MauiCore.setTestDirPath(testDirPath);
+		MauiCore.setModelPath(model.getPath());
+		MauiCore.setStemmer(stemmer);
+		MauiCore.buildModel();
 	}
 	
 	private static void runTopicExtractor() throws MauiFilterException {
-		MauiCore.setupAndRunTopicExtractor(model.getPath(), testDirPath, stemmer, true);
+		MauiCore.setModelPath(model.getPath());
+		MauiCore.setTestDirPath(testDirPath);
+		MauiCore.setStemmer(stemmer);
+		MauiCore.runTopicExtractor();
 	}
 	
 	private static void runMauiWrapper() throws IOException, MauiFilterException {
-		MauiCore.runMauiWrapperOnFile(testDoc, model.getPath(), stemmer);
+		MauiCore.setTestDocFile(testDoc);
+		MauiCore.setModelPath(model.getPath());
+		MauiCore.setStemmer(stemmer);
+		MauiCore.runMauiWrapperOnFile();
 	}
 	
 	/** Updates the modelType and stemmer based on model name */
@@ -167,14 +222,13 @@ public class StandaloneMain {
 		System.out.print("Opção: ");
 		input = SCAN.nextLine();
 		if (input.equals("1")) {
-			Stemmer[] stemmers = MauiCore.getStemmerList();
 			System.out.println();
-			for (int i = 0; i < stemmers.length; i++) {
-				System.out.println(i+1 + " - " + stemmers[i].getClass().getSimpleName());
+			for (int i = 0; i < stemmerList.length; i++) {
+				System.out.println(i+1 + " - " + stemmerList[i].getClass().getSimpleName());
 			}
 			System.out.print("Opção: ");
 			input = SCAN.nextLine();
-			stemmer = stemmers[Integer.parseInt(input) - 1];
+			stemmer = stemmerList[Integer.parseInt(input) - 1];
 			System.out.println("Stemizador " + stemmer.getClass().getSimpleName() + " selecionado.");
 		}
 		

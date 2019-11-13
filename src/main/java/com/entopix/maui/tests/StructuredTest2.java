@@ -8,7 +8,16 @@ import java.util.Date;
 import java.util.List;
 
 import com.entopix.maui.core.MauiCore;
+import com.entopix.maui.filters.MauiFilter.MauiFilterException;
+import com.entopix.maui.stemmers.LuceneBRStemmer;
+import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
+import com.entopix.maui.stemmers.LuceneRSLPStemmer;
+import com.entopix.maui.stemmers.LuceneSavoyStemmer;
+import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
+import com.entopix.maui.stemmers.WekaStemmerOrengo;
+import com.entopix.maui.stemmers.WekaStemmerPorter;
+import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.MauiPTUtils;
@@ -33,6 +42,26 @@ public class StructuredTest2 {
 	private static String[] header = {"MODEL NAME","AVG KEY","STDEV KEY","AVG PRECISION","STDEV PRECISION","AVG RECALL","STDEV RECALL","F-MEASURE"};
 	private static String[] tableFormat = {"%-65s","%-20s","%-20s","%-20s","%-20s","%-20s","%-20s","%-20s"};
 	
+	private static void buildModel(String trainDirPath, String modelPath, Stemmer stemmer) throws Exception {
+		MauiCore.setTrainDirPath(trainDirPath);
+		MauiCore.setModelPath(modelPath);
+		MauiCore.setStemmer(stemmer);
+		MauiCore.buildModel();
+	}
+	
+	private static List<MauiTopics> runTopicExtractor(String modelPath, String testDirPath, Stemmer stemmer, boolean printTopics) throws MauiFilterException {
+		MauiCore.setModelPath(modelPath);
+		MauiCore.setTestDirPath(testDirPath);
+		MauiCore.setStemmer(stemmer);
+		MauiCore.setPrintExtractedTopics(printTopics);
+		try {
+			return MauiCore.runTopicExtractor();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	/** @return A List where each line contains model name and its test results. */
 	public static List<String[]> runTest(File[] trainFolders, String testDir, Stemmer[] stemmers) throws Exception {
 		List<String[]> list = new ArrayList<String[]>();
@@ -43,8 +72,8 @@ public class StructuredTest2 {
 			for (File trainDir : trainFolders) {
 				modelName = MauiPTUtils.generateModelName(trainDir.getPath(), stemmer);
 				modelPath = modelsPath + "\\" + modelName;
-				MauiCore.setupAndBuildModel(trainDir.getPath(), modelPath, stemmer);
-				topics = MauiCore.setupAndRunTopicExtractor(modelPath, testDir, stemmer, false);
+				buildModel(trainDir.getPath(), modelPath, stemmer);
+				topics = runTopicExtractor(modelPath, testDir, stemmer, false);
 				result = MauiPTUtils.formatArray(modelName, MauiCore.classicEvaluateTopics(topics));
 				list.add(result);
 			}
@@ -57,7 +86,16 @@ public class StructuredTest2 {
 		abstractsMatrixes = new ArrayList<Table>();
 		fulltextsMatrixes = new ArrayList<Table>();
 		File[] trainFolders = null;
-		Stemmer[] stemmers = MauiCore.getStemmerList();
+		Stemmer[] stemmers = {
+				new PortugueseStemmer(),
+				new LuceneRSLPStemmer(),
+				new LuceneBRStemmer(),
+				new LuceneSavoyStemmer(),
+				new LuceneRSLPMinimalStemmer(),
+				new WekaStemmerOrengo(),
+				new WekaStemmerPorter(),
+				new WekaStemmerSavoy(),
+		};
 		
 		start = Instant.now();
 		

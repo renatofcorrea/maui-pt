@@ -3,9 +3,11 @@ package com.entopix.maui.utils;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.entopix.maui.stemmers.Stemmer;
+import com.entopix.maui.util.Topic;
 
 /**
  * Provides useful methods to dealing with result matrixes, arrays and models.
@@ -89,5 +91,13 @@ public class MauiPTUtils {
 		int minutes = (int) seconds/60;
 		int remainingSec = (int) (seconds - (minutes*60));
 		return minutes + " minutes and " + remainingSec + " seconds.";
+	}
+	
+	public static List<String> topicsToString(List<Topic> topics) {
+		List<String> strings = new ArrayList<String>();
+		for (Topic t : topics) {
+			strings.add(t.getTitle());
+		}
+		return strings;
 	}
 }

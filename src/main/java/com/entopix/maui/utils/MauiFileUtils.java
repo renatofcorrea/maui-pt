@@ -1,10 +1,14 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 import com.entopix.maui.main.StandaloneMain;
 /**
@@ -13,7 +17,6 @@ import com.entopix.maui.main.StandaloneMain;
  */
 public class MauiFileUtils {
 	
-	private static String vocabPath = getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 	private static String modelsDirPath = getDataPath() + "\\models";
 	
 	public static final String getRootPath() {
@@ -29,14 +32,6 @@ public class MauiFileUtils {
 		String rootPath = getRootPath();
 		if(rootPath.endsWith("maui-pt")) return rootPath + "\\data";
 		else return rootPath + "\\";
-	}
-	
-	public static String getVocabPath() {
-		return vocabPath;
-	}
-	
-	public void setVocabPath(String path) {
-		vocabPath = path;
 	}
 	
 	public static String getModelsDirPath() {
@@ -133,5 +128,17 @@ public class MauiFileUtils {
 		PrintWriter pw = new PrintWriter(new FileWriter(filePath));
 		pw.printf(s);
 		pw.close();
+	}
+	
+	public static List<String> readKeyFromFile(String keysPath) throws FileNotFoundException {
+		File keys = new File(keysPath);
+		Scanner scanner = new Scanner(keys);
+		String content = scanner.useDelimiter("\\Z").next();
+		scanner.close();
+		List<String> topics = Arrays.asList(content.split("\n"));
+		for (int i = 0; i < topics.size(); i++) {
+			topics.set(i, topics.get(i).replace("\r", ""));
+		}
+		return topics;
 	}
 }
