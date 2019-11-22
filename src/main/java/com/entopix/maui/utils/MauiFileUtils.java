@@ -78,17 +78,32 @@ public class MauiFileUtils {
 	}
 	
 	public static void displayDirContent(File dir) {
-		displayFileList(dir.listFiles());
+		displayNumberedFileList(dir.listFiles());
 	}
 	
 	public static void displayDirContent(String dirPath) {
-		displayFileList(new File(dirPath).listFiles());
+		displayNumberedFileList(new File(dirPath).listFiles());
 	}
 	
-	public static void displayFileList(File[] fileList) {
+	public static void displayNumberedFileList(File[] fileList) {
 		for (int i = 0; i < fileList.length; i++) {
 			System.out.println(i+1 + " - " + fileList[i].getName());
 		}
+	}
+	
+	/**
+	 * Returns a array of strings containing the file paths.
+	 * @return
+	 */
+	public static String[] getFileListPaths(File[] files) {
+		String[] paths = new String[files.length];
+		
+		int i;
+		for (i = 0; i < files.length; i++) {
+			paths[i] = files[i].getPath();
+		}
+		
+		return paths;
 	}
 	
 	public static File[] filterFileList(String dirPath, String filterMethod) {
@@ -117,7 +132,7 @@ public class MauiFileUtils {
 	public static File chooseFileFromList(File[] fileList) {
 		if (fileList == null) throw new NullPointerException();
 		int fileChoice;
-		displayFileList(fileList);
+		displayNumberedFileList(fileList);
 		System.out.print("Opção: ");
 		fileChoice = StandaloneMain.SCAN.nextInt();
 		StandaloneMain.SCAN.nextLine();
@@ -130,6 +145,8 @@ public class MauiFileUtils {
 		pw.close();
 	}
 	
+	/** Reads the keywords of a .key file. 
+	 * @return a list of keywords */
 	public static List<String> readKeyFromFile(String keysPath) throws FileNotFoundException {
 		File keys = new File(keysPath);
 		Scanner scanner = new Scanner(keys);

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.entopix.maui.stemmers.Stemmer;
+import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 
 /**
@@ -16,38 +17,17 @@ import com.entopix.maui.util.Topic;
 public class MauiPTUtils {
 	
 	/**
-	 * Takes a model name and its test results, then formats it on a array of strings.
+	 * Takes a model name and its test results, then formats it on a array of strings to be used on a table.
 	 * @param modelName
 	 * @param arr An array containing the test results.
 	 * @return The array in the format [model_name, testresult1, testresult2, ... , testresultN].
 	 * Each test result value has been shortened to two decimal digits.
 	 */
-	public static String[] formatArray(String modelName, double[] arr) {
+	public static String[] formatArray(String modelName, double[] arr) { //TODO: Use Table instead
 		String[] s = new String[arr.length + 1];
 		s[0] = modelName;
 		for (int i = 0; i < arr.length; i++) {
 			s[i+1] = String.format("%.2f", arr[i]);
-		}
-		return s;
-	}
-	
-	public static String formatHeader(String[] header) {
-		String h = "";
-		h += String.format("%-65s", header[0]);
-		int i;
-		for (i = 1; i < header.length; i++) {
-			h += String.format("%-20s", header[i]);
-		}
-		return h;
-	}
-	
-	public static String matrixToString(String header, List<String[]> matrix) {
-		String s = header + "\n";
-		for(String[] model : matrix) {
-			for(String value : model) {
-				s += value;
-			}
-			s += "\n";
 		}
 		return s;
 	}
@@ -77,7 +57,9 @@ public class MauiPTUtils {
 		return name;
 	}
 	
-	/** Finds the Nth occurrence of a substring on a string. */
+	/** 
+	 * Finds the Nth occurrence of a substring on a string.
+	 */
 	public static int ordinalIndexOf(String str, String substr, int n) {
 	    int pos = -1;
 	    do {
@@ -86,6 +68,12 @@ public class MauiPTUtils {
 	    return pos;
 	}
 	
+	/**
+	 * Calculates the elapsed time between two instants.
+	 * @param start
+	 * @param finish
+	 * @return string representation of elapsed time.
+	 */
 	public static String elapsedTime(Instant start, Instant finish) {
 		double seconds = (Duration.between(start, finish).toMillis()/1000);
 		int minutes = (int) seconds/60;
@@ -93,11 +81,52 @@ public class MauiPTUtils {
 		return minutes + " minutes and " + remainingSec + " seconds.";
 	}
 	
+	/**
+	 * Converts a list of topics to a list of strings.
+	 * @param topics
+	 * @return
+	 */
 	public static List<String> topicsToString(List<Topic> topics) {
 		List<String> strings = new ArrayList<String>();
 		for (Topic t : topics) {
 			strings.add(t.getTitle());
 		}
 		return strings;
+	}
+	
+	/**
+	 * Converts a list of maui topics into a list of string lists.
+	 * @param topics
+	 */
+	public static List<List<String>> mauiTopicsToString(List<MauiTopics> topicsList) {
+		
+		List<List<String>> stringsList = new ArrayList<>();
+		List<String> strings;
+		
+		for (MauiTopics mauiTopics : topicsList) {
+			strings = topicsToString(mauiTopics.getTopics());
+			stringsList.add(strings);
+		}
+		
+		return stringsList;
+	}
+
+	/**
+	 * Gets the Nth column of a matrix of doubles.
+	 * @param
+	 * @return
+	 * @throws ArrayIndexOutOfBoundsException if there is a row without specified index.
+	 */
+	public static double[] getColumn(double[][] matrix, int index) {
+		int rowCount = matrix.length;
+		double[] column = new double[rowCount];
+		
+		int i;
+		for (i = 0; i < rowCount; i++) {
+			if (index >= matrix[i].length) throw new ArrayIndexOutOfBoundsException();
+			column[i] = matrix[i][index];
+		}
+		
+		return column;
 	}
 }

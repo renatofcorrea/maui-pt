@@ -63,6 +63,9 @@ public class MauiCore {
 	//Standard General configs
 	private static String encoding = "UTF-8";
 	private static String language = "pt";
+	
+	//Class config
+	public static boolean debug = true;
 
 	public static Stopwords getStopwords() {
 		return stopwords;
@@ -239,9 +242,10 @@ public class MauiCore {
 	public static void setLanguage(String language) {
 		MauiCore.language = language;
 	}
-
+	
 	public static Vocabulary setupVocab(String vocabPath, Stemmer stemmer, Stopwords stopwords) {
-		Vocabulary vocab = new Vocabulary();
+		if (stemmer == null) throw new NullPointerException("MauiCore stemmer was not set");
+
 		vocab.setReorder(vocabReorder);
 		vocab.setSerialize(vocabSerialize);
 		vocab.setEncoding(encoding);
@@ -254,6 +258,8 @@ public class MauiCore {
 	}
 	
 	public static MauiFilter buildModel() throws Exception {
+		if (trainDirPath == null) throw new NullPointerException("Train directory path for the ModelBuilder was not set");
+		
 		modelBuilder.inputDirectoryName = trainDirPath;
 		modelBuilder.modelName = modelPath;
 		modelBuilder.vocabularyFormat = vocabFormat;
@@ -286,6 +292,8 @@ public class MauiCore {
 	}
 	
 	public static List<MauiTopics> runTopicExtractor() throws MauiFilterException {
+		if (testDirPath == null) throw new NullPointerException("Test directory path for the topic extractor was not set.");
+		
 		topicExtractor.inputDirectoryName = testDirPath;
 		topicExtractor.modelName = modelPath;
 		topicExtractor.vocabularyName = vocabPath;
@@ -311,8 +319,11 @@ public class MauiCore {
 	}
 	
 	public static List<Topic> runMauiWrapperOnFile() throws IOException, MauiFilterException {
+		if (testDocFile == null) throw new NullPointerException("Test document file for the MauiWrapper was not set");
+		else if (modelPath == null) throw new NullPointerException("Model path for the MauiWrapper was not set");
+		
 		MauiWrapper mauiWrapper = null;
-		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
+		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);	
 		String documentText = FileUtils.readFileToString(testDocFile, Charset.forName(encoding));
 		
 		mauiWrapper = new MauiWrapper(vocab, DataLoader.loadModel(modelPath));
@@ -345,7 +356,6 @@ public class MauiCore {
 			}
 	
 			if (numExtracted > 0 && documentTopics.getPossibleCorrect() > 0) {
-				//log.debug("-- " + numCorrect + " correct");
 				correctStatistics[i] = numCorrect;
 				precisionStatistics[i] = numCorrect / numExtracted;				
 				recallStatistics[i] = numCorrect / documentTopics.getPossibleCorrect();
@@ -381,32 +391,88 @@ public class MauiCore {
 		return results;
 	}
 	
-	public static void newEvaluateTopics(String documentPath, List<Topic> extractedTopicsList, int numTopicsToEvaluate) throws Exception {
+	/** Evaluates the topics on a single document. 
+	 * @return precision and recall */
+	public static double[] evaluateTopicsSingle(String documentPath, List<String> extracted, int numTopicsToEvaluate) throws Exception {
 		
-		List<String> manual = MauiFileUtils.readKeyFromFile(documentPath.replace(".txt", ".key"));
-		List<String> extracted = MauiPTUtils.topicsToString(extractedTopicsList);
+		List<String> manual = MauiFileUtils.readKeyFromFile(documentPath.replace(".txt", ".key")); //original manual keywords from .key file
 		
-		if (numTopicsToEvaluate > extracted.size()) throw new Exception("Number of topics to evaluate must be at least equal to number of extracted topics");
+		if (numTopicsToEvaluate > extracted.size()) throw new Exception("Number of topics to evaluate (" + numTopicsToEvaluate + ") is larger than the extracted topics list size (" + extracted.size() + ") in the document " + documentPath);
 		
-		List<String> evaluate = extracted.subList(0, numTopicsToEvaluate - 1);
-		List<String> matches = new ArrayList<String>();
+		List<String> evaluate = extracted.subList(0, numTopicsToEvaluate);
+		List<String> matches = new ArrayList<>();
 		
-		//checks for matches
+		//saves matches
 		for (String topic : evaluate) {
 			if (manual.contains(topic)) {
 				matches.add(topic);
 			}
 		}
 		
-		System.out.println();
-		System.out.println(extracted.size() + " topics extracted");
-		System.out.println(evaluate.size() + " topics evaluated");
-		System.out.println();
-		System.out.println("MANUAL (" + manual.size() + "):");
-		System.out.println(manual.toString() + "\n");
-		System.out.println("EVALUATED (" + numTopicsToEvaluate + "): ");
-		System.out.println(evaluate.toString() + "\n");
-		System.out.println("MATCHES (" + matches.size() + "):");
-		System.out.println(matches.toString() + "\n");
+		int numCorrect = matches.size();
+		int numExtracted = extracted.size();
+		int numManual = manual.size();
+		int numEvaluated = evaluate.size();
+		double precision = (double) numCorrect / numExtracted;
+		double recall = (double) numCorrect / numManual;
+		
+		if (debug) {
+			System.out.println();
+			System.out.println(numExtracted + " topics extracted");
+			System.out.println(numEvaluated + " topics evaluated " + "\n");
+			System.out.println("MANUAL (" + numManual + "):");
+			System.out.println(manual.toString() + "\n");
+			System.out.println("EVALUATED (" + numTopicsToEvaluate + "): ");
+			System.out.println(evaluate.toString() + "\n");
+			System.out.println("MATCHES (" + numCorrect + "):");
+			System.out.println(matches.toString() + "\n");
+			
+			System.out.println("Precision: " + precision * 100 + "%");
+			System.out.println("Recall: " + recall * 100 + "%");
+		}
+		
+		return new double[] {numCorrect, precision, recall};
+	}
+	
+	/**
+	 * Evaluates the topics on a list of documents. 
+	 * @param docPaths
+	 * @param allDocTopicsExtracted list of topics extracted in every document
+	 * @param numTopicsToEvaluate
+	 * @return a size 7 array with the test results.
+	 * @throws Exception 
+	 */
+	public static double[] evaluateTopics(String[] docPaths, List<List<String>> allDocTopicsExtracted, int numTopicsToEvaluate) throws Exception {
+		
+		int docCount = docPaths.length;
+		if (docCount != allDocTopicsExtracted.size()) throw new Exception("Length of extracted topics list is not equal to the number of documents");
+		
+		int i;
+		double[][] docResults = new double[docCount][];
+		for (i = 0; i < docCount; i++) {
+			docResults[i] = evaluateTopicsSingle(docPaths[i], allDocTopicsExtracted.get(i), numTopicsToEvaluate);
+		}
+		
+		double[] allCorrects = MauiPTUtils.getColumn(docResults, 0);
+		double avgCorrect = Utils.mean(allCorrects);
+		double stdevCorrect = Math.sqrt(Utils.variance(allCorrects));
+		
+		double[] allPrecisions = MauiPTUtils.getColumn(docResults, 1);
+		double avgPrecision = Utils.mean(allPrecisions);
+		double stdevPrecision = Math.sqrt(Utils.variance(allPrecisions));
+		
+		double[] allRecalls = MauiPTUtils.getColumn(docResults, 2);
+		double avgRecall = Utils.mean(allRecalls);
+		double stdevRecall = Math.sqrt(Utils.variance(allRecalls));
+		
+		//F-Measure
+		double fMeasure = 0.0;
+		if (avgPrecision > 0 && avgRecall > 0) {
+			fMeasure = 2 * avgRecall * avgPrecision / (avgRecall + avgPrecision);
+		}
+		
+		double[] results = new double[] {avgCorrect, stdevCorrect, avgPrecision, stdevPrecision, avgRecall, stdevRecall, fMeasure};
+		
+		return results;
 	}
 }

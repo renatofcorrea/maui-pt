@@ -134,7 +134,7 @@ public class StandaloneMain {
 	}
 	
 	private static void runModelBuilder() throws Exception {
-		MauiCore.setTestDirPath(testDirPath);
+		MauiCore.setTrainDirPath(trainDirPath);
 		MauiCore.setModelPath(model.getPath());
 		MauiCore.setStemmer(stemmer);
 		MauiCore.buildModel();
