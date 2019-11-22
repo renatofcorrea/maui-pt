@@ -62,6 +62,15 @@ public class StructuredTest2 {
 		}
 	}
 	
+	public static String[] formatArray(String modelName, double[] arr) {
+		String[] s = new String[arr.length + 1];
+		s[0] = modelName;
+		for (int i = 0; i < arr.length; i++) {
+			s[i+1] = String.format("%.2f", arr[i]);
+		}
+		return s;
+	}
+	
 	/** @return A List where each line contains model name and its test results. */
 	public static List<String[]> runTest(File[] trainFolders, String testDir, Stemmer[] stemmers) throws Exception {
 		List<String[]> list = new ArrayList<String[]>();
@@ -74,7 +83,7 @@ public class StructuredTest2 {
 				modelPath = modelsPath + "\\" + modelName;
 				buildModel(trainDir.getPath(), modelPath, stemmer);
 				topics = runTopicExtractor(modelPath, testDir, stemmer, false);
-				result = MauiPTUtils.formatArray(modelName, MauiCore.classicEvaluateTopics(topics));
+				result = formatArray(modelName, MauiCore.classicEvaluateTopics(topics));
 				list.add(result);
 			}
 		}

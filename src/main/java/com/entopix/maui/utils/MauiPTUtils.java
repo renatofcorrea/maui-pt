@@ -17,22 +17,6 @@ import com.entopix.maui.util.Topic;
 public class MauiPTUtils {
 	
 	/**
-	 * Takes a model name and its test results, then formats it on a array of strings to be used on a table.
-	 * @param modelName
-	 * @param arr An array containing the test results.
-	 * @return The array in the format [model_name, testresult1, testresult2, ... , testresultN].
-	 * Each test result value has been shortened to two decimal digits.
-	 */
-	public static String[] formatArray(String modelName, double[] arr) { //TODO: Use Table instead
-		String[] s = new String[arr.length + 1];
-		s[0] = modelName;
-		for (int i = 0; i < arr.length; i++) {
-			s[i+1] = String.format("%.2f", arr[i]);
-		}
-		return s;
-	}
-	
-	/**
 	 * Generates a model name in the format "model_doctype_stemmerclass_traindir"
 	 * @param trainDir
 	 * @param stemmer
@@ -47,7 +31,7 @@ public class MauiPTUtils {
 		} else if (trainDir.contains("fulltexts")) {
 			name += "fulltexts_";
 		} else {
-			new Exception("The training filepath of the model does not contain 'abstracts' or 'fulltexts' to generate modelname").printStackTrace(); //TODO
+			new Exception("The training filepath of the model does not contain 'abstracts' or 'fulltexts' to generate modelname").printStackTrace();
 		}
 		
 		name += stemmer.getClass().getSimpleName() + "_";
