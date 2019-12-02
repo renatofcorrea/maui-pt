@@ -64,8 +64,9 @@ public class MauiCore {
 	private static String encoding = "UTF-8";
 	private static String language = "pt";
 	
-	//Class config
-	public static boolean debug = true;
+	//Debug
+	public static boolean DB_evaluateTopicsSingle = false;
+	public static boolean DB_evaluateTopics = false;
 
 	public static Stopwords getStopwords() {
 		return stopwords;
@@ -291,19 +292,32 @@ public class MauiCore {
 		return filter;
 	}
 	
-	public static List<MauiTopics> runTopicExtractor() throws MauiFilterException {
+	public static List<MauiTopics> runTopicExtractor() throws Exception {
 		if (testDirPath == null) throw new NullPointerException("Test directory path for the topic extractor was not set.");
 		
-		topicExtractor.inputDirectoryName = testDirPath;
-		topicExtractor.modelName = modelPath;
-		topicExtractor.vocabularyName = vocabPath;
-		topicExtractor.vocabularyFormat = vocabFormat;
+		//topicExtractor.inputDirectoryName = testDirPath;
+		//topicExtractor.modelName = modelPath;
+		//topicExtractor.vocabularyName = vocabPath;
+		//topicExtractor.vocabularyFormat = vocabFormat;
 		topicExtractor.stemmer = stemmer;
 		topicExtractor.stopwords = stopwords;
-		topicExtractor.documentLanguage = language;
-		topicExtractor.documentEncoding = encoding;
-		topicExtractor.cutOffTopicProbability = cutOffTopicProbability;
+		//topicExtractor.documentLanguage = language;
+		//topicExtractor.documentEncoding = encoding;
+		//topicExtractor.cutOffTopicProbability = cutOffTopicProbability;
 		topicExtractor.serialize = topicExtractorSerialize;
+		
+		topicExtractor.setOptions(new String[] {
+				"-l", testDirPath,
+				"-m", modelPath,
+				"-v", vocabPath,
+				"-f", vocabFormat,
+				"-e", encoding,
+				"-i", language,
+				"-n", String.valueOf(numTopicsToExtract),
+				"-c", String.valueOf(cutOffTopicProbability),
+		});
+		
+		//topicExtractor.topicsPerDocument = numTopicsToExtract;
 		
 		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
 		topicExtractor.setVocabulary(vocab);
@@ -397,7 +411,9 @@ public class MauiCore {
 		
 		List<String> manual = MauiFileUtils.readKeyFromFile(documentPath.replace(".txt", ".key")); //original manual keywords from .key file
 		
-		if (numTopicsToEvaluate > extracted.size()) throw new Exception("Number of topics to evaluate (" + numTopicsToEvaluate + ") is larger than the extracted topics list size (" + extracted.size() + ") in the document " + documentPath);
+		if (numTopicsToEvaluate > extracted.size()) {
+			numTopicsToEvaluate = extracted.size();
+		}
 		
 		List<String> evaluate = extracted.subList(0, numTopicsToEvaluate);
 		List<String> matches = new ArrayList<>();
@@ -416,19 +432,20 @@ public class MauiCore {
 		double precision = (double) numCorrect / numExtracted;
 		double recall = (double) numCorrect / numManual;
 		
-		if (debug) {
-			System.out.println();
+		if (DB_evaluateTopicsSingle) {
+			System.out.println("File: " + new File(documentPath).getName());
 			System.out.println(numExtracted + " topics extracted");
 			System.out.println(numEvaluated + " topics evaluated " + "\n");
 			System.out.println("MANUAL (" + numManual + "):");
-			System.out.println(manual.toString() + "\n");
+			System.out.println(manual.toString());
 			System.out.println("EVALUATED (" + numTopicsToEvaluate + "): ");
-			System.out.println(evaluate.toString() + "\n");
+			System.out.println(evaluate.toString());
 			System.out.println("MATCHES (" + numCorrect + "):");
-			System.out.println(matches.toString() + "\n");
+			System.out.println(matches.toString());
 			
 			System.out.println("Precision: " + precision * 100 + "%");
 			System.out.println("Recall: " + recall * 100 + "%");
+			System.out.println();
 		}
 		
 		return new double[] {numCorrect, precision, recall};
@@ -472,6 +489,16 @@ public class MauiCore {
 		}
 		
 		double[] results = new double[] {avgCorrect, stdevCorrect, avgPrecision, stdevPrecision, avgRecall, stdevRecall, fMeasure};
+		
+		if (DB_evaluateTopics) {
+			System.out.println("AVG KEY: " + results[0]);
+			System.out.println("STDEV KEY: " + results[1]);
+			System.out.println("AVG PRECISION: " + results[2] * 100);
+			System.out.println("STDEV PRECISION: " + results[3] * 100);
+			System.out.println("AVG RECALL: " + results[4] * 100);
+			System.out.println("STDEV RECALL: " + results[5] * 100);
+			System.out.println("F-MEASURE: " + results[6] * 100);
+		}
 		
 		return results;
 	}

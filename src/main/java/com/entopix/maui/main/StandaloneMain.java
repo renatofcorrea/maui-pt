@@ -84,8 +84,6 @@ public class StandaloneMain {
 	
 	private static String testDirPath = null;
 	
-	/* END OF PATHS */
-	
 	public static void runWithArguments(String command, String[] args) throws Exception {
 		String dataPath = MauiFileUtils.getDataPath();
 		String documentsPath = dataPath + Utils.getOption('l', args);
@@ -140,7 +138,7 @@ public class StandaloneMain {
 		MauiCore.buildModel();
 	}
 	
-	private static void runTopicExtractor() throws MauiFilterException {
+	private static void runTopicExtractor() throws Exception {
 		MauiCore.setModelPath(model.getPath());
 		MauiCore.setTestDirPath(testDirPath);
 		MauiCore.setStemmer(stemmer);
@@ -265,7 +263,7 @@ public class StandaloneMain {
 		System.out.println("Modelo " + model.getName() + " selecionado.");
 	}
 	
-	private static void testModelOption() throws MauiFilterException, InstantiationException, IllegalAccessException, ClassNotFoundException {
+	private static void testModelOption() throws Exception {
 		System.out.println("\nModelo Atual: " + model.getName());
 		System.out.println("Deseja alterar o modelo para o teste?");
 		System.out.println("1 - Sim");

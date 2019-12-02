@@ -96,7 +96,7 @@ public class MauiPTUtils {
 	}
 
 	/**
-	 * Gets the Nth column of a matrix of doubles.
+	 * Gets the Nth column in a matrix of doubles.
 	 * @param
 	 * @return
 	 * @throws ArrayIndexOutOfBoundsException if there is a row without specified index.

@@ -42,7 +42,9 @@ public class MauiFileUtils {
 		modelsDirPath = path;
 	}
 	
-	/** Verifies if a file path exists. */
+	/** 
+	 * Verifies if a file path exists.
+	 */
 	public static boolean exists(String path) {
 		File file = new File(path);
 		if (!file.exists()) {
@@ -145,10 +147,12 @@ public class MauiFileUtils {
 		pw.close();
 	}
 	
-	/** Reads the keywords of a .key file. 
-	 * @return a list of keywords */
-	public static List<String> readKeyFromFile(String keysPath) throws FileNotFoundException {
-		File keys = new File(keysPath);
+	/** 
+	 * Reads the keywords in a file. Assumes that every word is separated by a newline character. 
+	 * @return a list of keywords
+	 * */
+	public static List<String> readKeyFromFile(String filePath) throws Exception {
+		File keys = new File(filePath);
 		Scanner scanner = new Scanner(keys);
 		String content = scanner.useDelimiter("\\Z").next();
 		scanner.close();
@@ -156,6 +160,22 @@ public class MauiFileUtils {
 		for (int i = 0; i < topics.size(); i++) {
 			topics.set(i, topics.get(i).replace("\r", ""));
 		}
+		return topics;
+	}
+	
+	/**
+	 * Reads keywords from files with specified format in specified directory.
+	 * Assumes that every word is separated by a newline character.
+	 * @return a list of keywords for every file.
+	 */
+	public static List<List<String>> readKeyFromFolder(String dir, String format) throws Exception {
+		File[] files = filterFileList(dir, format);
+		List<List<String>> topics = new ArrayList<>();
+		
+		for (File f : files) {
+			topics.add(readKeyFromFile(f.getPath()));
+		}
+		
 		return topics;
 	}
 }
