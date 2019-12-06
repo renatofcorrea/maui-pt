@@ -1,7 +1,6 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -30,8 +29,8 @@ public class MauiFileUtils {
 	
 	public static final String getDataPath() {
 		String rootPath = getRootPath();
-		if(rootPath.endsWith("maui-pt")) return rootPath + "\\data";
-		else return rootPath + "\\";
+		if(rootPath.endsWith("maui-pt")) return rootPath + "\\data\\"; // likely to be running on console
+		else return rootPath + "\\"; // likely to be running on IDE
 	}
 	
 	public static String getModelsDirPath() {

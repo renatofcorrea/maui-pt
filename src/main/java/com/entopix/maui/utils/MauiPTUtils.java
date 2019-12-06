@@ -6,14 +6,16 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 
 /**
- * Provides useful methods to dealing with result matrixes, arrays and models.
+ * Provides useful methods to dealing with models, result matrixes, arrays and strings.
  * @author Rahmon Jorge
  */
+//TODO: organize method order and description in this class
 public class MauiPTUtils {
 	
 	/**
@@ -41,8 +43,22 @@ public class MauiPTUtils {
 		return name;
 	}
 	
+	/**
+	 * Returns a Stemmer instance based on the name of the model.
+	 * The model name has to be in the format modelname_modeltype_stemmername_traindirname .
+	 * @throws ClassNotFoundException 
+	 * @throws IllegalAccessException 
+	 * @throws InstantiationException 
+	 */
+	public static Stemmer getStemmerFromModelName(File model) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+		int start = MauiPTUtils.ordinalIndexOf(model.getName(), "_", 1);
+		int end = MauiPTUtils.ordinalIndexOf(model.getName(), "_", 2);
+		String stemmerName = MauiCore.getStemmersPackage() + model.getName().substring(start + 1, end);
+		return (Stemmer) Class.forName(stemmerName).newInstance();
+	}
+	
 	/** 
-	 * Finds the Nth occurrence of a substring on a string.
+	 * Finds the Nth occurrence of a substring on a string. (n = 0 for fist occurrence)
 	 */
 	public static int ordinalIndexOf(String str, String substr, int n) {
 	    int pos = -1;
@@ -50,6 +66,13 @@ public class MauiPTUtils {
 	        pos = str.indexOf(substr, pos + 1);
 	    } while (n-- > 0 && pos != -1);
 	    return pos;
+	}
+	
+	/**
+	 * Returns true if, and only if, length of s != 0 and s != null.
+	 */
+	public static boolean isValid(String s) {
+		return s != null && !s.isEmpty();
 	}
 	
 	/**

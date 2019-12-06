@@ -19,3 +19,6 @@ dir
 vocab
 serializer
 std
+mauicore
+renato
+correa

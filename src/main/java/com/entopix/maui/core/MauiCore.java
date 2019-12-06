@@ -34,6 +34,8 @@ public class MauiCore {
 	private static MauiModelBuilder modelBuilder = new MauiModelBuilder();
 	private static MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
 	private static Vocabulary vocab = new Vocabulary();
+	private static String stemmersPackage = "com.entopix.maui.stemmers.";
+	private static String stopwordsPackage = "com.entopix.maui.stopwords.";
 	
 	//Core parameters
 	private static File testDocFile;
@@ -156,6 +158,14 @@ public class MauiCore {
 		return language;
 	}
 
+	public static String getStemmersPackage() {
+		return stemmersPackage;
+	}
+
+	public static String getStopwordsPackage() {
+		return stopwordsPackage;
+	}
+
 	public static void setStopwords(Stopwords stopwords) {
 		MauiCore.stopwords = stopwords;
 	}
@@ -244,8 +254,16 @@ public class MauiCore {
 		MauiCore.language = language;
 	}
 	
-	public static Vocabulary setupVocab(String vocabPath, Stemmer stemmer, Stopwords stopwords) {
-		if (stemmer == null) throw new NullPointerException("MauiCore stemmer was not set");
+	public static void setStemmersPackage(String stemmersPackage) {
+		MauiCore.stemmersPackage = stemmersPackage;
+	}
+
+	public static void setStopwordsPackage(String stopwordsPackage) {
+		MauiCore.stopwordsPackage = stopwordsPackage;
+	}
+
+	public static void setupVocab(String vocabPath, Stemmer stemmer, Stopwords stopwords) {
+		if (stemmer == null) throw new NullPointerException("Stemmer is not set");
 
 		vocab.setReorder(vocabReorder);
 		vocab.setSerialize(vocabSerialize);
@@ -255,11 +273,10 @@ public class MauiCore {
 		vocab.setStopwords(stopwords);
 		vocab.setVocabularyName(vocabPath);
 		vocab.initializeVocabulary(vocabPath, vocabFormat);
-		return vocab;
 	}
 	
 	public static MauiFilter buildModel() throws Exception {
-		if (trainDirPath == null) throw new NullPointerException("Train directory path for the ModelBuilder was not set");
+		if (trainDirPath == null) throw new NullPointerException("Train directory path for the ModelBuilder is not set");
 		
 		modelBuilder.inputDirectoryName = trainDirPath;
 		modelBuilder.modelName = modelPath;
@@ -274,7 +291,7 @@ public class MauiCore {
 		modelBuilder.minPhraseLength = minPhraseLength;
 		modelBuilder.serialize = modelBuilderSerialize;
 
-		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
+		setupVocab(vocabPath, stemmer, stopwords);
 		modelBuilder.setVocabulary(vocab);
 		modelBuilder.setBasicFeatures(true);
 		modelBuilder.setFrequencyFeatures(true);
@@ -293,7 +310,7 @@ public class MauiCore {
 	}
 	
 	public static List<MauiTopics> runTopicExtractor() throws Exception {
-		if (testDirPath == null) throw new NullPointerException("Test directory path for the topic extractor was not set.");
+		if (testDirPath == null) throw new NullPointerException("Test directory path for the topic extractor is not set.");
 		
 		//topicExtractor.inputDirectoryName = testDirPath;
 		//topicExtractor.modelName = modelPath;
@@ -319,7 +336,7 @@ public class MauiCore {
 		
 		//topicExtractor.topicsPerDocument = numTopicsToExtract;
 		
-		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);
+		setupVocab(vocabPath, stemmer, stopwords);
 		topicExtractor.setVocabulary(vocab);
 		topicExtractor.loadModel();
 		
@@ -333,11 +350,15 @@ public class MauiCore {
 	}
 	
 	public static List<Topic> runMauiWrapperOnFile() throws IOException, MauiFilterException {
-		if (testDocFile == null) throw new NullPointerException("Test document file for the MauiWrapper was not set");
-		else if (modelPath == null) throw new NullPointerException("Model path for the MauiWrapper was not set");
+		if (testDocFile == null) throw new NullPointerException("Test document file for the MauiWrapper is not set");
+		else if (modelPath == null) throw new NullPointerException("Model path for the MauiWrapper is not set");
 		
 		MauiWrapper mauiWrapper = null;
-		Vocabulary vocab = setupVocab(vocabPath, stemmer, stopwords);	
+		try {
+			setupVocab(vocabPath, stemmer, stopwords);
+		} catch (RuntimeException e) {
+			
+		}	
 		String documentText = FileUtils.readFileToString(testDocFile, Charset.forName(encoding));
 		
 		mauiWrapper = new MauiWrapper(vocab, DataLoader.loadModel(modelPath));

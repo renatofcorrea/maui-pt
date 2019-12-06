@@ -72,8 +72,6 @@ public class StandaloneMain {
 			new WekaStemmerSavoy(),
 	};
 	
-	/* PATHS */
-	
 	/** Path to the abstracts documents folder. */
 	private static final String ABS_PATH = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\abstracts";
 	
@@ -88,43 +86,71 @@ public class StandaloneMain {
 		String dataPath = MauiFileUtils.getDataPath();
 		String documentsPath = dataPath + Utils.getOption('l', args);
 		String modelPath = dataPath + Utils.getOption('m', args);
-		String vocabFormat = Utils.getOption('f', args);
 		String vocabPath = dataPath + Utils.getOption('v', args);
-		Stemmer stemmer = (Stemmer) Class.forName(Utils.getOption('t', args)).newInstance(); //use full package name
-		Stopwords stopwords = (Stopwords) Class.forName(Utils.getOption('s', args)).newInstance(); //here too
-		String language = Utils.getOption('i', args);
-		String encoding = Utils.getOption('e', args);
-		boolean serialize = Boolean.parseBoolean(Utils.getOption('z', args));
-		int numTopicsToExtract = Integer.parseInt(Utils.getOption('n', args));
+		
+		String vocabFormat = MauiCore.getVocabFormat();
+		String input = Utils.getOption('f', args);
+		if (MauiPTUtils.isValid(input)) vocabFormat = input;
+		
+		String language = MauiCore.getLanguage();
+		input = Utils.getOption('i', args);
+		if (MauiPTUtils.isValid(input)) language = input;
+		
+		String encoding = MauiCore.getEncoding();
+		input = Utils.getOption('e', args);
+		if (MauiPTUtils.isValid(input)) encoding = input;
+		
+		boolean serialize = MauiCore.isTopicExtractorSerialize();
+		input = Utils.getOption('z', args);
+		if (MauiPTUtils.isValid(Utils.getOption('z', args))) serialize = Boolean.parseBoolean(input);
+		
+		int numTopicsToExtract = MauiCore.getNumTopicsToExtract();
+		input = Utils.getOption('n', args);
+		if (MauiPTUtils.isValid(input)) numTopicsToExtract = Integer.parseInt(input);
+		
+		Stopwords stopwords = MauiCore.getStopwords();
+		input = Utils.getOption('s', args);
+		if (MauiPTUtils.isValid(input)) {
+			stopwords = (Stopwords) Class.forName(MauiCore.getStopwordsPackage() + Utils.getOption('s', args)).newInstance();
+		}
+		
+		Stemmer stemmer = null;
+		input = Utils.getOption('t', args);
+		if (MauiPTUtils.isValid(input)) {
+			stemmer = (Stemmer) Class.forName(MauiCore.getStemmersPackage() + Utils.getOption('t', args)).newInstance();
+		} else {
+			System.out.println("[StandaloneMain] WARNING: Stemmer class not set, trying to get stemmer from model name");
+			try {
+				stemmer = MauiPTUtils.getStemmerFromModelName(new File(modelPath));
+			} catch (Exception e) {
+				e.printStackTrace();
+				stemmer = null;
+			}
+			System.out.println("[StandaloneMain] Current stemmer: " + stemmer.getClass().getSimpleName());
+		}
+		
+		MauiCore.setModelPath(modelPath);
+		MauiCore.setStemmer(stemmer);
+		MauiCore.setStopwords(stopwords);
+		MauiCore.setLanguage(language);
+		MauiCore.setEncoding(encoding);
+		MauiCore.setVocabPath(vocabPath);
+		
+		if (MauiPTUtils.isValid(vocabPath)) {
+			MauiCore.setVocabFormat(vocabFormat);
+		}
 		
 		if (command.equals("train")) {
 			MauiCore.setTrainDirPath(documentsPath);
-			MauiCore.setModelPath(modelPath);
-			MauiCore.setVocabFormat(vocabFormat);
-			MauiCore.setStemmer(stemmer);
-			MauiCore.setStopwords(stopwords);
-			MauiCore.setLanguage(language);
 			MauiCore.buildModel();
 		}
 		else if (command.equals("test")) {
 			MauiCore.setTestDirPath(documentsPath);
-			MauiCore.setModelPath(modelPath);
-			MauiCore.setVocabPath(vocabPath);
-			MauiCore.setVocabFormat(vocabFormat);
-			MauiCore.setStemmer(stemmer);
-			MauiCore.setStopwords(stopwords);
-			MauiCore.setLanguage(language);
-			MauiCore.setEncoding(encoding);
 			MauiCore.setTopicExtractorSerialize(serialize);
 			MauiCore.runTopicExtractor();
 		}
 		else if (command.equals("run")) {
-			MauiCore.setModelPath(modelPath);
 			MauiCore.setTestDocFile(new File(documentsPath));
-			MauiCore.setStemmer(stemmer);
-			MauiCore.setStopwords(stopwords);
-			MauiCore.setVocabPath(vocabPath);
-			MauiCore.setLanguage(language);
 			MauiCore.setNumTopicsToExtract(numTopicsToExtract);
 			MauiCore.runMauiWrapperOnFile();
 		}
@@ -152,18 +178,18 @@ public class StandaloneMain {
 		MauiCore.runMauiWrapperOnFile();
 	}
 	
-	/** Updates the modelType and stemmer based on model name */
+	/** 
+	 * Updates the document type of the model and stemmer based on model name.
+	 * The model name has to be in the format modelname_modeltype_stemmername_traindirname
+	 */
 	private static void updateModelSetup() throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-		//Updates model type
-		modelType = (model.getName().contains("abstracts") ? ABSTRACTS : FULLTEXTS);
-		//Updates model stemmer
-		int start = MauiPTUtils.ordinalIndexOf(model.getName(), "_", 1);
-		int end = MauiPTUtils.ordinalIndexOf(model.getName(), "_", 2);
-		String stemmerName = "com.entopix.maui.stemmers." + model.getName().substring(start + 1, end);
-		stemmer = (Stemmer) Class.forName(stemmerName).newInstance();
+		modelType = (model.getName().contains("abstracts") ? ABSTRACTS : FULLTEXTS); //Updates model type
+		stemmer = MauiPTUtils.getStemmerFromModelName(model); //Updates model stemmer
 	}
 	
-	/** Updates standard paths based on the document type of the model. */
+	/** 
+	 * Updates standard paths based on the document type of the model.
+	 */
 	private static void updatePaths() {
 		trainDirPath = (modelType == ABSTRACTS ? ABS_PATH + "\\train30" : FTS_PATH + "\\train30");
 		testDirPath = (modelType == ABSTRACTS ? ABS_PATH + "\\test60" : FTS_PATH + "\\test60");
@@ -362,7 +388,6 @@ public class StandaloneMain {
 		/* RUNNING WITH NO ARGUMENTS */
 		
 		if (args == null || args.length == 0) {
-		
 			UI.instructUser("pt");
 			UI.printPTCIMessage("pt");
 			
