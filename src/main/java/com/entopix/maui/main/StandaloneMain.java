@@ -119,22 +119,27 @@ public class StandaloneMain {
 		if (MauiPTUtils.isValid(input)) {
 			stemmer = (Stemmer) Class.forName(MauiCore.getStemmersPackage() + Utils.getOption('t', args)).newInstance();
 		} else {
-			System.out.println("[StandaloneMain] WARNING: Stemmer class not set, trying to get stemmer from model name");
+			System.out.println("[StandaloneMain] WARNING: Stemmer class not set, trying to fetch stemmer from model name");
 			try {
 				stemmer = MauiPTUtils.getStemmerFromModelName(new File(modelPath));
 			} catch (Exception e) {
-				e.printStackTrace();
-				stemmer = null;
+				System.out.println("[StandaloneMain] Stemmer fetching failed, using default stemmer");
+				stemmer = MauiCore.getStemmer();
 			}
 			System.out.println("[StandaloneMain] Current stemmer: " + stemmer.getClass().getSimpleName());
 		}
 		
-		MauiCore.setModelPath(modelPath);
 		MauiCore.setStemmer(stemmer);
 		MauiCore.setStopwords(stopwords);
 		MauiCore.setLanguage(language);
 		MauiCore.setEncoding(encoding);
 		MauiCore.setVocabPath(vocabPath);
+		
+		if (MauiFileUtils.exists(modelPath)) {
+			MauiCore.setModelPath(modelPath);
+		} else {
+			throw new Exception("Model " + modelPath + " was not found");
+		}
 		
 		if (MauiPTUtils.isValid(vocabPath)) {
 			MauiCore.setVocabFormat(vocabFormat);
@@ -154,7 +159,10 @@ public class StandaloneMain {
 			MauiCore.setNumTopicsToExtract(numTopicsToExtract);
 			MauiCore.runMauiWrapperOnFile();
 		}
-		else throw new Exception("Invalid command");
+		else {
+			UI.instructUser(language);
+			throw new Exception("Invalid command");
+		}
 	}
 	
 	private static void runModelBuilder() throws Exception {

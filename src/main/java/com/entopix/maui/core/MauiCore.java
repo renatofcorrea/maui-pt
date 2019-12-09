@@ -13,6 +13,7 @@ import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.main.MauiModelBuilder;
 import com.entopix.maui.main.MauiTopicExtractor;
 import com.entopix.maui.main.MauiWrapper;
+import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
@@ -41,7 +42,7 @@ public class MauiCore {
 	private static File testDocFile;
 	private static String testDirPath;
 	private static String trainDirPath;
-	private static Stemmer stemmer;
+	private static Stemmer stemmer = new PortugueseStemmer();
 	private static String modelPath;
 	private static String vocabPath = MauiFileUtils.getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 	
