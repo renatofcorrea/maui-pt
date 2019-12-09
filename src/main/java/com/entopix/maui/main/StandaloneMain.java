@@ -47,12 +47,10 @@ public class StandaloneMain {
 	/** The models directory. Can be set using MauiFileUtils.setModelsDirPath */
 	private static final File MODELS_DIR = new File(MauiFileUtils.getModelsDirPath());
 	
-	/** Indicates that the current model was trained under abstracts documents. */
-	private static final int ABSTRACTS = 0;
+	/** Indicates that the current model was trained under abstracts or fulltexts documents. */
+	private static final int ABSTRACTS = 0, FULLTEXTS = 1;
 	
-	/** Indicates that the current model was trained under full texts documents. */
-	private static final int FULLTEXTS = 1;
-	
+	/** Variable that holds the enums above.*/
 	private static int modelType = -1;
 	
 	private static File model = null;
@@ -100,7 +98,7 @@ public class StandaloneMain {
 		input = Utils.getOption('e', args);
 		if (MauiPTUtils.isValid(input)) encoding = input;
 		
-		boolean serialize = MauiCore.isTopicExtractorSerialize();
+		boolean serialize = MauiCore.isVocabSerialize();
 		input = Utils.getOption('z', args);
 		if (MauiPTUtils.isValid(Utils.getOption('z', args))) serialize = Boolean.parseBoolean(input);
 		
@@ -151,7 +149,7 @@ public class StandaloneMain {
 		}
 		else if (command.equals("test")) {
 			MauiCore.setTestDirPath(documentsPath);
-			MauiCore.setTopicExtractorSerialize(serialize);
+			MauiCore.setVocabSerialize(serialize);
 			MauiCore.runTopicExtractor();
 		}
 		else if (command.equals("run")) {

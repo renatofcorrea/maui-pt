@@ -35,8 +35,6 @@ public class MauiCore {
 	private static MauiModelBuilder modelBuilder = new MauiModelBuilder();
 	private static MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
 	private static Vocabulary vocab = new Vocabulary();
-	private static String stemmersPackage = "com.entopix.maui.stemmers.";
-	private static String stopwordsPackage = "com.entopix.maui.stopwords.";
 	
 	//Core parameters
 	private static File testDocFile;
@@ -50,12 +48,11 @@ public class MauiCore {
 	private static int minOccur = 2;
 	private static int maxPhraseLength = 5;
 	private static int minPhraseLength = 1;
-	private static boolean modelBuilderSerialize = true;
+	public static boolean saveModel = true;
 	
 	//Standard TopicExtractor configs
 	private static int numTopicsToExtract = 10;
 	private static double cutOffTopicProbability = 0.12;
-	private static boolean topicExtractorSerialize = true;
 	private static boolean printExtractedTopics = true;
 	
 	//Standard Vocabulary configs
@@ -71,6 +68,10 @@ public class MauiCore {
 	public static boolean DB_evaluateTopicsSingle = false;
 	public static boolean DB_evaluateTopics = false;
 
+	//Other
+	private static String stemmersPackage = "com.entopix.maui.stemmers.";
+	private static String stopwordsPackage = "com.entopix.maui.stopwords.";
+	
 	public static Stopwords getStopwords() {
 		return stopwords;
 	}
@@ -119,20 +120,12 @@ public class MauiCore {
 		return minPhraseLength;
 	}
 
-	public static boolean isModelBuilderSerialize() {
-		return modelBuilderSerialize;
-	}
-
 	public static int getNumTopicsToExtract() {
 		return numTopicsToExtract;
 	}
 
 	public static double getCutOffTopicProbability() {
 		return cutOffTopicProbability;
-	}
-
-	public static boolean isTopicExtractorSerialize() {
-		return topicExtractorSerialize;
 	}
 
 	public static boolean isPrintExtractedTopics() {
@@ -165,6 +158,10 @@ public class MauiCore {
 
 	public static String getStopwordsPackage() {
 		return stopwordsPackage;
+	}
+	
+	public static boolean isSaveModel() {
+		return saveModel;
 	}
 
 	public static void setStopwords(Stopwords stopwords) {
@@ -215,20 +212,12 @@ public class MauiCore {
 		MauiCore.minPhraseLength = minPhraseLength;
 	}
 
-	public static void setModelBuilderSerialize(boolean modelBuilderSerialize) {
-		MauiCore.modelBuilderSerialize = modelBuilderSerialize;
-	}
-
 	public static void setNumTopicsToExtract(int numTopicsToExtract) {
 		MauiCore.numTopicsToExtract = numTopicsToExtract;
 	}
 
 	public static void setCutOffTopicProbability(double cutOffTopicProbability) {
 		MauiCore.cutOffTopicProbability = cutOffTopicProbability;
-	}
-
-	public static void setTopicExtractorSerialize(boolean topicExtractorSerialize) {
-		MauiCore.topicExtractorSerialize = topicExtractorSerialize;
 	}
 
 	public static void setPrintExtractedTopics(boolean printExtractedTopics) {
@@ -262,6 +251,10 @@ public class MauiCore {
 	public static void setStopwordsPackage(String stopwordsPackage) {
 		MauiCore.stopwordsPackage = stopwordsPackage;
 	}
+	
+	public static void setSaveModel(boolean saveModel) {
+		MauiCore.saveModel = saveModel;
+	}
 
 	public static void setupVocab(String vocabPath, Stemmer stemmer, Stopwords stopwords) {
 		if (stemmer == null) throw new NullPointerException("Stemmer is not set");
@@ -277,7 +270,7 @@ public class MauiCore {
 	}
 	
 	public static MauiFilter buildModel() throws Exception {
-		if (trainDirPath == null) throw new NullPointerException("Train directory path for the ModelBuilder is not set");
+		if (trainDirPath == null) throw new NullPointerException("Train directory for the ModelBuilder is not set");
 		
 		modelBuilder.inputDirectoryName = trainDirPath;
 		modelBuilder.modelName = modelPath;
@@ -290,7 +283,7 @@ public class MauiCore {
 		modelBuilder.minNumOccur = minOccur;
 		modelBuilder.maxPhraseLength = maxPhraseLength;
 		modelBuilder.minPhraseLength = minPhraseLength;
-		modelBuilder.serialize = modelBuilderSerialize;
+		modelBuilder.serialize = vocabSerialize;
 
 		setupVocab(vocabPath, stemmer, stopwords);
 		modelBuilder.setVocabulary(vocab);
@@ -303,26 +296,25 @@ public class MauiCore {
 		modelBuilder.setWikipediaFeatures(false);
 		
 		MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDirPath));
-		modelBuilder.saveModel(filter);
+		if (saveModel) {
+			if (modelPath == null) throw new NullPointerException("Model path for the modelBuilder is not set");
+			modelBuilder.saveModel(filter);
+			UI.showModelBuilt(new File(modelPath).getName());
+		} else {
+			System.out.println("[MauiCore] Save model is disabled, therefore, the MauiFilter was not serialized.");
+		}
 		
-		UI.showModelBuilt(new File(modelPath).getName());
 		
 		return filter;
 	}
 	
 	public static List<MauiTopics> runTopicExtractor() throws Exception {
 		if (testDirPath == null) throw new NullPointerException("Test directory path for the topic extractor is not set.");
+		if (modelPath == null) throw new NullPointerException("The model path was not set.");
 		
-		//topicExtractor.inputDirectoryName = testDirPath;
-		//topicExtractor.modelName = modelPath;
-		//topicExtractor.vocabularyName = vocabPath;
-		//topicExtractor.vocabularyFormat = vocabFormat;
 		topicExtractor.stemmer = stemmer;
 		topicExtractor.stopwords = stopwords;
-		//topicExtractor.documentLanguage = language;
-		//topicExtractor.documentEncoding = encoding;
-		//topicExtractor.cutOffTopicProbability = cutOffTopicProbability;
-		topicExtractor.serialize = topicExtractorSerialize;
+		topicExtractor.serialize = vocabSerialize;
 		
 		topicExtractor.setOptions(new String[] {
 				"-l", testDirPath,
@@ -334,8 +326,6 @@ public class MauiCore {
 				"-n", String.valueOf(numTopicsToExtract),
 				"-c", String.valueOf(cutOffTopicProbability),
 		});
-		
-		//topicExtractor.topicsPerDocument = numTopicsToExtract;
 		
 		setupVocab(vocabPath, stemmer, stopwords);
 		topicExtractor.setVocabulary(vocab);
@@ -362,7 +352,7 @@ public class MauiCore {
 		}	
 		String documentText = FileUtils.readFileToString(testDocFile, Charset.forName(encoding));
 		
-		mauiWrapper = new MauiWrapper(vocab, DataLoader.loadModel(modelPath));
+		mauiWrapper = new MauiWrapper(vocab, DataLoader.loadModel(modelPath)); //TODO: use full constructor
 		mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, language);
 
 		ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, numTopicsToExtract);

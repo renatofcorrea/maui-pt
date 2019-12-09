@@ -1,5 +1,15 @@
 package com.entopix.maui.tests;
 
+import com.entopix.maui.core.MauiCore;
+import com.entopix.maui.core.ModelWrapper;
+import com.entopix.maui.main.MauiTopicExtractor;
+import com.entopix.maui.stemmers.LuceneBRStemmer;
+import com.entopix.maui.stemmers.Stemmer;
+import com.entopix.maui.stopwords.StopwordsPortuguese;
+import com.entopix.maui.util.DataLoader;
+import com.entopix.maui.utils.MauiFileUtils;
+import com.entopix.maui.vocab.Vocabulary;
+
 /**
  * Class used for tests during development. Should be removed before release.
  * @author Rahmon Jorge
@@ -9,50 +19,41 @@ package com.entopix.maui.tests;
 public class TempClass {
 	
 	public static void main(String[] args) throws Exception {
-		/*
+		
 		//Variable init
-		String docPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\test30";
-		File[] docList = MauiFileUtils.filterFileList(docPath, ".txt");
-		String[] docPaths = MauiFileUtils.getFileListPaths(docList);
-		String modelPath = "C:\\Users\\PC1\\git\\maui-pt\\data\\models\\model_fulltexts_PortugueseStemmer_train30";
-		Stemmer stemmer = new PortugueseStemmer();
+		String testDirPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\test60";
+		String trainDirPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\train30";
+		String packedModelPath = "C:\\Users\\PC1\\git\\maui-pt\\data\\models\\packed_model";
+		Stemmer stemmer = new LuceneBRStemmer();
 		
-		//MauiCore setup
-		MauiCore.DB_evaluateTopics = true;
-		MauiCore.DB_evaluateTopicsSingle = true;
-		MauiCore.setNumTopicsToExtract(10);
-		MauiCore.setCutOffTopicProbability(0.12);
+		MauiCore.setTrainDirPath(trainDirPath);
 		MauiCore.setStemmer(stemmer);
-		MauiCore.setTestDirPath(docPath);
-		MauiCore.setModelPath(modelPath);
+		MauiCore.setSaveModel(false);
 		
-		List<MauiTopics> mauiTopics = MauiCore.runTopicExtractor();
+		ModelWrapper model = new ModelWrapper(MauiCore.buildModel(), trainDirPath, stemmer);
 		
-		List<List<String>> extractedTopics = MauiPTUtils.mauiTopicsToString(mauiTopics);
+		MauiFileUtils.serializeObject(model, packedModelPath);
 		
-		double[] numCorrect = MauiCore.evaluateTopics(docPaths, extractedTopics, 10);
+		ModelWrapper modelFromFile = (ModelWrapper) MauiFileUtils.deserializeObject(packedModelPath);
 		
+		/*
+		ModelWrapper wrapper = (ModelWrapper) MauiFileUtils.deserializeObject(modelPath);
 		
-		//Counts and prints topics marked as true
-		List<Topic> topics;
-		int[] correctTopicsCount = new int[mauiTopics.size()];
-		int i;
-		for (i = 0; i < mauiTopics.size(); i++) {
-			topics = mauiTopics.get(i).getTopics();
-			for (Topic t : topics) {
-				if (t.isCorrect()) {
-					correctTopicsCount[i]++;
-				}
-			}
-			System.out.println(correctTopicsCount[i] + " marked as 'true' for document " + new File(mauiTopics.get(i).getFilePath()).getName());
-			if (correctTopicsCount[i] == numCorrect[i]) {
-				System.out.println("TopicExtractor evaluation matches manual evaluation.");
-			} else {
-				System.out.println("TopicExtractor evaluation does NOT matches manual evaluation.");
-			}
-		}
-
+		Vocabulary vocab = new Vocabulary();
+		vocab.setReorder(false);
+		vocab.setSerialize(true);
+		vocab.setEncoding("UTF-8");
+		vocab.setLanguage("pt");
+		vocab.setStemmer(wrapper.getStemmerUsed());
+		vocab.setStopwords(new StopwordsPortuguese());
+		vocab.setVocabularyName(MauiCore.getVocabPath());
+		vocab.initializeVocabulary(MauiCore.getVocabPath(), "skos");
 		
+		MauiTopicExtractor mte = new MauiTopicExtractor();
+		mte.setModel(wrapper.getFilter());
+		mte.stemmer = wrapper.getStemmerUsed();
+		mte.setVocabulary(vocab);
+		mte.extractTopics(DataLoader.loadTestDocuments(testDirPath));
 		*/
 		
 	}

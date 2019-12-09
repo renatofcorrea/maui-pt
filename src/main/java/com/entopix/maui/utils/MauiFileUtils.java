@@ -1,8 +1,12 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,6 +43,65 @@ public class MauiFileUtils {
 	
 	public void setModelsDirPath(String path) {
 		modelsDirPath = path;
+	}
+	
+	public static void serializeObject(Object obj, String path) {
+		FileOutputStream fout = null;
+		ObjectOutputStream oos = null;
+		
+		try {
+			fout = new FileOutputStream(path);
+			oos = new ObjectOutputStream(fout);
+			oos.writeObject(obj);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (fout != null) {
+				try {
+					fout.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (oos != null) {
+				try {
+					oos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public static Object deserializeObject(String path) {
+		Object object = null;
+		FileInputStream fin = null;
+		ObjectInputStream ois = null;
+		
+		try {
+			fin = new FileInputStream(path);
+			ois = new ObjectInputStream(fin);
+			object = ois.readObject();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (fin != null) {
+				try {
+					fin.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (ois != null) {
+				try {
+					ois.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		return object;
 	}
 	
 	/** 

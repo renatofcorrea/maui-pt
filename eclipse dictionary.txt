@@ -22,3 +22,5 @@ std
 mauicore
 renato
 correa
+standalone
+enums
