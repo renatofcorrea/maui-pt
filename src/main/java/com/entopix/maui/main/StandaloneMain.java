@@ -18,7 +18,7 @@ import com.entopix.maui.stemmers.WekaStemmerOrengo;
 import com.entopix.maui.stemmers.WekaStemmerPorter;
 import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.stopwords.Stopwords;
-import com.entopix.maui.tests.StructuredTest2;
+import com.entopix.maui.tests.StructuredTest;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.MauiPTUtils;
 import com.entopix.maui.utils.UI;
@@ -402,11 +402,16 @@ public class StandaloneMain {
 				model = MODELS_DIR.listFiles()[0];
 				updateModelSetup();
 				updatePaths();
+				
 			} else { //If it doesn't, create a new model
+				
+				//Path & variables updating
 				trainDirPath = FTS_PATH + "\\train30";
 				testDirPath = FTS_PATH + "\\test60";
 				testDoc = new File(testDirPath + "\\Artigo32.txt");
 				stemmer = new PortugueseStemmer();	
+				
+				//Creates model
 				String modelName = MauiPTUtils.generateModelName(trainDirPath, stemmer);
 				model = new File(MODELS_DIR.getPath() + "\\" + modelName);
 				modelType = FULLTEXTS;
@@ -431,7 +436,7 @@ public class StandaloneMain {
 				else if (input.equals("3")) testModelOption();
 				else if (input.equals("4")) runModelOption();
 				else if (input.equals("5")) deleteModelsOption();
-				else if (input.equals("6")) StructuredTest2.runAllTests();
+				else if (input.equals("6")) StructuredTest.runAllTests();
 				else if (input.equals("7")) {
 					UI.displayCredits();
 					System.out.println("Aperte [enter] para continuar ou 0 para sair.");

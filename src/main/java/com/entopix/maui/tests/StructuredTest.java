@@ -22,7 +22,7 @@ import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.MauiPTUtils;
 
-public class StructuredTest2 {
+public class StructuredTest {
 	
 	//Paths
 	private static String dataPath = MauiFileUtils.getDataPath();

@@ -35,6 +35,7 @@ public class MauiCore {
 	private static MauiModelBuilder modelBuilder = new MauiModelBuilder();
 	private static MauiTopicExtractor topicExtractor = new MauiTopicExtractor();
 	private static Vocabulary vocab = new Vocabulary();
+	private static ModelWrapper model;
 	
 	//Core parameters
 	private static File testDocFile;
@@ -160,8 +161,8 @@ public class MauiCore {
 		return stopwordsPackage;
 	}
 	
-	public static boolean isSaveModel() {
-		return saveModel;
+	public static ModelWrapper getModel() {
+		return model;
 	}
 
 	public static void setStopwords(Stopwords stopwords) {
@@ -252,10 +253,14 @@ public class MauiCore {
 		MauiCore.stopwordsPackage = stopwordsPackage;
 	}
 	
-	public static void setSaveModel(boolean saveModel) {
-		MauiCore.saveModel = saveModel;
+	public static void setModel(ModelWrapper modelWrapper) {
+		model = modelWrapper;
 	}
-
+	
+	public static void loadModel(String modelPath) {
+		model = (ModelWrapper) MauiFileUtils.deserializeObject(modelPath);
+	}
+	
 	public static void setupVocab(String vocabPath, Stemmer stemmer, Stopwords stopwords) {
 		if (stemmer == null) throw new NullPointerException("Stemmer is not set");
 
@@ -296,9 +301,11 @@ public class MauiCore {
 		modelBuilder.setWikipediaFeatures(false);
 		
 		MauiFilter filter = modelBuilder.buildModel(DataLoader.loadTestDocuments(trainDirPath));
+		
 		if (saveModel) {
 			if (modelPath == null) throw new NullPointerException("Model path for the modelBuilder is not set");
-			modelBuilder.saveModel(filter);
+			model = new ModelWrapper(filter, trainDirPath, stemmer, vocabPath);
+			MauiFileUtils.serializeObject(model, modelPath);
 			UI.showModelBuilt(new File(modelPath).getName());
 		} else {
 			System.out.println("[MauiCore] Save model is disabled, therefore, the MauiFilter was not serialized.");
@@ -309,8 +316,9 @@ public class MauiCore {
 	}
 	
 	public static List<MauiTopics> runTopicExtractor() throws Exception {
-		if (testDirPath == null) throw new NullPointerException("Test directory path for the topic extractor is not set.");
+		if (testDirPath == null) throw new NullPointerException("Test directory path for the topic extractor not set.");
 		if (modelPath == null) throw new NullPointerException("The model path was not set.");
+		if (model == null) throw new NullPointerException("No model loaded.");
 		
 		topicExtractor.stemmer = stemmer;
 		topicExtractor.stopwords = stopwords;
@@ -329,9 +337,16 @@ public class MauiCore {
 		
 		setupVocab(vocabPath, stemmer, stopwords);
 		topicExtractor.setVocabulary(vocab);
-		topicExtractor.loadModel();
+		topicExtractor.setModel(model.getFilter());
 		
-		List<MauiTopics> topics = topicExtractor.extractTopics(DataLoader.loadTestDocuments(testDirPath));
+		List<MauiTopics> topics = null;
+		try {
+			topics = topicExtractor.extractTopics(DataLoader.loadTestDocuments(testDirPath));
+		} catch (NullPointerException e) {
+			model.getFilter().setVocabulary(vocab);
+			topics = topicExtractor.extractTopics(DataLoader.loadTestDocuments(testDirPath));
+		}
+		
 		if (printExtractedTopics) {
 			topicExtractor.printTopics(topics);
 			Evaluator.evaluateTopics(topics);
@@ -345,14 +360,15 @@ public class MauiCore {
 		else if (modelPath == null) throw new NullPointerException("Model path for the MauiWrapper is not set");
 		
 		MauiWrapper mauiWrapper = null;
-		try {
-			setupVocab(vocabPath, stemmer, stopwords);
-		} catch (RuntimeException e) {
-			
-		}	
+		setupVocab(vocabPath, stemmer, stopwords);
 		String documentText = FileUtils.readFileToString(testDocFile, Charset.forName(encoding));
 		
-		mauiWrapper = new MauiWrapper(vocab, DataLoader.loadModel(modelPath)); //TODO: use full constructor
+		try {
+			mauiWrapper = new MauiWrapper(vocab, model.getFilter()); //TODO: use full constructor
+		} catch (Exception e) {
+			model.getFilter().setVocabulary(vocab);
+			mauiWrapper = new MauiWrapper(vocab, model.getFilter());
+		}
 		mauiWrapper.setModelParameters(vocabPath, stemmer, stopwords, language);
 
 		ArrayList<Topic> keywords = mauiWrapper.extractTopicsFromText(documentText, numTopicsToExtract);

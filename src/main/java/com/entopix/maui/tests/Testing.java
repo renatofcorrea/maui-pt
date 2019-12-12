@@ -16,7 +16,7 @@ import com.entopix.maui.vocab.Vocabulary;
  *
  */
 
-public class TempClass {
+public class Testing {
 	
 	public static void main(String[] args) throws Exception {
 		
@@ -26,35 +26,16 @@ public class TempClass {
 		String packedModelPath = "C:\\Users\\PC1\\git\\maui-pt\\data\\models\\packed_model";
 		Stemmer stemmer = new LuceneBRStemmer();
 		
+		//MauiCore setup
 		MauiCore.setTrainDirPath(trainDirPath);
+		MauiCore.setTestDirPath(testDirPath);
 		MauiCore.setStemmer(stemmer);
-		MauiCore.setSaveModel(false);
+		MauiCore.saveModel= true;
+		MauiCore.DB_evaluateTopics = true;
+		MauiCore.setPrintExtractedTopics(true);
+		MauiCore.setModelPath(packedModelPath);
 		
-		ModelWrapper model = new ModelWrapper(MauiCore.buildModel(), trainDirPath, stemmer);
-		
-		MauiFileUtils.serializeObject(model, packedModelPath);
-		
-		ModelWrapper modelFromFile = (ModelWrapper) MauiFileUtils.deserializeObject(packedModelPath);
-		
-		/*
-		ModelWrapper wrapper = (ModelWrapper) MauiFileUtils.deserializeObject(modelPath);
-		
-		Vocabulary vocab = new Vocabulary();
-		vocab.setReorder(false);
-		vocab.setSerialize(true);
-		vocab.setEncoding("UTF-8");
-		vocab.setLanguage("pt");
-		vocab.setStemmer(wrapper.getStemmerUsed());
-		vocab.setStopwords(new StopwordsPortuguese());
-		vocab.setVocabularyName(MauiCore.getVocabPath());
-		vocab.initializeVocabulary(MauiCore.getVocabPath(), "skos");
-		
-		MauiTopicExtractor mte = new MauiTopicExtractor();
-		mte.setModel(wrapper.getFilter());
-		mte.stemmer = wrapper.getStemmerUsed();
-		mte.setVocabulary(vocab);
-		mte.extractTopics(DataLoader.loadTestDocuments(testDirPath));
-		*/
-		
+		//Test area
+		MauiCore.runTopicExtractor();
 	}
 }

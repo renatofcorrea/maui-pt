@@ -193,6 +193,11 @@ public class MauiFileUtils {
 		return chooseFileFromList(new File(dirPath).listFiles());
 	}
 	
+	/**
+	 * Prints a numbered file list for the user to choose, then returns the file choice.
+	 * @param fileList
+	 * @return fileChoice
+	 */
 	public static File chooseFileFromList(File[] fileList) {
 		if (fileList == null) throw new NullPointerException();
 		int fileChoice;
