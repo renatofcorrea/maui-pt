@@ -1,1 +1,718 @@
-11:08:28,028 INFO  [VocabularyStoreFactory] Deserializing vocabulary from C:\Users\PC1\git\maui-pt\data\vocabulary\TBCI-SKOS_pt.rdf.gz_com.entopix.maui.vocab.VocabularyStore_Original_PortugueseStemmer.serialized
+08:45:12,084 INFO  [VocabularyStoreFactory] Deserializing vocabulary from C:\Users\PC1\git\maui-pt\data\\vocabulary\TBCI-SKOS_pt.rdf_com.entopix.maui.vocab.VocabularyStore_Original_WekaStemmerSavoy.serialized
+08:45:12,302 INFO  [MauiModelBuilder] -- Building the model... 
+08:45:12,333 INFO  [MauiModelBuilder] -- Adding documents as instances... 
+08:45:12,708 INFO  [MauiModelBuilder] -- Building the model... 
+08:45:19,509 INFO  [VocabularyStoreFactory] Deserializing vocabulary from C:\Users\PC1\git\maui-pt\data\\vocabulary\TBCI-SKOS_pt.rdf_com.entopix.maui.vocab.VocabularyStore_Original_WekaStemmerSavoy.serialized
+08:45:19,853 INFO  [MauiTopicExtractor] -- Extracting keyphrases... 
+08:45:19,915 INFO  [MauiTopicExtractor] -- Processing document: Artigo01.txt
+08:45:19,915 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:19,915 INFO  [MauiTopicExtractor] Topic conhecimento nas organizações 1 0.9191965811965812 > true
+08:45:19,915 INFO  [MauiTopicExtractor] Topic gestão do conhecimento 1 0.9191965811965812 > true
+08:45:19,915 INFO  [MauiTopicExtractor] Topic transferência da informação 1 0.8991965811965812 > true
+08:45:19,915 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.5561627906976744 > false
+08:45:19,931 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.30116279069767443 > false
+08:45:19,931 INFO  [MauiTopicExtractor] Topic conhecimento tácito 1 0.2273779527482805 > true
+08:45:19,931 INFO  [MauiTopicExtractor] Topic gestão 1 0.21798199819982003 > false
+08:45:19,931 INFO  [MauiTopicExtractor] Topic avaliação 1 0.21589866486648665 > false
+08:45:19,931 INFO  [MauiTopicExtractor] Topic processos de gestão 1 0.2155339750688588 > true
+08:45:19,962 INFO  [MauiTopicExtractor] -- Processing document: Artigo02.txt
+08:45:19,962 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:19,962 INFO  [MauiTopicExtractor] Topic divulgação científica 1 0.9191965811965812 > true
+08:45:19,962 INFO  [MauiTopicExtractor] Topic comunicação científica 1 0.7635915206905306 > true
+08:45:19,977 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6588888888888889 > true
+08:45:19,977 INFO  [MauiTopicExtractor] Topic notícias 1 0.5138910891089109 > true
+08:45:19,977 INFO  [MauiTopicExtractor] Topic resumos 1 0.2958986648664866 > false
+08:45:19,977 INFO  [MauiTopicExtractor] Topic agências governamentais 1 0.14404461941494717 > false
+08:45:19,977 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.14404461941494717 > true
+08:45:20,009 INFO  [MauiTopicExtractor] -- Processing document: Artigo03.txt
+08:45:20,009 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,009 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.8991965811965812 > true
+08:45:20,009 INFO  [MauiTopicExtractor] Topic direito à informação 1 0.8191965811965811 > true
+08:45:20,009 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.5611627906976744 > true
+08:45:20,009 INFO  [MauiTopicExtractor] Topic acesso à informação 1 0.5595815941164779 > true
+08:45:20,009 INFO  [MauiTopicExtractor] Topic direito 1 0.36722442244224424 > false
+08:45:20,024 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.3154485049833887 > true
+08:45:20,024 INFO  [MauiTopicExtractor] Topic bibliotecas 1 0.3121151716500553 > false
+08:45:20,024 INFO  [MauiTopicExtractor] Topic resumos 1 0.2958986648664866 > false
+08:45:20,024 INFO  [MauiTopicExtractor] Topic avaliação 1 0.18256533153315332 > false
+08:45:20,055 INFO  [MauiTopicExtractor] -- Processing document: Artigo04.txt
+08:45:20,055 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,055 INFO  [MauiTopicExtractor] Topic acesso livre 1 0.6635915206905306 > true
+08:45:20,055 INFO  [MauiTopicExtractor] Topic direito autoral 1 0.6635915206905306 > true
+08:45:20,055 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.6451371496720334 > true
+08:45:20,055 INFO  [MauiTopicExtractor] Topic arranjo 1 0.6272244224422442 > false
+08:45:20,071 INFO  [MauiTopicExtractor] Topic arquivos 1 0.4951410891089109 > false
+08:45:20,071 INFO  [MauiTopicExtractor] Topic publicações 1 0.44722442244224425 > false
+08:45:20,071 INFO  [MauiTopicExtractor] Topic direito 1 0.395141089108911 > false
+08:45:20,071 INFO  [MauiTopicExtractor] Topic publicações eletrônicas 1 0.3188183366537807 > true
+08:45:20,087 INFO  [MauiTopicExtractor] Topic filosofia 1 0.2958986648664866 > false
+08:45:20,087 INFO  [MauiTopicExtractor] Topic publicações impressas 1 0.2265106443460884 > false
+08:45:20,118 INFO  [MauiTopicExtractor] -- Processing document: Artigo05.txt
+08:45:20,118 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,118 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.6361627906976743 > true
+08:45:20,133 INFO  [MauiTopicExtractor] Topic sumários 1 0.5284744224422442 > false
+08:45:20,133 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.422041404140414 > false
+08:45:20,133 INFO  [MauiTopicExtractor] Topic fitas sonoras 1 0.3905339750688588 > false
+08:45:20,133 INFO  [MauiTopicExtractor] Topic relações entre conceitos 1 0.2405339750688588 > false
+08:45:20,133 INFO  [MauiTopicExtractor] Topic estudantes 1 0.21589866486648665 > true
+08:45:20,133 INFO  [MauiTopicExtractor] Topic comunidades científicas 1 0.1517369271072549 > true
+08:45:20,149 INFO  [MauiTopicExtractor] Topic análise comparativa 1 0.14404461941494717 > false
+08:45:20,149 INFO  [MauiTopicExtractor] Topic cientistas 1 0.13256533153315334 > false
+08:45:20,149 INFO  [MauiTopicExtractor] Topic pesquisa 1 0.12998199819981998 > false
+08:45:20,180 INFO  [MauiTopicExtractor] -- Processing document: Artigo06.txt
+08:45:20,180 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,180 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.8068888888888889 > true
+08:45:20,180 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.7991965811965812 > true
+08:45:20,180 INFO  [MauiTopicExtractor] Topic ciência da computação 1 0.6991965811965812 > true
+08:45:20,196 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6588888888888889 > true
+08:45:20,196 INFO  [MauiTopicExtractor] Topic tesauros 1 0.5472244224422442 > true
+08:45:20,196 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.4611627906976744 > false
+08:45:20,196 INFO  [MauiTopicExtractor] Topic navegação 1 0.3625653315331533 > false
+08:45:20,196 INFO  [MauiTopicExtractor] Topic universidades 1 0.21589866486648665 > false
+08:45:20,211 INFO  [MauiTopicExtractor] Topic ciências humanas 1 0.2130922384625662 > false
+08:45:20,211 INFO  [MauiTopicExtractor] Topic identificadores de objetos digitais 1 0.18256533153315332 > false
+08:45:20,243 INFO  [MauiTopicExtractor] -- Processing document: Artigo07.txt
+08:45:20,258 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,258 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.9191965811965812 > true
+08:45:20,258 INFO  [MauiTopicExtractor] Topic gestão do conhecimento 1 0.8191965811965811 > true
+08:45:20,258 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.8161965811965812 > false
+08:45:20,258 INFO  [MauiTopicExtractor] Topic recursos de informação 1 0.7991965811965812 > true
+08:45:20,258 INFO  [MauiTopicExtractor] Topic inteligência competitiva 1 0.7635915206905306 > true
+08:45:20,258 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.7168888888888889 > false
+08:45:20,274 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.5561627906976744 > true
+08:45:20,274 INFO  [MauiTopicExtractor] Topic competitividade 1 0.4625653315331533 > true
+08:45:20,274 INFO  [MauiTopicExtractor] Topic tomada de decisões 1 0.3905339750688588 > false
+08:45:20,274 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.31211517165005537 > false
+08:45:20,289 INFO  [MauiTopicExtractor] -- Processing document: Artigo08.txt
+08:45:20,289 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,289 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.8991965811965812 > true
+08:45:20,289 INFO  [MauiTopicExtractor] Topic estados da arte 1 0.7991965811965812 > false
+08:45:20,289 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.7388888888888889 > true
+08:45:20,305 INFO  [MauiTopicExtractor] Topic tipos de documento 1 0.4738673084021922 > true
+08:45:20,305 INFO  [MauiTopicExtractor] Topic registros 1 0.4284744224422442 > false
+08:45:20,305 INFO  [MauiTopicExtractor] Topic homografia 1 0.3125653315331533 > false
+08:45:20,305 INFO  [MauiTopicExtractor] Topic artes 1 0.2625653315331533 > false
+08:45:20,305 INFO  [MauiTopicExtractor] Topic processamento de informações 1 0.2405339750688588 > false
+08:45:20,305 INFO  [MauiTopicExtractor] Topic indústria da informação 1 0.2155339750688588 > true
+08:45:20,305 INFO  [MauiTopicExtractor] Topic resumos 1 0.21256533153315332 > false
+08:45:20,336 INFO  [MauiTopicExtractor] -- Processing document: Artigo09.txt
+08:45:20,336 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,336 INFO  [MauiTopicExtractor] Topic tomada de decisões 1 0.9191965811965812 > true
+08:45:20,336 INFO  [MauiTopicExtractor] Topic fluxo da informação 1 0.9191965811965812 > true
+08:45:20,336 INFO  [MauiTopicExtractor] Topic inteligência competitiva 1 0.6635915206905306 > true
+08:45:20,336 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.5588888888888889 > true
+08:45:20,352 INFO  [MauiTopicExtractor] Topic disseminação seletiva da informação 1 0.526888888888889 > false
+08:45:20,352 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.3811627906976744 > false
+08:45:20,352 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.3794228639577477 > true
+08:45:20,352 INFO  [MauiTopicExtractor] Topic universidades 1 0.36722442244224424 > true
+08:45:20,352 INFO  [MauiTopicExtractor] Topic relevância 1 0.2625653315331533 > false
+08:45:20,352 INFO  [MauiTopicExtractor] Topic gestores 1 0.18256533153315332 > false
+08:45:20,383 INFO  [MauiTopicExtractor] -- Processing document: Artigo10.txt
+08:45:20,383 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,383 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.8091965811965812 > true
+08:45:20,383 INFO  [MauiTopicExtractor] Topic probabilidade e estatística 1 0.5472244224422442 > true
+08:45:20,383 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.4794228639577477 > true
+08:45:20,399 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.43389108910891094 > true
+08:45:20,399 INFO  [MauiTopicExtractor] Topic economia 1 0.3625653315331533 > true
+08:45:20,399 INFO  [MauiTopicExtractor] Topic formatos MARC 1 0.2625653315331533 > false
+08:45:20,399 INFO  [MauiTopicExtractor] Topic imagens 1 0.18245123840549432 > false
+08:45:20,399 INFO  [MauiTopicExtractor] Topic computadores pessoais 1 0.14404461941494717 > false
+08:45:20,399 INFO  [MauiTopicExtractor] Topic pertinência 1 0.13256533153315334 > false
+08:45:20,399 INFO  [MauiTopicExtractor] Topic levantamentos 1 0.13256533153315334 > true
+08:45:20,414 INFO  [MauiTopicExtractor] -- Processing document: Artigo11.txt
+08:45:20,430 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,430 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.7388888888888889 > true
+08:45:20,430 INFO  [MauiTopicExtractor] Topic propriedade intelectual 1 0.5976824297814397 > true
+08:45:20,430 INFO  [MauiTopicExtractor] Topic classificação 1 0.3625653315331533 > false
+08:45:20,430 INFO  [MauiTopicExtractor] Topic resumos 1 0.2958986648664866 > false
+08:45:20,430 INFO  [MauiTopicExtractor] Topic associações de elaboração de normas 1 0.2405339750688588 > false
+08:45:20,430 INFO  [MauiTopicExtractor] Topic protocolos de comunicação 1 0.2155339750688588 > false
+08:45:20,445 INFO  [MauiTopicExtractor] Topic educação 1 0.13256533153315334 > true
+08:45:20,461 INFO  [MauiTopicExtractor] -- Processing document: Artigo12.txt
+08:45:20,461 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,461 INFO  [MauiTopicExtractor] Topic acesso à informação 1 0.8991965811965812 > true
+08:45:20,461 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.8991965811965812 > false
+08:45:20,461 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.8991965811965812 > true
+08:45:20,461 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.8311965811965812 > true
+08:45:20,477 INFO  [MauiTopicExtractor] Topic biblioteconomia 1 0.5938910891089109 > true
+08:45:20,477 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.4812482607831446 > false
+08:45:20,477 INFO  [MauiTopicExtractor] Topic arquivologia 1 0.42923199819981994 > true
+08:45:20,477 INFO  [MauiTopicExtractor] Topic teoria da informação 1 0.38124826078314455 > true
+08:45:20,477 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.2905339750688588 > true
+08:45:20,477 INFO  [MauiTopicExtractor] Topic nomes próprios 1 0.2625653315331533 > false
+08:45:20,508 INFO  [MauiTopicExtractor] -- Processing document: Artigo13.txt
+08:45:20,508 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,508 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.9191965811965812 > true
+08:45:20,508 INFO  [MauiTopicExtractor] Topic formação profissional 1 0.7991965811965812 > true
+08:45:20,523 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.7284704830053668 > false
+08:45:20,523 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6438888888888888 > true
+08:45:20,523 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.6268888888888889 > true
+08:45:20,523 INFO  [MauiTopicExtractor] Topic bibliotecas 1 0.44722442244224425 > true
+08:45:20,523 INFO  [MauiTopicExtractor] Topic acervos 1 0.3625653315331533 > false
+08:45:20,523 INFO  [MauiTopicExtractor] Topic economia 1 0.3625653315331533 > true
+08:45:20,523 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.3568888888888889 > false
+08:45:20,523 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.3568888888888889 > false
+08:45:20,555 INFO  [MauiTopicExtractor] -- Processing document: Artigo14.txt
+08:45:20,555 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,555 INFO  [MauiTopicExtractor] Topic competência em informação 1 0.9191965811965812 > true
+08:45:20,555 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.9191965811965812 > true
+08:45:20,555 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.8161965811965812 > false
+08:45:20,555 INFO  [MauiTopicExtractor] Topic gestão do conhecimento 1 0.7291965811965812 > true
+08:45:20,570 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.6168888888888888 > true
+08:45:20,570 INFO  [MauiTopicExtractor] Topic necessidades de informação 1 0.6068888888888889 > false
+08:45:20,570 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.5627561972910811 > true
+08:45:20,570 INFO  [MauiTopicExtractor] Topic gestores 1 0.49389108910891083 > false
+08:45:20,570 INFO  [MauiTopicExtractor] Topic consultores de informação 1 0.4155339750688588 > false
+08:45:20,586 INFO  [MauiTopicExtractor] Topic inclusão digital 1 0.3188183366537807 > true
+08:45:20,601 INFO  [MauiTopicExtractor] -- Processing document: Artigo15.txt
+08:45:20,617 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,617 INFO  [MauiTopicExtractor] Topic formação profissional 1 0.9191965811965812 > true
+08:45:20,617 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.9191965811965812 > true
+08:45:20,617 INFO  [MauiTopicExtractor] Topic educação superior 1 0.5064927552584318 > true
+08:45:20,617 INFO  [MauiTopicExtractor] Topic paradigmas 1 0.4951410891089109 > true
+08:45:20,617 INFO  [MauiTopicExtractor] Topic mudança 1 0.38131533153315333 > false
+08:45:20,617 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.37044850498338866 > true
+08:45:20,617 INFO  [MauiTopicExtractor] Topic universidades 1 0.36722442244224424 > false
+08:45:20,617 INFO  [MauiTopicExtractor] Topic educação 1 0.2838910891089109 > false
+08:45:20,617 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.23211517165005535 > true
+08:45:20,648 INFO  [MauiTopicExtractor] -- Processing document: Artigo16.txt
+08:45:20,648 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,648 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.8991965811965812 > true
+08:45:20,648 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.8991965811965812 > true
+08:45:20,648 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.8311965811965812 > true
+08:45:20,648 INFO  [MauiTopicExtractor] Topic formação profissional 1 0.7635915206905306 > true
+08:45:20,664 INFO  [MauiTopicExtractor] Topic educação superior 1 0.5143490964481063 > true
+08:45:20,664 INFO  [MauiTopicExtractor] Topic biblioteconomia 1 0.49389108910891083 > true
+08:45:20,664 INFO  [MauiTopicExtractor] Topic cientistas da informação 1 0.3155339750688588 > true
+08:45:20,664 INFO  [MauiTopicExtractor] Topic educação 1 0.2838910891089109 > false
+08:45:20,664 INFO  [MauiTopicExtractor] Topic arquitetura de informação 1 0.2405339750688588 > false
+08:45:20,664 INFO  [MauiTopicExtractor] Topic mudança 1 0.21589866486648665 > false
+08:45:20,695 INFO  [MauiTopicExtractor] -- Processing document: Artigo17.txt
+08:45:20,695 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,695 INFO  [MauiTopicExtractor] Topic publicações eletrônicas 1 0.7635915206905306 > true
+08:45:20,711 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.6268888888888889 > true
+08:45:20,711 INFO  [MauiTopicExtractor] Topic controle bibliográfico 1 0.5976824297814397 > true
+08:45:20,711 INFO  [MauiTopicExtractor] Topic publicações 1 0.4284744224422442 > false
+08:45:20,711 INFO  [MauiTopicExtractor] Topic propriedade intelectual 1 0.41434909644810636 > true
+08:45:20,711 INFO  [MauiTopicExtractor] Topic Internet 1 0.36722442244224424 > true
+08:45:20,711 INFO  [MauiTopicExtractor] Topic direito à privacidade 1 0.3625653315331533 > false
+08:45:20,711 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.2978294573643411 > true
+08:45:20,711 INFO  [MauiTopicExtractor] Topic complexidade 1 0.2625653315331533 > false
+08:45:20,711 INFO  [MauiTopicExtractor] Topic inovação 1 0.18256533153315332 > true
+08:45:20,820 INFO  [MauiTopicExtractor] -- Processing document: Artigo18.txt
+08:45:20,820 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,835 INFO  [MauiTopicExtractor] Topic sociologia 1 0.3958986648664866 > true
+08:45:20,835 INFO  [MauiTopicExtractor] Topic mudança 1 0.36722442244224424 > false
+08:45:20,835 INFO  [MauiTopicExtractor] Topic construtivismo 1 0.21256533153315332 > true
+08:45:20,835 INFO  [MauiTopicExtractor] Topic identificadores de objetos digitais 1 0.18256533153315332 > false
+08:45:20,835 INFO  [MauiTopicExtractor] Topic comunidades científicas 1 0.1517369271072549 > false
+08:45:20,835 INFO  [MauiTopicExtractor] Topic funcionalidade 1 0.13256533153315334 > false
+08:45:20,835 INFO  [MauiTopicExtractor] Topic categorias 1 0.13256533153315334 > true
+08:45:20,835 INFO  [MauiTopicExtractor] Topic resumos 1 0.13256533153315334 > false
+08:45:20,835 INFO  [MauiTopicExtractor] Topic pesquisa 1 0.12998199819981998 > true
+08:45:20,867 INFO  [MauiTopicExtractor] -- Processing document: Artigo19.txt
+08:45:20,867 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,867 INFO  [MauiTopicExtractor] Topic ambiente organizacional 1 0.7635915206905306 > true
+08:45:20,867 INFO  [MauiTopicExtractor] Topic inteligência competitiva 1 0.7635915206905306 > true
+08:45:20,867 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.6268888888888889 > true
+08:45:20,867 INFO  [MauiTopicExtractor] Topic gestão do conhecimento 1 0.6068888888888889 > true
+08:45:20,882 INFO  [MauiTopicExtractor] Topic confiabilidade 1 0.4951410891089109 > false
+08:45:20,882 INFO  [MauiTopicExtractor] Topic confiabilidade 1 0.4951410891089109 > false
+08:45:20,882 INFO  [MauiTopicExtractor] Topic informação para negócios 1 0.3645815941164779 > true
+08:45:20,882 INFO  [MauiTopicExtractor] Topic relevância 1 0.32923199819981996 > true
+08:45:20,882 INFO  [MauiTopicExtractor] Topic conhecimento nas organizações 1 0.2955339750688588 > true
+08:45:20,882 INFO  [MauiTopicExtractor] Topic coleta de dados 1 0.2155339750688588 > false
+08:45:20,898 INFO  [MauiTopicExtractor] -- Processing document: Artigo20.txt
+08:45:20,913 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,913 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.8311965811965812 > true
+08:45:20,913 INFO  [MauiTopicExtractor] Topic dissertações e teses 1 0.5284744224422442 > true
+08:45:20,913 INFO  [MauiTopicExtractor] Topic publicações 1 0.49389108910891083 > true
+08:45:20,913 INFO  [MauiTopicExtractor] Topic projetos de pesquisa 1 0.4738673084021922 > true
+08:45:20,913 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.4611627906976744 > false
+08:45:20,913 INFO  [MauiTopicExtractor] Topic avaliação 1 0.36722442244224424 > false
+08:45:20,913 INFO  [MauiTopicExtractor] Topic anais de congressos 1 0.3405339750688588 > false
+08:45:20,913 INFO  [MauiTopicExtractor] Topic resumos 1 0.2958986648664866 > false
+08:45:20,913 INFO  [MauiTopicExtractor] Topic estudos de caso 1 0.2405339750688588 > false
+08:45:20,929 INFO  [MauiTopicExtractor] Topic artigos de periódico 1 0.2155339750688588 > false
+08:45:20,976 INFO  [MauiTopicExtractor] -- Processing document: Artigo21.txt
+08:45:20,976 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:20,976 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.9191965811965812 > true
+08:45:20,976 INFO  [MauiTopicExtractor] Topic usuários 1 0.43389108910891094 > true
+08:45:20,976 INFO  [MauiTopicExtractor] Topic inteligência artificial 1 0.3130922384625662 > true
+08:45:20,976 INFO  [MauiTopicExtractor] Topic buscas de informação 1 0.2405339750688588 > false
+08:45:20,976 INFO  [MauiTopicExtractor] Topic dissertações e teses 1 0.19137565701014547 > false
+08:45:20,976 INFO  [MauiTopicExtractor] Topic sociologia 1 0.18245123840549432 > true
+08:45:20,976 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.15711517165005537 > false
+08:45:20,976 INFO  [MauiTopicExtractor] Topic bibliotecas nacionais 1 0.14404461941494717 > false
+08:45:20,991 INFO  [MauiTopicExtractor] Topic ciências humanas 1 0.14404461941494717 > false
+08:45:21,023 INFO  [MauiTopicExtractor] -- Processing document: Artigo22.txt
+08:45:21,023 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,023 INFO  [MauiTopicExtractor] Topic processamento de informações 1 0.7991965811965812 > true
+08:45:21,023 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6588888888888889 > true
+08:45:21,023 INFO  [MauiTopicExtractor] Topic paradigmas 1 0.5472244224422442 > true
+08:45:21,023 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.436888888888889 > true
+08:45:21,023 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.23211517165005535 > false
+08:45:21,023 INFO  [MauiTopicExtractor] Topic identificadores de objetos digitais 1 0.21589866486648665 > false
+08:45:21,038 INFO  [MauiTopicExtractor] Topic complexidade 1 0.1837012384054943 > true
+08:45:21,038 INFO  [MauiTopicExtractor] Topic buscas 1 0.18256533153315332 > false
+08:45:21,038 INFO  [MauiTopicExtractor] Topic hipertextos 1 0.18245123840549432 > true
+08:45:21,038 INFO  [MauiTopicExtractor] Topic hipertexto 1 0.18245123840549432 > true
+08:45:21,054 INFO  [MauiTopicExtractor] -- Processing document: Artigo23.txt
+08:45:21,054 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,054 INFO  [MauiTopicExtractor] Topic história 1 0.5138910891089109 > true
+08:45:21,054 INFO  [MauiTopicExtractor] Topic conceitos de informação 1 0.49886730840219223 > true
+08:45:21,069 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.487756197291081 > true
+08:45:21,069 INFO  [MauiTopicExtractor] Topic suportes de informação 1 0.3905339750688588 > false
+08:45:21,069 INFO  [MauiTopicExtractor] Topic políticas públicas 1 0.3130922384625662 > false
+08:45:21,101 INFO  [MauiTopicExtractor] -- Processing document: Artigo24.txt
+08:45:21,116 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,116 INFO  [MauiTopicExtractor] Topic validade 1 0.5284744224422442 > false
+08:45:21,116 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.4794228639577477 > true
+08:45:21,116 INFO  [MauiTopicExtractor] Topic pesquisadores 1 0.4138910891089108 > true
+08:45:21,116 INFO  [MauiTopicExtractor] Topic revisão pelos pares 1 0.3155339750688588 > false
+08:45:21,116 INFO  [MauiTopicExtractor] Topic ecologia 1 0.3125653315331533 > false
+08:45:21,116 INFO  [MauiTopicExtractor] Topic pesquisa 1 0.23998199819982 > true
+08:45:21,116 INFO  [MauiTopicExtractor] Topic políticas públicas 1 0.2265106443460884 > true
+08:45:21,132 INFO  [MauiTopicExtractor] Topic organização do conhecimento 1 0.1482262827611665 > false
+08:45:21,132 INFO  [MauiTopicExtractor] Topic comunidades científicas 1 0.14404461941494717 > false
+08:45:21,132 INFO  [MauiTopicExtractor] Topic buscas 1 0.13256533153315334 > false
+08:45:21,163 INFO  [MauiTopicExtractor] -- Processing document: Artigo25.txt
+08:45:21,163 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,163 INFO  [MauiTopicExtractor] Topic agências de fomento 1 0.8991965811965812 > true
+08:45:21,163 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.8311965811965812 > true
+08:45:21,163 INFO  [MauiTopicExtractor] Topic bolsas de pesquisa 1 0.5738673084021922 > true
+08:45:21,163 INFO  [MauiTopicExtractor] Topic programas de pós-graduação 1 0.5138910891089109 > false
+08:45:21,163 INFO  [MauiTopicExtractor] Topic ciências sociais aplicadas 1 0.4738673084021922 > false
+08:45:21,163 INFO  [MauiTopicExtractor] Topic levantamentos 1 0.3625653315331533 > true
+08:45:21,163 INFO  [MauiTopicExtractor] Topic pesquisadores 1 0.2838910891089109 > true
+08:45:21,163 INFO  [MauiTopicExtractor] Topic projetos de pesquisa 1 0.2155339750688588 > true
+08:45:21,179 INFO  [MauiTopicExtractor] Topic pesquisa 1 0.17331533153315332 > true
+08:45:21,179 INFO  [MauiTopicExtractor] Topic comunidades científicas 1 0.1517369271072549 > false
+08:45:21,194 INFO  [MauiTopicExtractor] -- Processing document: Artigo26.txt
+08:45:21,194 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,194 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6588888888888889 > false
+08:45:21,194 INFO  [MauiTopicExtractor] Topic semântica 1 0.6272244224422442 > true
+08:45:21,194 INFO  [MauiTopicExtractor] Topic monitoramento 1 0.6272244224422442 > true
+08:45:21,210 INFO  [MauiTopicExtractor] Topic subsídios 1 0.5284744224422442 > false
+08:45:21,210 INFO  [MauiTopicExtractor] Topic programas de computador 1 0.32923199819981996 > false
+08:45:21,210 INFO  [MauiTopicExtractor] Topic gestão 1 0.29798199819982 > false
+08:45:21,210 INFO  [MauiTopicExtractor] Topic fluxo da informação 1 0.2905339750688588 > false
+08:45:21,225 INFO  [MauiTopicExtractor] Topic transferência da informação 1 0.2155339750688588 > false
+08:45:21,225 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.1482262827611665 > false
+08:45:21,225 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.1232262827611665 > true
+08:45:21,257 INFO  [MauiTopicExtractor] -- Processing document: Artigo27.txt
+08:45:21,257 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,257 INFO  [MauiTopicExtractor] Topic bases de dados 1 0.9191965811965812 > true
+08:45:21,257 INFO  [MauiTopicExtractor] Topic agências de fomento 1 0.8991965811965812 > true
+08:45:21,257 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.8091965811965812 > false
+08:45:21,257 INFO  [MauiTopicExtractor] Topic bolsas de pesquisa 1 0.7291965811965812 > true
+08:45:21,257 INFO  [MauiTopicExtractor] Topic indicadores de C&T 1 0.5138910891089109 > true
+08:45:21,257 INFO  [MauiTopicExtractor] Topic indicadores 1 0.5138910891089109 > true
+08:45:21,272 INFO  [MauiTopicExtractor] Topic pesquisadores 1 0.36722442244224424 > true
+08:45:21,272 INFO  [MauiTopicExtractor] Topic relevância 1 0.21256533153315332 > false
+08:45:21,272 INFO  [MauiTopicExtractor] Topic monitoramento 1 0.17923199819982 > false
+08:45:21,272 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.15711517165005537 > false
+08:45:21,288 INFO  [MauiTopicExtractor] -- Processing document: Artigo28.txt
+08:45:21,303 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,303 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.9191965811965812 > true
+08:45:21,303 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.8991965811965812 > true
+08:45:21,303 INFO  [MauiTopicExtractor] Topic necessidades de informação 1 0.8191965811965811 > false
+08:45:21,303 INFO  [MauiTopicExtractor] Topic governo eletrônico 1 0.7635915206905306 > true
+08:45:21,303 INFO  [MauiTopicExtractor] Topic bibliotecas digitais 1 0.6635915206905306 > true
+08:45:21,319 INFO  [MauiTopicExtractor] Topic unidades de informação 1 0.49886730840219223 > true
+08:45:21,319 INFO  [MauiTopicExtractor] Topic dissertações e teses 1 0.4951410891089109 > false
+08:45:21,319 INFO  [MauiTopicExtractor] Topic informação governamental 1 0.41434909644810636 > false
+08:45:21,319 INFO  [MauiTopicExtractor] Topic bibliotecas 1 0.34923199819982 > false
+08:45:21,319 INFO  [MauiTopicExtractor] Topic World Wide Web 1 0.28245123840549435 > false
+08:45:21,335 INFO  [MauiTopicExtractor] -- Processing document: Artigo29.txt
+08:45:21,335 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,335 INFO  [MauiTopicExtractor] Topic políticas de informação 1 0.8991965811965812 > true
+08:45:21,335 INFO  [MauiTopicExtractor] Topic informação governamental 1 0.7635915206905306 > true
+08:45:21,350 INFO  [MauiTopicExtractor] Topic governo eletrônico 1 0.7635915206905306 > true
+08:45:21,350 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.5528294573643411 > false
+08:45:21,350 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.546888888888889 > true
+08:45:21,350 INFO  [MauiTopicExtractor] Topic administração 1 0.5272244224422442 > false
+08:45:21,350 INFO  [MauiTopicExtractor] Topic políticas públicas 1 0.3130922384625662 > false
+08:45:21,350 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.23211517165005535 > false
+08:45:21,350 INFO  [MauiTopicExtractor] Topic identificadores de objetos digitais 1 0.18256533153315332 > false
+08:45:21,350 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.13211517165005537 > false
+08:45:21,366 INFO  [MauiTopicExtractor] -- Processing document: Artigo30.txt
+08:45:21,366 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,366 INFO  [MauiTopicExtractor] Topic periódicos eletrônicos 1 0.7635915206905306 > true
+08:45:21,366 INFO  [MauiTopicExtractor] Topic World Wide Web 1 0.44722442244224425 > true
+08:45:21,366 INFO  [MauiTopicExtractor] Topic arquivos 1 0.44722442244224425 > false
+08:45:21,366 INFO  [MauiTopicExtractor] Topic acesso 1 0.3058910891089109 > false
+08:45:21,381 INFO  [MauiTopicExtractor] Topic artigos de periódico 1 0.2405339750688588 > true
+08:45:21,381 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.23211517165005535 > false
+08:45:21,381 INFO  [MauiTopicExtractor] Topic periódicos 1 0.21798199819982003 > false
+08:45:21,381 INFO  [MauiTopicExtractor] Topic associações de elaboração de normas 1 0.2155339750688588 > false
+08:45:21,381 INFO  [MauiTopicExtractor] Topic resumos 1 0.13256533153315334 > false
+08:45:21,381 INFO  [MauiTopicExtractor] Topic avaliação 1 0.13256533153315334 > false
+08:45:21,428 INFO  [MauiTopicExtractor] -- Processing document: Artigo31.txt
+08:45:21,428 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,428 INFO  [MauiTopicExtractor] Topic políticas de informação 1 0.9191965811965812 > true
+08:45:21,428 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.8991965811965812 > true
+08:45:21,428 INFO  [MauiTopicExtractor] Topic regimes de informação 1 0.8791965811965812 > true
+08:45:21,428 INFO  [MauiTopicExtractor] Topic Internet 1 0.44798199819982 > true
+08:45:21,428 INFO  [MauiTopicExtractor] Topic cenários 1 0.3625653315331533 > false
+08:45:21,428 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.32737795274828047 > false
+08:45:21,428 INFO  [MauiTopicExtractor] Topic economia 1 0.2958986648664866 > true
+08:45:21,444 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.23211517165005535 > false
+08:45:21,444 INFO  [MauiTopicExtractor] Topic políticas públicas 1 0.2297589051292329 > false
+08:45:21,444 INFO  [MauiTopicExtractor] Topic mudança 1 0.21589866486648665 > false
+08:45:21,475 INFO  [MauiTopicExtractor] -- Processing document: Artigo32.txt
+08:45:21,475 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,475 INFO  [MauiTopicExtractor] Topic estratégias de busca 1 0.9191965811965812 > true
+08:45:21,491 INFO  [MauiTopicExtractor] Topic bases de dados 1 0.9191965811965812 > true
+08:45:21,491 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.9191965811965812 > true
+08:45:21,491 INFO  [MauiTopicExtractor] Topic sistemas de recuperação da informação 1 0.8591965811965812 > false
+08:45:21,491 INFO  [MauiTopicExtractor] Topic buscas de informação 1 0.7991965811965812 > false
+08:45:21,491 INFO  [MauiTopicExtractor] Topic termos de indexação 1 0.7791965811965813 > true
+08:45:21,491 INFO  [MauiTopicExtractor] Topic linguagens documentárias 1 0.7235915206905307 > true
+08:45:21,491 INFO  [MauiTopicExtractor] Topic revisões de literatura 1 0.646888888888889 > true
+08:45:21,491 INFO  [MauiTopicExtractor] Topic estudos de uso 1 0.6068888888888889 > false
+08:45:21,491 INFO  [MauiTopicExtractor] Topic buscas 1 0.45722442244224426 > false
+08:45:21,537 INFO  [MauiTopicExtractor] -- Processing document: Artigo33.txt
+08:45:21,537 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,537 INFO  [MauiTopicExtractor] Topic desenvolvimento de coleções 1 0.7991965811965812 > false
+08:45:21,537 INFO  [MauiTopicExtractor] Topic bibliotecas virtuais 1 0.7635915206905306 > true
+08:45:21,537 INFO  [MauiTopicExtractor] Topic bibliotecas digitais 1 0.7635915206905306 > true
+08:45:21,553 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.7068888888888889 > true
+08:45:21,553 INFO  [MauiTopicExtractor] Topic produtividade de autor 1 0.646888888888889 > true
+08:45:21,553 INFO  [MauiTopicExtractor] Topic artigos de periódico 1 0.6268888888888889 > true
+08:45:21,553 INFO  [MauiTopicExtractor] Topic tipos de documento 1 0.526888888888889 > false
+08:45:21,553 INFO  [MauiTopicExtractor] Topic referências bibliográficas 1 0.4820414041404141 > false
+08:45:21,553 INFO  [MauiTopicExtractor] Topic bibliotecas 1 0.45722442244224426 > true
+08:45:21,553 INFO  [MauiTopicExtractor] Topic redes de telecomunicações 1 0.3568888888888889 > false
+08:45:21,584 INFO  [MauiTopicExtractor] -- Processing document: Artigo34.txt
+08:45:21,584 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,584 INFO  [MauiTopicExtractor] Topic ciências da saúde 1 0.8991965811965812 > false
+08:45:21,584 INFO  [MauiTopicExtractor] Topic transferência da informação 1 0.8191965811965811 > true
+08:45:21,584 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.7635915206905306 > true
+08:45:21,584 INFO  [MauiTopicExtractor] Topic institutos de pesquisa 1 0.6691965811965812 > true
+08:45:21,584 INFO  [MauiTopicExtractor] Topic nutrição 1 0.5472244224422442 > true
+08:45:21,584 INFO  [MauiTopicExtractor] Topic universidades 1 0.36722442244224424 > true
+08:45:21,600 INFO  [MauiTopicExtractor] Topic pesquisa e desenvolvimento 1 0.3645815941164779 > true
+08:45:21,600 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.23211517165005535 > false
+08:45:21,600 INFO  [MauiTopicExtractor] Topic serviços de informação 1 0.1482262827611665 > false
+08:45:21,600 INFO  [MauiTopicExtractor] Topic bibliotecas especializadas 1 0.14404461941494717 > false
+08:45:21,615 INFO  [MauiTopicExtractor] -- Processing document: Artigo35.txt
+08:45:21,615 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,615 INFO  [MauiTopicExtractor] Topic linguagens de marcação 1 0.9191965811965812 > true
+08:45:21,631 INFO  [MauiTopicExtractor] Topic XML 1 0.6372244224422443 > true
+08:45:21,631 INFO  [MauiTopicExtractor] Topic HTML 1 0.6272244224422442 > true
+08:45:21,631 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.5688888888888888 > true
+08:45:21,631 INFO  [MauiTopicExtractor] Topic Internet 1 0.36722442244224424 > true
+08:45:21,631 INFO  [MauiTopicExtractor] Topic normas e protocolos 1 0.28256533153315333 > false
+08:45:21,631 INFO  [MauiTopicExtractor] Topic padrões de metadados 1 0.2755339750688588 > false
+08:45:21,631 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.23211517165005535 > false
+08:45:21,631 INFO  [MauiTopicExtractor] Topic resumos 1 0.21256533153315332 > false
+08:45:21,631 INFO  [MauiTopicExtractor] Topic publicações 1 0.21256533153315332 > false
+08:45:21,647 INFO  [MauiTopicExtractor] -- Processing document: Artigo36.txt
+08:45:21,662 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,662 INFO  [MauiTopicExtractor] Topic lei de Lotka 1 0.9191965811965812 > true
+08:45:21,662 INFO  [MauiTopicExtractor] Topic produtividade de autor 1 0.7891965811965813 > true
+08:45:21,662 INFO  [MauiTopicExtractor] Topic arquivos privados 1 0.7235915206905307 > false
+08:45:21,662 INFO  [MauiTopicExtractor] Topic cartas 1 0.4951410891089109 > false
+08:45:21,662 INFO  [MauiTopicExtractor] Topic bases de dados bibliográficos 1 0.44458159411647785 > false
+08:45:21,662 INFO  [MauiTopicExtractor] Topic arquivos 1 0.42923199819981994 > false
+08:45:21,662 INFO  [MauiTopicExtractor] Topic bibliometria 1 0.3958986648664866 > true
+08:45:21,662 INFO  [MauiTopicExtractor] Topic biblioteconomia 1 0.395141089108911 > false
+08:45:21,662 INFO  [MauiTopicExtractor] Topic revisões de literatura 1 0.3755339750688588 > false
+08:45:21,678 INFO  [MauiTopicExtractor] Topic registros bibliográficos 1 0.37309223846256623 > false
+08:45:21,725 INFO  [MauiTopicExtractor] -- Processing document: Artigo37.txt
+08:45:21,725 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,725 INFO  [MauiTopicExtractor] Topic informação para negócios 1 0.9191965811965812 > true
+08:45:21,725 INFO  [MauiTopicExtractor] Topic bases de dados 1 0.9191965811965812 > true
+08:45:21,725 INFO  [MauiTopicExtractor] Topic informação financeira 1 0.7635915206905306 > true
+08:45:21,740 INFO  [MauiTopicExtractor] Topic informação jurídica 1 0.5743490964481064 > true
+08:45:21,740 INFO  [MauiTopicExtractor] Topic tomada de decisões 1 0.546888888888889 > true
+08:45:21,740 INFO  [MauiTopicExtractor] Topic notícias 1 0.5284744224422442 > false
+08:45:21,740 INFO  [MauiTopicExtractor] Topic probabilidade e estatística 1 0.4625653315331533 > false
+08:45:21,740 INFO  [MauiTopicExtractor] Topic empresas 1 0.45722442244224426 > true
+08:45:21,740 INFO  [MauiTopicExtractor] Topic indústria da informação 1 0.44688888888888895 > true
+08:45:21,740 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.422041404140414 > false
+08:45:21,771 INFO  [MauiTopicExtractor] -- Processing document: Artigo38.txt
+08:45:21,771 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,771 INFO  [MauiTopicExtractor] Topic ensino a distância 1 0.9191965811965812 > true
+08:45:21,771 INFO  [MauiTopicExtractor] Topic bibliotecas híbridas 1 0.7635915206905306 > true
+08:45:21,771 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.546888888888889 > true
+08:45:21,771 INFO  [MauiTopicExtractor] Topic usuários 1 0.5238910891089109 > true
+08:45:21,771 INFO  [MauiTopicExtractor] Topic bibliotecas 1 0.45722442244224426 > false
+08:45:21,787 INFO  [MauiTopicExtractor] Topic bibliotecas universitárias 1 0.36881833665378067 > true
+08:45:21,787 INFO  [MauiTopicExtractor] Topic acesso à informação 1 0.3155339750688588 > true
+08:45:21,787 INFO  [MauiTopicExtractor] Topic serviços de biblioteca 1 0.2755339750688588 > true
+08:45:21,787 INFO  [MauiTopicExtractor] Topic necessidades de informação 1 0.2568888888888889 > true
+08:45:21,787 INFO  [MauiTopicExtractor] Topic estratégias de busca 1 0.2405339750688588 > false
+08:45:21,834 INFO  [MauiTopicExtractor] -- Processing document: Artigo39.txt
+08:45:21,834 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,834 INFO  [MauiTopicExtractor] Topic estratégias de busca 1 0.9191965811965812 > true
+08:45:21,834 INFO  [MauiTopicExtractor] Topic bases de dados 1 0.9191965811965812 > true
+08:45:21,834 INFO  [MauiTopicExtractor] Topic sistemas de recuperação da informação 1 0.8991965811965812 > true
+08:45:21,849 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.8991965811965812 > true
+08:45:21,849 INFO  [MauiTopicExtractor] Topic revisões de literatura 1 0.646888888888889 > true
+08:45:21,849 INFO  [MauiTopicExtractor] Topic buscas de informação 1 0.6268888888888889 > false
+08:45:21,849 INFO  [MauiTopicExtractor] Topic buscas 1 0.45722442244224426 > false
+08:45:21,849 INFO  [MauiTopicExtractor] Topic acesso à informação 1 0.44688888888888895 > false
+08:45:21,849 INFO  [MauiTopicExtractor] Topic bases de dados em linha 1 0.44458159411647785 > false
+08:45:21,849 INFO  [MauiTopicExtractor] Topic necessidades de informação 1 0.41688888888888886 > false
+08:45:21,881 INFO  [MauiTopicExtractor] -- Processing document: Artigo40.txt
+08:45:21,881 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,881 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.9191965811965812 > true
+08:45:21,896 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.8991965811965812 > true
+08:45:21,896 INFO  [MauiTopicExtractor] Topic mercado de trabalho 1 0.7991965811965812 > true
+08:45:21,896 INFO  [MauiTopicExtractor] Topic recursos de informação 1 0.7991965811965812 > true
+08:45:21,896 INFO  [MauiTopicExtractor] Topic serviços de informação 1 0.6841965811965812 > false
+08:45:21,896 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6588888888888889 > true
+08:45:21,896 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.4794228639577477 > true
+08:45:21,896 INFO  [MauiTopicExtractor] Topic direito autoral 1 0.41434909644810636 > false
+08:45:21,896 INFO  [MauiTopicExtractor] Topic competências profissionais 1 0.37309223846256623 > true
+08:45:21,896 INFO  [MauiTopicExtractor] Topic gestores 1 0.3625653315331533 > false
+08:45:21,927 INFO  [MauiTopicExtractor] -- Processing document: Artigo41.txt
+08:45:21,927 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,927 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.8311965811965812 > true
+08:45:21,927 INFO  [MauiTopicExtractor] Topic institutos de pesquisa 1 0.6323076923076923 > false
+08:45:21,927 INFO  [MauiTopicExtractor] Topic literatura cinzenta 1 0.4788183366537807 > true
+08:45:21,927 INFO  [MauiTopicExtractor] Topic artigos de periódico 1 0.4368888888888889 > true
+08:45:21,943 INFO  [MauiTopicExtractor] Topic autoria individual 1 0.4288183366537807 > false
+08:45:21,943 INFO  [MauiTopicExtractor] Topic tipos de documento 1 0.3155339750688588 > false
+08:45:21,943 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.23211517165005535 > false
+08:45:21,943 INFO  [MauiTopicExtractor] Topic comunidades científicas 1 0.22078454615487392 > true
+08:45:21,943 INFO  [MauiTopicExtractor] Topic coleta de dados 1 0.2155339750688588 > false
+08:45:21,943 INFO  [MauiTopicExtractor] Topic bases de dados 1 0.2155339750688588 > false
+08:45:21,974 INFO  [MauiTopicExtractor] -- Processing document: Artigo42.txt
+08:45:21,974 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:21,990 INFO  [MauiTopicExtractor] Topic informação para negócios 1 0.9191965811965812 > true
+08:45:21,990 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.8991965811965812 > true
+08:45:21,990 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.8991965811965812 > true
+08:45:21,990 INFO  [MauiTopicExtractor] Topic gestão do conhecimento 1 0.7991965811965812 > true
+08:45:21,990 INFO  [MauiTopicExtractor] Topic inteligência competitiva 1 0.5976824297814397 > true
+08:45:21,990 INFO  [MauiTopicExtractor] Topic bibliotecas virtuais 1 0.5743490964481064 > true
+08:45:21,990 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.546888888888889 > true
+08:45:21,990 INFO  [MauiTopicExtractor] Topic empresas 1 0.45722442244224426 > true
+08:45:21,990 INFO  [MauiTopicExtractor] Topic bibliotecas 1 0.44722442244224425 > true
+08:45:21,990 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.436888888888889 > false
+08:45:22,083 INFO  [MauiTopicExtractor] -- Processing document: Artigo43.txt
+08:45:22,083 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,083 INFO  [MauiTopicExtractor] Topic necessidades de informação 1 0.9191965811965812 > true
+08:45:22,083 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.7635915206905306 > true
+08:45:22,083 INFO  [MauiTopicExtractor] Topic estudos de usuários 1 0.5445815941164779 > false
+08:45:22,083 INFO  [MauiTopicExtractor] Topic usos da informação 1 0.5395815941164779 > false
+08:45:22,099 INFO  [MauiTopicExtractor] Topic inovação 1 0.36722442244224424 > true
+08:45:22,099 INFO  [MauiTopicExtractor] Topic empresas 1 0.36722442244224424 > true
+08:45:22,099 INFO  [MauiTopicExtractor] Topic serviços de informação 1 0.3645815941164779 > false
+08:45:22,099 INFO  [MauiTopicExtractor] Topic conhecimento nas organizações 1 0.3568888888888889 > true
+08:45:22,099 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.3121151716500553 > false
+08:45:22,099 INFO  [MauiTopicExtractor] Topic tomada de decisões 1 0.2955339750688588 > true
+08:45:22,130 INFO  [MauiTopicExtractor] -- Processing document: Artigo44.txt
+08:45:22,130 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,130 INFO  [MauiTopicExtractor] Topic conhecimento nas organizações 1 0.9191965811965812 > true
+08:45:22,146 INFO  [MauiTopicExtractor] Topic gestão do conhecimento 1 0.9191965811965812 > true
+08:45:22,146 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.9191965811965812 > true
+08:45:22,146 INFO  [MauiTopicExtractor] Topic competitividade 1 0.4625653315331533 > true
+08:45:22,146 INFO  [MauiTopicExtractor] Topic empresas 1 0.36722442244224424 > false
+08:45:22,146 INFO  [MauiTopicExtractor] Topic tomada de decisões 1 0.3155339750688588 > true
+08:45:22,146 INFO  [MauiTopicExtractor] Topic gestão 1 0.29798199819982 > false
+08:45:22,146 INFO  [MauiTopicExtractor] Topic conhecimento tácito 1 0.2273779527482805 > false
+08:45:22,146 INFO  [MauiTopicExtractor] Topic mudança 1 0.1837012384054943 > false
+08:45:22,146 INFO  [MauiTopicExtractor] Topic papel 1 0.18256533153315332 > false
+08:45:22,193 INFO  [MauiTopicExtractor] -- Processing document: Artigo45.txt
+08:45:22,193 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,193 INFO  [MauiTopicExtractor] Topic fluxo da informação 1 0.7991965811965812 > false
+08:45:22,193 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6588888888888889 > true
+08:45:22,193 INFO  [MauiTopicExtractor] Topic informetria 1 0.6272244224422442 > true
+08:45:22,193 INFO  [MauiTopicExtractor] Topic bibliometria 1 0.6272244224422442 > true
+08:45:22,193 INFO  [MauiTopicExtractor] Topic mecanismos de busca 1 0.4155339750688588 > false
+08:45:22,193 INFO  [MauiTopicExtractor] Topic fator de impacto 1 0.3405339750688588 > false
+08:45:22,193 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.23211517165005535 > false
+08:45:22,208 INFO  [MauiTopicExtractor] Topic bases de dados 1 0.2155339750688588 > true
+08:45:22,208 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.2155339750688588 > false
+08:45:22,208 INFO  [MauiTopicExtractor] Topic produtividade de autor 1 0.18322628276116648 > false
+08:45:22,239 INFO  [MauiTopicExtractor] -- Processing document: Artigo46.txt
+08:45:22,239 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,239 INFO  [MauiTopicExtractor] Topic lei de Bradford 1 0.9191965811965812 > true
+08:45:22,239 INFO  [MauiTopicExtractor] Topic teoria do caos 1 0.9191965811965812 > true
+08:45:22,255 INFO  [MauiTopicExtractor] Topic revisões de literatura 1 0.6891965811965812 > false
+08:45:22,255 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6588888888888889 > true
+08:45:22,255 INFO  [MauiTopicExtractor] Topic bibliometria 1 0.6272244224422442 > true
+08:45:22,255 INFO  [MauiTopicExtractor] Topic publicações seriadas 1 0.4788183366537807 > false
+08:45:22,255 INFO  [MauiTopicExtractor] Topic perfil do usuário 1 0.3155339750688588 > false
+08:45:22,255 INFO  [MauiTopicExtractor] Topic física 1 0.2958986648664866 > false
+08:45:22,255 INFO  [MauiTopicExtractor] Topic teoria dos jogos 1 0.2405339750688588 > false
+08:45:22,255 INFO  [MauiTopicExtractor] Topic faculdades de biblioteconomia 1 0.2405339750688588 > false
+08:45:22,286 INFO  [MauiTopicExtractor] -- Processing document: Artigo47.txt
+08:45:22,286 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,286 INFO  [MauiTopicExtractor] Topic periódicos eletrônicos 1 0.7635915206905306 > true
+08:45:22,286 INFO  [MauiTopicExtractor] Topic periódicos científicos 1 0.7635915206905306 > true
+08:45:22,286 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6588888888888889 > true
+08:45:22,286 INFO  [MauiTopicExtractor] Topic World Wide Web 1 0.5272244224422442 > true
+08:45:22,286 INFO  [MauiTopicExtractor] Topic artigos de periódico 1 0.4738673084021922 > false
+08:45:22,286 INFO  [MauiTopicExtractor] Topic mecanismos de busca 1 0.4155339750688588 > false
+08:45:22,286 INFO  [MauiTopicExtractor] Topic periódicos 1 0.3738910891089109 > false
+08:45:22,286 INFO  [MauiTopicExtractor] Topic usuários 1 0.36722442244224424 > true
+08:45:22,286 INFO  [MauiTopicExtractor] Topic monitores de vídeo 1 0.2405339750688588 > false
+08:45:22,302 INFO  [MauiTopicExtractor] Topic obras de referência 1 0.2405339750688588 > false
+08:45:22,333 INFO  [MauiTopicExtractor] -- Processing document: Artigo48.txt
+08:45:22,333 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,333 INFO  [MauiTopicExtractor] Topic economia da informação 1 0.9191965811965812 > true
+08:45:22,333 INFO  [MauiTopicExtractor] Topic usos da informação 1 0.9191965811965812 > true
+08:45:22,333 INFO  [MauiTopicExtractor] Topic economia 1 0.44722442244224425 > false
+08:45:22,333 INFO  [MauiTopicExtractor] Topic custos 1 0.44722442244224425 > true
+08:45:22,333 INFO  [MauiTopicExtractor] Topic tomada de decisões 1 0.44688888888888895 > false
+08:45:22,349 INFO  [MauiTopicExtractor] Topic processamento de informações 1 0.44688888888888895 > false
+08:45:22,349 INFO  [MauiTopicExtractor] Topic mudança 1 0.3813153315331533 > false
+08:45:22,349 INFO  [MauiTopicExtractor] Topic empresas 1 0.36722442244224424 > true
+08:45:22,349 INFO  [MauiTopicExtractor] Topic inovação 1 0.28256533153315333 > true
+08:45:22,349 INFO  [MauiTopicExtractor] Topic Internet 1 0.28256533153315333 > false
+08:45:22,364 INFO  [MauiTopicExtractor] -- Processing document: Artigo49.txt
+08:45:22,380 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,380 INFO  [MauiTopicExtractor] Topic monitoramento 1 0.5284744224422442 > true
+08:45:22,380 INFO  [MauiTopicExtractor] Topic descritores 1 0.5138910891089109 > true
+08:45:22,380 INFO  [MauiTopicExtractor] Topic títulos de documentos 1 0.4951410891089109 > false
+08:45:22,380 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.3811627906976744 > false
+08:45:22,380 INFO  [MauiTopicExtractor] Topic resumos 1 0.2958986648664866 > false
+08:45:22,380 INFO  [MauiTopicExtractor] Topic World Wide Web 1 0.2625653315331533 > false
+08:45:22,380 INFO  [MauiTopicExtractor] Topic programas de computador 1 0.2625653315331533 > false
+08:45:22,380 INFO  [MauiTopicExtractor] Topic periódicos 1 0.21798199819982003 > true
+08:45:22,395 INFO  [MauiTopicExtractor] Topic coleta de dados 1 0.2155339750688588 > false
+08:45:22,395 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.1517369271072549 > false
+08:45:22,411 INFO  [MauiTopicExtractor] -- Processing document: Artigo50.txt
+08:45:22,411 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,411 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.8361965811965811 > true
+08:45:22,411 INFO  [MauiTopicExtractor] Topic formação profissional 1 0.6976824297814397 > true
+08:45:22,411 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.5091965811965812 > true
+08:45:22,427 INFO  [MauiTopicExtractor] Topic bibliotecários 1 0.44722442244224425 > true
+08:45:22,427 INFO  [MauiTopicExtractor] Topic educação 1 0.3738910891089109 > true
+08:45:22,427 INFO  [MauiTopicExtractor] Topic papel 1 0.34798199819982 > false
+08:45:22,427 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.23211517165005535 > false
+08:45:22,427 INFO  [MauiTopicExtractor] Topic tomada de decisões 1 0.2155339750688588 > false
+08:45:22,427 INFO  [MauiTopicExtractor] Topic resumos 1 0.21256533153315332 > false
+08:45:22,427 INFO  [MauiTopicExtractor] Topic educação básica 1 0.20404461941494717 > false
+08:45:22,458 INFO  [MauiTopicExtractor] -- Processing document: Artigo51.txt
+08:45:22,458 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,458 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.5688888888888888 > true
+08:45:22,473 INFO  [MauiTopicExtractor] Topic acessibilidade 1 0.5472244224422442 > true
+08:45:22,473 INFO  [MauiTopicExtractor] Topic acesso à informação 1 0.3905339750688588 > true
+08:45:22,473 INFO  [MauiTopicExtractor] Topic bibliotecas 1 0.36722442244224424 > true
+08:45:22,473 INFO  [MauiTopicExtractor] Topic usuários 1 0.36722442244224424 > true
+08:45:22,473 INFO  [MauiTopicExtractor] Topic física 1 0.3625653315331533 > false
+08:45:22,473 INFO  [MauiTopicExtractor] Topic sítios web 1 0.28975890512923286 > false
+08:45:22,473 INFO  [MauiTopicExtractor] Topic acesso à biblioteca 1 0.2405339750688588 > false
+08:45:22,489 INFO  [MauiTopicExtractor] Topic serviços de biblioteca 1 0.2405339750688588 > false
+08:45:22,489 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.23211517165005535 > false
+08:45:22,505 INFO  [MauiTopicExtractor] -- Processing document: Artigo52.txt
+08:45:22,505 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,505 INFO  [MauiTopicExtractor] Topic estudos de usuários 1 0.9191965811965812 > true
+08:45:22,505 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.8311965811965812 > true
+08:45:22,505 INFO  [MauiTopicExtractor] Topic projetos de pesquisa 1 0.7991965811965812 > true
+08:45:22,505 INFO  [MauiTopicExtractor] Topic transferência da informação 1 0.49886730840219223 > false
+08:45:22,520 INFO  [MauiTopicExtractor] Topic usuários 1 0.36722442244224424 > true
+08:45:22,520 INFO  [MauiTopicExtractor] Topic educação 1 0.36464866486648667 > true
+08:45:22,520 INFO  [MauiTopicExtractor] Topic papel 1 0.28256533153315333 > false
+08:45:22,520 INFO  [MauiTopicExtractor] Topic hipertexto 1 0.28245123840549435 > true
+08:45:22,520 INFO  [MauiTopicExtractor] Topic hipertextos 1 0.28245123840549435 > true
+08:45:22,520 INFO  [MauiTopicExtractor] Topic políticas de informação 1 0.2812482607831445 > false
+08:45:22,551 INFO  [MauiTopicExtractor] -- Processing document: Artigo53.txt
+08:45:22,551 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,551 INFO  [MauiTopicExtractor] Topic mecanismos de busca 1 0.9191965811965812 > true
+08:45:22,551 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.8991965811965812 > true
+08:45:22,567 INFO  [MauiTopicExtractor] Topic comportamento do usuário 1 0.7891965811965813 > true
+08:45:22,567 INFO  [MauiTopicExtractor] Topic estudos experimentais 1 0.5284744224422442 > false
+08:45:22,567 INFO  [MauiTopicExtractor] Topic buscas 1 0.45722442244224426 > false
+08:45:22,567 INFO  [MauiTopicExtractor] Topic World Wide Web 1 0.44722442244224425 > false
+08:45:22,567 INFO  [MauiTopicExtractor] Topic usuários 1 0.4238910891089109 > true
+08:45:22,567 INFO  [MauiTopicExtractor] Topic buscas booleanas 1 0.14404461941494717 > false
+08:45:22,567 INFO  [MauiTopicExtractor] Topic professores 1 0.13256533153315334 > false
+08:45:22,567 INFO  [MauiTopicExtractor] Topic resumos 1 0.13256533153315334 > false
+08:45:22,614 INFO  [MauiTopicExtractor] -- Processing document: Artigo54.txt
+08:45:22,614 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,614 INFO  [MauiTopicExtractor] Topic competência em informação 1 0.7635915206905306 > true
+08:45:22,614 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.6268888888888889 > true
+08:45:22,614 INFO  [MauiTopicExtractor] Topic bibliotecários 1 0.5272244224422442 > true
+08:45:22,614 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.4794228639577477 > false
+08:45:22,629 INFO  [MauiTopicExtractor] Topic bibliotecas 1 0.44722442244224425 > true
+08:45:22,629 INFO  [MauiTopicExtractor] Topic educação 1 0.29798199819982 > true
+08:45:22,629 INFO  [MauiTopicExtractor] Topic buscas 1 0.28256533153315333 > false
+08:45:22,629 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.23211517165005535 > false
+08:45:22,629 INFO  [MauiTopicExtractor] Topic papel 1 0.21589866486648665 > false
+08:45:22,629 INFO  [MauiTopicExtractor] Topic usos da informação 1 0.2155339750688588 > true
+08:45:22,661 INFO  [MauiTopicExtractor] -- Processing document: Artigo55.txt
+08:45:22,661 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,661 INFO  [MauiTopicExtractor] Topic mercado de trabalho 1 0.9191965811965812 > true
+08:45:22,661 INFO  [MauiTopicExtractor] Topic profissionais de informação 1 0.9191965811965812 > true
+08:45:22,661 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.7388888888888889 > true
+08:45:22,661 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.7273076923076923 > false
+08:45:22,661 INFO  [MauiTopicExtractor] Topic gestão do conhecimento 1 0.7041965811965811 > false
+08:45:22,676 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.436888888888889 > true
+08:45:22,676 INFO  [MauiTopicExtractor] Topic empresas 1 0.36722442244224424 > false
+08:45:22,676 INFO  [MauiTopicExtractor] Topic processos de gestão 1 0.3155339750688588 > false
+08:45:22,676 INFO  [MauiTopicExtractor] Topic organização do conhecimento 1 0.3155339750688588 > false
+08:45:22,676 INFO  [MauiTopicExtractor] Topic tomada de decisões 1 0.2722739018087855 > false
+08:45:22,707 INFO  [MauiTopicExtractor] -- Processing document: Artigo56.txt
+08:45:22,707 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,707 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.8511965811965811 > true
+08:45:22,707 INFO  [MauiTopicExtractor] Topic cientistas da informação 1 0.8191965811965811 > true
+08:45:22,707 INFO  [MauiTopicExtractor] Topic teorias na ciência da informação 1 0.7791965811965813 > true
+08:45:22,707 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.7635915206905306 > true
+08:45:22,707 INFO  [MauiTopicExtractor] Topic cientistas 1 0.44722442244224425 > false
+08:45:22,707 INFO  [MauiTopicExtractor] Topic comunicação científica 1 0.41434909644810636 > true
+08:45:22,723 INFO  [MauiTopicExtractor] Topic história 1 0.2625653315331533 > false
+08:45:22,723 INFO  [MauiTopicExtractor] Topic relevância 1 0.2625653315331533 > false
+08:45:22,723 INFO  [MauiTopicExtractor] Topic literatura científica 1 0.2130922384625662 > false
+08:45:22,723 INFO  [MauiTopicExtractor] Topic normas e protocolos 1 0.18256533153315332 > false
+08:45:22,770 INFO  [MauiTopicExtractor] -- Processing document: Artigo57.txt
+08:45:22,770 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,770 INFO  [MauiTopicExtractor] Topic regimes de informação 1 0.6891965811965812 > true
+08:45:22,770 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.6588888888888889 > true
+08:45:22,770 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.546888888888889 > true
+08:45:22,770 INFO  [MauiTopicExtractor] Topic transferência da informação 1 0.5091965811965812 > false
+08:45:22,785 INFO  [MauiTopicExtractor] Topic informação científica e tecnológica 1 0.4130922384625662 > false
+08:45:22,785 INFO  [MauiTopicExtractor] Topic políticas de informação 1 0.3645815941164779 > false
+08:45:22,785 INFO  [MauiTopicExtractor] Topic sociedade da informação 1 0.30116279069767443 > true
+08:45:22,785 INFO  [MauiTopicExtractor] Topic avaliação 1 0.21589866486648665 > false
+08:45:22,785 INFO  [MauiTopicExtractor] Topic bases de dados referenciais 1 0.2155339750688588 > false
+08:45:22,785 INFO  [MauiTopicExtractor] Topic bases de dados 1 0.2155339750688588 > false
+08:45:22,817 INFO  [MauiTopicExtractor] -- Processing document: Artigo58.txt
+08:45:22,817 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,817 INFO  [MauiTopicExtractor] Topic processamento de informações 1 0.9191965811965812 > true
+08:45:22,817 INFO  [MauiTopicExtractor] Topic recuperação da informação 1 0.9191965811965812 > true
+08:45:22,832 INFO  [MauiTopicExtractor] Topic ciência cognitiva 1 0.7635915206905306 > true
+08:45:22,832 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.7388888888888889 > true
+08:45:22,832 INFO  [MauiTopicExtractor] Topic sistemas de informação 1 0.636888888888889 > false
+08:45:22,832 INFO  [MauiTopicExtractor] Topic indexação 1 0.5284744224422442 > true
+08:45:22,832 INFO  [MauiTopicExtractor] Topic computadores 1 0.5272244224422442 > false
+08:45:22,832 INFO  [MauiTopicExtractor] Topic ciência da computação 1 0.3905339750688588 > false
+08:45:22,832 INFO  [MauiTopicExtractor] Topic necessidades de informação 1 0.2812482607831445 > false
+08:45:22,848 INFO  [MauiTopicExtractor] Topic linguagens documentárias 1 0.2405339750688588 > false
+08:45:22,863 INFO  [MauiTopicExtractor] -- Processing document: Artigo59.txt
+08:45:22,863 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,863 INFO  [MauiTopicExtractor] Topic frente de pesquisa 1 0.8791965811965812 > true
+08:45:22,863 INFO  [MauiTopicExtractor] Topic ciência da informação 1 0.4728294573643411 > false
+08:45:22,863 INFO  [MauiTopicExtractor] Topic autoria 1 0.3725577557755776 > false
+08:45:22,863 INFO  [MauiTopicExtractor] Topic áreas do conhecimento 1 0.3121151716500553 > false
+08:45:22,863 INFO  [MauiTopicExtractor] Topic resumos 1 0.2958986648664866 > false
+08:45:22,863 INFO  [MauiTopicExtractor] Topic educação 1 0.21798199819982003 > true
+08:45:22,879 INFO  [MauiTopicExtractor] Topic estruturalismo 1 0.1837012384054943 > false
+08:45:22,879 INFO  [MauiTopicExtractor] Topic bibliometria 1 0.1837012384054943 > true
+08:45:22,879 INFO  [MauiTopicExtractor] Topic páginas da web 1 0.14404461941494717 > false
+08:45:22,879 INFO  [MauiTopicExtractor] Topic bibliotecas virtuais 1 0.14404461941494717 > false
+08:45:22,926 INFO  [MauiTopicExtractor] -- Processing document: Artigo60.txt
+08:45:22,926 INFO  [MauiTopicExtractor] -- Keyphrases and feature values:
+08:45:22,926 INFO  [MauiTopicExtractor] Topic gestão da informação 1 0.8991965811965812 > true
+08:45:22,926 INFO  [MauiTopicExtractor] Topic engenharia de produção 1 0.8591965811965812 > false
+08:45:22,941 INFO  [MauiTopicExtractor] Topic agentes inteligentes 1 0.7635915206905306 > true
+08:45:22,941 INFO  [MauiTopicExtractor] Topic inteligência competitiva 1 0.7635915206905306 > true
+08:45:22,941 INFO  [MauiTopicExtractor] Topic estudos de caso 1 0.7191965811965813 > true
+08:45:22,941 INFO  [MauiTopicExtractor] Topic monitoramento 1 0.6272244224422442 > true
+08:45:22,941 INFO  [MauiTopicExtractor] Topic tecnologias da informação e comunicação 1 0.6268888888888889 > false
+08:45:22,941 INFO  [MauiTopicExtractor] Topic usos da informação 1 0.546888888888889 > true
+08:45:22,941 INFO  [MauiTopicExtractor] Topic engenharia química 1 0.4820414041404141 > false
+08:45:22,941 INFO  [MauiTopicExtractor] Topic Internet 1 0.36722442244224424 > true
+08:45:22,973 INFO  [MauiTopicExtractor] 
+-- Evaluation results based on 60 documents:
+08:45:22,973 INFO  [MauiTopicExtractor] Avg. number of correct keyphrases per document: 5.17 +/- 1.43
+08:45:22,973 INFO  [MauiTopicExtractor] Precision: 53.18 +/- 13.96
+08:45:22,973 INFO  [MauiTopicExtractor] Recall: 51.2 +/- 15.02
+08:45:22,973 INFO  [MauiTopicExtractor] F-Measure: 52.17
+08:45:22,973 INFO  [MauiTopicExtractor] 
+08:45:28,043 INFO  [VocabularyStoreFactory] Deserializing vocabulary from C:\Users\PC1\git\maui-pt\data\\vocabulary\TBCI-SKOS_pt.rdf_com.entopix.maui.vocab.VocabularyStore_Original_WekaStemmerSavoy.serialized

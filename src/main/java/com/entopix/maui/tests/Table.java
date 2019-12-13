@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Contains a grid of String objects with a header. Can be sorted and formatted to better visualization of data.
+ * Contains a grid of String objects with a header. Can be sorted and formatted for better visualization of data.
  * @author Rahmon Jorge
  */
 public class Table {

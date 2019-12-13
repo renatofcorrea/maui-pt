@@ -1,10 +1,8 @@
 package com.entopix.maui.tests;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import com.entopix.maui.core.MauiCore;
@@ -27,7 +25,6 @@ public class StructuredTest {
 	//Paths
 	private static String dataPath = MauiFileUtils.getDataPath();
 	private static String modelsPath = MauiFileUtils.getModelsDirPath();
-	private static String testResultsPath = MauiFileUtils.getDataPath() + "\\tests";
 	
 	//Files
 	private static File abstractsDir = new File(dataPath + "\\docs\\corpusci\\abstracts");
@@ -36,7 +33,8 @@ public class StructuredTest {
 	//Others
 	private static List<Table> fulltextsMatrixes, abstractsMatrixes;
 	private static Instant start, finish;
-	private static boolean sort, saveToFile;
+	private static String elapsed;
+	private static boolean sort;
 	private static int sortIndex;
 	
 	private static String[] header = {"MODEL NAME","AVG KEY","STDEV KEY","AVG PRECISION","STDEV PRECISION","AVG RECALL","STDEV RECALL","F-MEASURE"};
@@ -121,6 +119,7 @@ public class StructuredTest {
 		MauiCore.setMinOccur(2);
 		
 		finish = Instant.now();
+		elapsed = MauiPTUtils.elapsedTime(start, finish);
 		
 		if (sort) {
 			for (Table t : abstractsMatrixes) t.sort(sortIndex, "double");
@@ -129,16 +128,6 @@ public class StructuredTest {
 		
 		String allResults = getResultString();
 		System.out.println(allResults);
-		
-		if (saveToFile) {
-			//creates file
-			Date date = new Date();
-			String dateString = new SimpleDateFormat("dd-MM-yyyy HHmm").format(date);
-			String filePath = testResultsPath + "\\" + dateString + ".txt";
-			
-			//save file
-			MauiFileUtils.printOnFile(allResults, filePath); //TODO: generating completely messed up file
-		}
 	}
 	
 	public static String getResultString() {
@@ -154,14 +143,13 @@ public class StructuredTest {
 		s += fulltextsMatrixes.get(0).tableToString();
 		s += "\n>>> Results based on 60 documents:\n";
 		s += fulltextsMatrixes.get(1).tableToString();
-		s += "\nStructured Test Duration: " + MauiPTUtils.elapsedTime(start, finish);
+		s += "\nStructured Test Duration: " + elapsed;
 		return s;
 	}
 	
 	public static void main(String[] args) {
 		sort = true;
 		sortIndex = 7;
-		saveToFile = true;
 		try {
 			runAllTests();
 		} catch (Exception e) {

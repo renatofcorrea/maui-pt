@@ -1,14 +1,14 @@
 package com.entopix.maui.tests;
 
 import com.entopix.maui.core.MauiCore;
-import com.entopix.maui.core.ModelWrapper;
-import com.entopix.maui.main.MauiTopicExtractor;
+//import com.entopix.maui.core.ModelWrapper;
+//import com.entopix.maui.main.MauiTopicExtractor;
 import com.entopix.maui.stemmers.LuceneBRStemmer;
 import com.entopix.maui.stemmers.Stemmer;
-import com.entopix.maui.stopwords.StopwordsPortuguese;
-import com.entopix.maui.util.DataLoader;
+//import com.entopix.maui.stopwords.StopwordsPortuguese;
+//import com.entopix.maui.util.DataLoader;
 import com.entopix.maui.utils.MauiFileUtils;
-import com.entopix.maui.vocab.Vocabulary;
+//import com.entopix.maui.vocab.Vocabulary;
 
 /**
  * Class used for tests during development. Should be removed before release.

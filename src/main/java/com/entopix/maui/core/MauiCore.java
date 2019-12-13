@@ -335,7 +335,7 @@ public class MauiCore {
 				"-c", String.valueOf(cutOffTopicProbability),
 		});
 		
-		setupVocab(vocabPath, stemmer, stopwords);
+		setupVocab(model.getVocabUsedPath(), stemmer, stopwords);
 		topicExtractor.setVocabulary(vocab);
 		topicExtractor.setModel(model.getFilter());
 		
@@ -433,11 +433,17 @@ public class MauiCore {
 		return results;
 	}
 	
-	/** Evaluates the topics on a single document. 
-	 * @return precision and recall */
-	public static double[] evaluateTopicsSingle(String documentPath, List<String> extracted, int numTopicsToEvaluate) throws Exception {
+	/**
+	 * Compares the extracted topics with the manual topics of a document.
+	 * @param keysPath The path to the file containing the manual, original topics
+	 * @param extracted The extracted topics
+	 * @param numTopicsToEvaluate The number of extracted topics to be evaluated
+	 * @return number of correct topics, precision and recall.
+	 * @throws Exception
+	 */
+	public static double[] evaluateTopicsSingle(String keysPath, List<String> extracted, int numTopicsToEvaluate, boolean printResults) throws Exception {
 		
-		List<String> manual = MauiFileUtils.readKeyFromFile(documentPath.replace(".txt", ".key")); //original manual keywords from .key file
+		List<String> manual = MauiFileUtils.readKeyFromFile(keysPath);
 		
 		if (numTopicsToEvaluate > extracted.size()) {
 			numTopicsToEvaluate = extracted.size();
@@ -460,8 +466,8 @@ public class MauiCore {
 		double precision = (double) numCorrect / numExtracted;
 		double recall = (double) numCorrect / numManual;
 		
-		if (DB_evaluateTopicsSingle) {
-			System.out.println("File: " + new File(documentPath).getName());
+		if (printResults || DB_evaluateTopicsSingle) {
+			System.out.println("\nFile: " + new File(keysPath).getName());
 			System.out.println(numExtracted + " topics extracted");
 			System.out.println(numEvaluated + " topics evaluated " + "\n");
 			System.out.println("MANUAL (" + numManual + "):");
@@ -473,7 +479,6 @@ public class MauiCore {
 			
 			System.out.println("Precision: " + precision * 100 + "%");
 			System.out.println("Recall: " + recall * 100 + "%");
-			System.out.println();
 		}
 		
 		return new double[] {numCorrect, precision, recall};
@@ -481,21 +486,21 @@ public class MauiCore {
 	
 	/**
 	 * Evaluates the topics on a list of documents. 
-	 * @param docPaths
+	 * @param keysPaths
 	 * @param allDocTopicsExtracted list of topics extracted in every document
 	 * @param numTopicsToEvaluate
 	 * @return a size 7 array with the test results.
 	 * @throws Exception 
 	 */
-	public static double[] evaluateTopics(String[] docPaths, List<List<String>> allDocTopicsExtracted, int numTopicsToEvaluate) throws Exception {
+	public static double[] evaluateTopics(String[] keysPaths, List<List<String>> allDocTopicsExtracted, int numTopicsToEvaluate, boolean printResults) throws Exception {
 		
-		int docCount = docPaths.length;
+		int docCount = keysPaths.length;
 		if (docCount != allDocTopicsExtracted.size()) throw new Exception("Length of extracted topics list is not equal to the number of documents");
 		
 		int i;
 		double[][] docResults = new double[docCount][];
 		for (i = 0; i < docCount; i++) {
-			docResults[i] = evaluateTopicsSingle(docPaths[i], allDocTopicsExtracted.get(i), numTopicsToEvaluate);
+			docResults[i] = evaluateTopicsSingle(keysPaths[i], allDocTopicsExtracted.get(i), numTopicsToEvaluate, false);
 		}
 		
 		double[] allCorrects = MauiPTUtils.getColumn(docResults, 0);
@@ -518,7 +523,7 @@ public class MauiCore {
 		
 		double[] results = new double[] {avgCorrect, stdevCorrect, avgPrecision, stdevPrecision, avgRecall, stdevRecall, fMeasure};
 		
-		if (DB_evaluateTopics) {
+		if (printResults || DB_evaluateTopics) {
 			System.out.println("AVG KEY: " + results[0]);
 			System.out.println("STDEV KEY: " + results[1]);
 			System.out.println("AVG PRECISION: " + results[2] * 100);

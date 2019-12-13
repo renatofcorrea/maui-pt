@@ -31,7 +31,7 @@ public class UI {
 		System.out.println("ERRO: Opção Inválida.");
 	}
 	
-	public static void showDirectoryNotFoundMessage(String dir) {
-		System.out.println("ERRO: O diretório '" + dir + "' não foi encontrado.");
+	public static void showFileNotFoundMessage(String f) {
+		System.out.println("ERRO: O arquivo ou diretório '" + f + "' não foi encontrado.");
 	}
 }

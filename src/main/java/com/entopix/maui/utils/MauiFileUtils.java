@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
-
-import com.entopix.maui.main.StandaloneMain;
 /**
  * Provides paths to avoid path conflicts and methods for managing and processing files.
  * @author Rahmon Jorge
@@ -34,7 +32,7 @@ public class MauiFileUtils {
 	public static final String getDataPath() {
 		String rootPath = getRootPath();
 		if(rootPath.endsWith("maui-pt")) return rootPath + "\\data\\"; // likely to be running on console
-		else return rootPath + "\\"; // likely to be running on IDE
+		else return rootPath + "\\"; // likely to be running on IDE or other platform
 	}
 	
 	public static String getModelsDirPath() {
@@ -45,6 +43,11 @@ public class MauiFileUtils {
 		modelsDirPath = path;
 	}
 	
+	/**
+	 * Serializes a object in the specified path
+	 * @param obj
+	 * @param path
+	 */
 	public static void serializeObject(Object obj, String path) {
 		FileOutputStream fout = null;
 		ObjectOutputStream oos = null;
@@ -73,6 +76,11 @@ public class MauiFileUtils {
 		}
 	}
 	
+	/**
+	 * Deserializes the object in the specified path
+	 * @param path
+	 * @return
+	 */
 	public static Object deserializeObject(String path) {
 		Object object = null;
 		FileInputStream fin = null;
@@ -141,14 +149,6 @@ public class MauiFileUtils {
 		return false;
 	}
 	
-	public static void displayDirContent(File dir) {
-		displayNumberedFileList(dir.listFiles());
-	}
-	
-	public static void displayDirContent(String dirPath) {
-		displayNumberedFileList(new File(dirPath).listFiles());
-	}
-	
 	public static void displayNumberedFileList(File[] fileList) {
 		for (int i = 0; i < fileList.length; i++) {
 			System.out.println(i+1 + " - " + fileList[i].getName());
@@ -189,8 +189,8 @@ public class MauiFileUtils {
 		return newArray.toArray(new File[newArray.size()]);
 	}
 	
-	public static File chooseFileFromDirectory(String dirPath) {
-		return chooseFileFromList(new File(dirPath).listFiles());
+	public static File chooseFileFromDirectory(String dirPath, Scanner scanner) {
+		return chooseFileFromList(new File(dirPath).listFiles(), scanner);
 	}
 	
 	/**
@@ -198,13 +198,13 @@ public class MauiFileUtils {
 	 * @param fileList
 	 * @return fileChoice
 	 */
-	public static File chooseFileFromList(File[] fileList) {
+	public static File chooseFileFromList(File[] fileList, Scanner scanner) {
 		if (fileList == null) throw new NullPointerException();
 		int fileChoice;
 		displayNumberedFileList(fileList);
 		System.out.print("Opção: ");
-		fileChoice = StandaloneMain.SCAN.nextInt();
-		StandaloneMain.SCAN.nextLine();
+		fileChoice = scanner.nextInt();
+		scanner.nextLine();
 		return fileList[fileChoice - 1];
 	}
 	
