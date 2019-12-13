@@ -1,14 +1,9 @@
 package com.entopix.maui.tests;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.entopix.maui.core.MauiCore;
-//import com.entopix.maui.core.ModelWrapper;
-//import com.entopix.maui.main.MauiTopicExtractor;
-import com.entopix.maui.stemmers.LuceneBRStemmer;
-import com.entopix.maui.stemmers.Stemmer;
-//import com.entopix.maui.stopwords.StopwordsPortuguese;
-//import com.entopix.maui.util.DataLoader;
-import com.entopix.maui.utils.MauiFileUtils;
-//import com.entopix.maui.vocab.Vocabulary;
 
 /**
  * Class used for tests during development. Should be removed before release.
@@ -20,22 +15,16 @@ public class Testing {
 	
 	public static void main(String[] args) throws Exception {
 		
-		//Variable init
-		String testDirPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\test60";
-		String trainDirPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\train30";
-		String packedModelPath = "C:\\Users\\PC1\\git\\maui-pt\\data\\models\\packed_model";
-		Stemmer stemmer = new LuceneBRStemmer();
+		String s = "ciência da informação";
 		
-		//MauiCore setup
-		MauiCore.setTrainDirPath(trainDirPath);
-		MauiCore.setTestDirPath(testDirPath);
-		MauiCore.setStemmer(stemmer);
-		MauiCore.saveModel= true;
-		MauiCore.DB_evaluateTopics = true;
-		MauiCore.setPrintExtractedTopics(true);
-		MauiCore.setModelPath(packedModelPath);
+		String keysPath = "C:\\Users\\PC1\\git\\maui-pt\\data\\docs\\corpusci\\fulltexts\\test60\\Artigo06.key";
 		
-		//Test area
-		MauiCore.runTopicExtractor();
+		List<String> extracted = new ArrayList<>();
+		
+		extracted.add("INterdisciplinaridade");
+		extracted.add("Ciencia da informacao");
+		
+		MauiCore.evaluateTopicsSingle(keysPath, extracted, 10, true);
+		
 	}
 }

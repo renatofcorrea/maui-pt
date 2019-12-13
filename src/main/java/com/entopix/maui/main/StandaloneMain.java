@@ -439,7 +439,7 @@ public class StandaloneMain {
 		} else UI.showInvalidOptionMessage();
 	}
 	
-	private static void evaluateIndexingOption() throws Exception {
+	private static void evaluateIndexingOption() throws Exception { //TODO: adicionar opção para testar em diretório
 		System.out.println("\nInsira o caminho do arquivo contendo as palavras chave de saída do sistema de indexação.");
 		System.out.print("Caminho: ");
 		input = SCAN.nextLine();

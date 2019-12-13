@@ -1,6 +1,7 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
+import java.text.Normalizer;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -135,5 +136,16 @@ public class MauiPTUtils {
 		}
 		
 		return column;
+	}
+	
+	/**
+	 * Removes the diacritics of a string
+	 * @param s
+	 * @return
+	 */
+	public static String stripAccents(String s) {
+	    s = Normalizer.normalize(s, Normalizer.Form.NFD);
+	    s = s.replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+	    return s;
 	}
 }

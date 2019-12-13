@@ -452,10 +452,17 @@ public class MauiCore {
 		List<String> evaluate = extracted.subList(0, numTopicsToEvaluate);
 		List<String> matches = new ArrayList<>();
 		
-		//saves matches
-		for (String topic : evaluate) {
-			if (manual.contains(topic)) {
-				matches.add(topic);
+		for (String ext : evaluate) {
+			for (String m : manual) {
+				if (ext.equals(m)) {
+					matches.add(ext);
+				} else if (ext.equalsIgnoreCase(m)) {
+					System.out.println("Match by ignore case (" + ext + ", " + m + ")");
+					matches.add(ext);
+				} else if (MauiPTUtils.stripAccents(ext).equalsIgnoreCase(MauiPTUtils.stripAccents(m))) {
+					System.out.println("Match by strip accents and ignore case (" + ext + ", " + m + ")");
+					matches.add(ext);
+				}
 			}
 		}
 		
@@ -465,6 +472,11 @@ public class MauiCore {
 		int numEvaluated = evaluate.size();
 		double precision = (double) numCorrect / numExtracted;
 		double recall = (double) numCorrect / numManual;
+		
+		double fMeasure = 0.0;
+		if (precision > 0 && recall > 0) {
+			fMeasure = 2 * recall * precision / (recall + precision);
+		}
 		
 		if (printResults || DB_evaluateTopicsSingle) {
 			System.out.println("\nFile: " + new File(keysPath).getName());
@@ -479,9 +491,10 @@ public class MauiCore {
 			
 			System.out.println("Precision: " + precision * 100 + "%");
 			System.out.println("Recall: " + recall * 100 + "%");
+			System.out.println("F-Measure: " + fMeasure * 100 + "%");
 		}
 		
-		return new double[] {numCorrect, precision, recall};
+		return new double[] {numCorrect, precision, recall, fMeasure};
 	}
 	
 	/**
