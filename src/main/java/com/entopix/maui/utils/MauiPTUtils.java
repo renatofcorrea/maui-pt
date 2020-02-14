@@ -103,7 +103,8 @@ public class MauiPTUtils {
 	}
 	
 	/**
-	 * Converts a list of maui topics into a list of string lists.
+	 * Converts a list of maui topics into a list of lists of strings, where every element represents a document
+	 * which contains a list of the keywords.
 	 * @param topics
 	 */
 	public static List<List<String>> mauiTopicsToString(List<MauiTopics> topicsList) {

@@ -156,8 +156,7 @@ public class MauiFileUtils {
 	}
 	
 	/**
-	 * Returns a array of strings containing the file paths.
-	 * @return
+	 * Takes a array of files and returns its paths.
 	 */
 	public static String[] getFileListPaths(File[] files) {
 		String[] paths = new String[files.length];
@@ -170,6 +169,25 @@ public class MauiFileUtils {
 		return paths;
 	}
 	
+	/**
+	 * Takes a array of files and returns its names.
+	 */
+	public static String[] getFileListNames(File[] files) {
+		String[] names = new String[files.length];
+		
+		int i;
+		for (i = 0; i < files.length; i++) {
+			names[i] = files[i].getName();
+		}
+		
+		return names;
+	}
+	
+	/**
+	 * @param dirPath
+	 * @param filterMethod
+	 * @return
+	 */
 	public static File[] filterFileList(String dirPath, String filterMethod) {
 		File[] fileArray = new File(dirPath).listFiles();
 		ArrayList<File> newArray = new ArrayList<File>();

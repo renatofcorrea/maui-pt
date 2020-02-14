@@ -2,6 +2,7 @@ package com.entopix.maui.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -22,6 +23,7 @@ import com.entopix.maui.stemmers.WekaStemmerPorter;
 import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.tests.StructuredTest;
+import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.MauiPTUtils;
 import com.entopix.maui.utils.UI;
@@ -166,12 +168,12 @@ public class StandaloneMain {
 		MauiCore.buildModel();
 	}
 	
-	private static void runTopicExtractor() throws Exception {
+	private static List<MauiTopics> runTopicExtractor() throws Exception {
 		MauiCore.setModelPath(modelPath);
 		MauiCore.setTestDirPath(testDirPath);
 		MauiCore.setStemmer(stemmer);
 		MauiCore.setModel(model);
-		MauiCore.runTopicExtractor();
+		return MauiCore.runTopicExtractor();
 	}
 	
 	private static void runMauiWrapper() throws IOException, MauiFilterException {
@@ -334,10 +336,12 @@ public class StandaloneMain {
 			return;
 		}
 		
+		File testDir = null;
+		
 		System.out.println("\nDiretório de teste: " + testDirPath);
 		System.out.println("Deseja alterar o diretório de teste?");
 		System.out.println("1 - Sim");
-		System.out.println("[Enter] - Não");
+		System.out.println("[Enter] - Não"); //TODO remover
 		System.out.print("Opção: ");
 		input = SCAN.nextLine();
 		if (input.equals("1")) {
@@ -349,7 +353,7 @@ public class StandaloneMain {
 			case "1":
 				System.out.println();
 				String browsingDir = (modelType == ABSTRACTS ? ABS_PATH : FTS_PATH);
-				File testDir = MauiFileUtils.chooseFileFromList(MauiFileUtils.filterFileList(browsingDir, "test"), SCAN);
+				testDir = MauiFileUtils.chooseFileFromList(MauiFileUtils.filterFileList(browsingDir, "test"), SCAN);
 				testDirPath = testDir.getPath();
 				break;
 			case "2":
@@ -365,7 +369,12 @@ public class StandaloneMain {
 			}
 		}
 		
-		runTopicExtractor();
+		List<MauiTopics> topicsList = runTopicExtractor();
+		List<List<String>> extractedTopics = MauiPTUtils.mauiTopicsToString(topicsList);
+		List<List<String>> manualTopics = MauiFileUtils.readKeyFromFolder(testDirPath, ".key");
+		List<String> documentsNames = Arrays.asList(MauiFileUtils.getFileListNames(MauiFileUtils.filterFileList(testDirPath, ".key")));
+		
+		MauiCore.detailedResults(documentsNames, extractedTopics, manualTopics).exportAsCSV(MauiFileUtils.getDataPath() + "tests//results.csv");
 	}
 	
 	private static void runOnFileOption() throws IOException, MauiFilterException, InstantiationException, IllegalAccessException, ClassNotFoundException, EmptyModelsDirException {
@@ -457,10 +466,12 @@ public class StandaloneMain {
 			return;
 		}
 		String originalTopicsPath = input;
+		String filename = new File(input).getName();
 		
 		List<String> extractedTopicsList = MauiFileUtils.readKeyFromFile(extractedTopicsPath);
+		List<String> manualTopicsList = MauiFileUtils.readKeyFromFile(originalTopicsPath);
 		
-		MauiCore.evaluateTopicsSingle(originalTopicsPath, extractedTopicsList , extractedTopicsList.size(), true);
+		MauiCore.evaluateTopicsSingle(filename, manualTopicsList, extractedTopicsList , extractedTopicsList.size(), true);
 	}
 	
 	private static void showCreditsOption() {

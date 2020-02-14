@@ -19,22 +19,25 @@ import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.MauiPTUtils;
+import com.entopix.maui.utils.Table;
 
 public class StructuredTest {
 	
 	//Paths
 	private static String dataPath = MauiFileUtils.getDataPath();
 	private static String modelsPath = MauiFileUtils.getModelsDirPath();
+	private static String resultsPath = dataPath + "tests\\";
 	
 	//Files
 	private static File abstractsDir = new File(dataPath + "\\docs\\corpusci\\abstracts");
 	private static File fullTextsDir = new File(dataPath + "\\docs\\corpusci\\fulltexts");
 	
-	//Others
+	
 	private static List<Table> fulltextsMatrixes, abstractsMatrixes;
 	private static Instant start, finish;
 	private static String elapsed;
 	private static boolean sort;
+	private static boolean saveCSVFile = true;
 	private static int sortIndex;
 	
 	private static String[] header = {"MODEL NAME","AVG KEY","STDEV KEY","AVG PRECISION","STDEV PRECISION","AVG RECALL","STDEV RECALL","F-MEASURE"};
@@ -128,28 +131,36 @@ public class StructuredTest {
 		
 		String allResults = getResultString();
 		System.out.println(allResults);
+		
+		if (saveCSVFile) {
+			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts30.csv");
+			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts60.csv");
+			fulltextsMatrixes.get(0).exportAsCSV(resultsPath + "fulltexts30.csv");
+			fulltextsMatrixes.get(1).exportAsCSV(resultsPath + "fulltexts60.csv");
+		}
 	}
 	
 	public static String getResultString() {
 		String s = "--- STRUCTURED TEST RESULTS ---\n";
 		s += "\n--- ABSTRACTS ---\n";
 		s += "\n>>> Results based on 30 documents:\n";
-		s += abstractsMatrixes.get(0).tableToString();
+		s += abstractsMatrixes.get(0).tableToFormattedString();
 		s += "\n>>> Results based on 60 documents:\n";
-		s += abstractsMatrixes.get(1).tableToString();
+		s += abstractsMatrixes.get(1).tableToFormattedString();
 		s += "\n";
 		s += "\n--- FULL TEXTS ---\n";
 		s += "\n>>> Results based on 30 documents:\n";
-		s += fulltextsMatrixes.get(0).tableToString();
+		s += fulltextsMatrixes.get(0).tableToFormattedString();
 		s += "\n>>> Results based on 60 documents:\n";
-		s += fulltextsMatrixes.get(1).tableToString();
+		s += fulltextsMatrixes.get(1).tableToFormattedString();
 		s += "\nStructured Test Duration: " + elapsed;
 		return s;
 	}
 	
 	public static void main(String[] args) {
 		sort = true;
-		sortIndex = 7;
+		sortIndex = 8;
+		saveCSVFile = true;
 		try {
 			runAllTests();
 		} catch (Exception e) {

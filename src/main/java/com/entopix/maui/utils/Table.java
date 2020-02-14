@@ -1,10 +1,11 @@
-package com.entopix.maui.tests;
+package com.entopix.maui.utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Contains a grid of String objects with a header. Can be sorted and formatted for better visualization of data.
+ * Contains a grid of String objects with a header. Can be sorted and formatted to ease visualization of data.
  * @author Rahmon Jorge
  */
 public class Table {
@@ -23,7 +24,7 @@ public class Table {
 		if (header.length != columnCount || columnFormat.length != columnCount) {
 			throw new Exception("Header or column format of table must have the same size");
 		}
-		//TODO: for to check size of content lines
+		//TODO: build a for to check size of content lines
 		
 		this.header = header;
 		this.content = content;
@@ -71,7 +72,7 @@ public class Table {
 		}
 	}
 	
-	public String tableToString() {
+	public String tableToFormattedString() {
 		String s = "";
 		//formats header
 		if (header != null) {
@@ -88,5 +89,21 @@ public class Table {
 			s += "\n";
 		}
 		return s;
+	}
+	
+	/**
+	 * This awesome method exports the table as a .csv file.
+	 * @throws IOException 
+	 */
+	public void exportAsCSV(String filePath) throws IOException {
+		String content = "";
+		//TODO put header
+		for (String[] line : this.content) {
+			for (String word : line) {
+				content += word + ";";
+			}
+			content += "\n";
+		}
+		MauiFileUtils.printOnFile(content, filePath);
 	}
 }

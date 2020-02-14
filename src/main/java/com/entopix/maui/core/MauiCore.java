@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -19,10 +20,12 @@ import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.stopwords.StopwordsPortuguese;
 import com.entopix.maui.util.DataLoader;
 import com.entopix.maui.util.Evaluator;
+import com.entopix.maui.util.MauiDocument;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.MauiPTUtils;
+import com.entopix.maui.utils.Table;
 import com.entopix.maui.utils.UI;
 import com.entopix.maui.vocab.Vocabulary;
 
@@ -434,25 +437,18 @@ public class MauiCore {
 	}
 	
 	/**
-	 * Compares the extracted topics with the manual topics of a document.
-	 * @param keysPath The path to the file containing the manual, original topics
-	 * @param extracted The extracted topics
-	 * @param numTopicsToEvaluate The number of extracted topics to be evaluated
-	 * @return number of correct topics, precision and recall.
-	 * @throws Exception
+	 * Makes an comparison match between the extracted and manual keywords, and returns the matches.
+	 * @param numTopicsToEvaluate 
+	 * @param extracted 
+	 * @param keysPath 
+	 * @return The topics matched.
+	 * @throws Exception 
 	 */
-	public static double[] evaluateTopicsSingle(String keysPath, List<String> extracted, int numTopicsToEvaluate, boolean printResults) throws Exception {
+	public static List<String> matches(List<String> manual, List<String> extracted) throws Exception {
 		
-		List<String> manual = MauiFileUtils.readKeyFromFile(keysPath);
-		
-		if (numTopicsToEvaluate > extracted.size()) {
-			numTopicsToEvaluate = extracted.size();
-		}
-		
-		List<String> evaluate = extracted.subList(0, numTopicsToEvaluate);
 		List<String> matches = new ArrayList<>();
 		
-		for (String ext : evaluate) {
+		for (String ext : extracted) {
 			for (String m : manual) {
 				if (ext.equals(m)) {
 					matches.add(ext);
@@ -465,6 +461,27 @@ public class MauiCore {
 				}
 			}
 		}
+		
+		return matches;
+	}
+	
+	/**
+	 * Compares the extracted topics with the manual topics of a single document. Returns number of correct topics, precision, recall and f-measure.
+	 * @param keysPath The path to the file containing the manual, original topics
+	 * @param extracted The extracted topics
+	 * @param numTopicsToEvaluate The number of extracted topics to be evaluated
+	 * @return number of correct topics, precision, recall and f-measure.
+	 * @throws Exception
+	 */
+	public static double[] evaluateTopicsSingle(String filename, List<String> manual, List<String> extracted, int numTopicsToEvaluate, boolean printResults) throws Exception {
+		
+		if (numTopicsToEvaluate > extracted.size()) {
+			numTopicsToEvaluate = extracted.size();
+		}
+		
+		List<String> evaluate = extracted.subList(0, numTopicsToEvaluate);
+		
+		List<String> matches = matches(evaluate, manual);
 		
 		int numCorrect = matches.size();
 		int numExtracted = extracted.size();
@@ -479,7 +496,7 @@ public class MauiCore {
 		}
 		
 		if (printResults || DB_evaluateTopicsSingle) {
-			System.out.println("\nFile: " + new File(keysPath).getName());
+			System.out.println("\nFile: " + filename);
 			System.out.println(numExtracted + " topics extracted");
 			System.out.println(numEvaluated + " topics evaluated " + "\n");
 			System.out.println("MANUAL (" + numManual + "):");
@@ -500,20 +517,20 @@ public class MauiCore {
 	/**
 	 * Evaluates the topics on a list of documents. 
 	 * @param keysPaths
-	 * @param allDocTopicsExtracted list of topics extracted in every document
+	 * @param allExtractedTopics list of topics extracted in every document
 	 * @param numTopicsToEvaluate
 	 * @return a size 7 array with the test results.
 	 * @throws Exception 
 	 */
-	public static double[] evaluateTopics(String[] keysPaths, List<List<String>> allDocTopicsExtracted, int numTopicsToEvaluate, boolean printResults) throws Exception {
+	public static double[] evaluateTopics(List<String> filenames, List<List<String>> allManualTopics, List<List<String>> allExtractedTopics, int numTopicsToEvaluate, boolean printResults) throws Exception {
 		
-		int docCount = keysPaths.length;
-		if (docCount != allDocTopicsExtracted.size()) throw new Exception("Length of extracted topics list is not equal to the number of documents");
+		int docCount = allManualTopics.size();
+		if (docCount != allExtractedTopics.size()) throw new Exception("Length of extracted topics list is not equal to the number of documents");
 		
 		int i;
 		double[][] docResults = new double[docCount][];
 		for (i = 0; i < docCount; i++) {
-			docResults[i] = evaluateTopicsSingle(keysPaths[i], allDocTopicsExtracted.get(i), numTopicsToEvaluate, false);
+			docResults[i] = evaluateTopicsSingle(filenames.get(i), allManualTopics.get(i), allExtractedTopics.get(i), numTopicsToEvaluate, false);
 		}
 		
 		double[] allCorrects = MauiPTUtils.getColumn(docResults, 0);
@@ -547,5 +564,54 @@ public class MauiCore {
 		}
 		
 		return results;
+	}
+	
+	/**
+	 * Builds a table with detailed results of a model execution on a directory.
+	 * @param keywordsPaths the paths to the manual keywords of every document
+	 * @param allDocTopicsExtracted
+	 * @return 
+	 * @throws Exception if number of topics isn't equal to number of documents
+	 */
+	public static Table detailedResults(List<String> filenames, List<List<String>> extractedTopics, List<List<String>> manualTopics) throws Exception {
+		
+		if (filenames.size() != manualTopics.size()) {
+			throw new Exception("Incoherent number of topics");
+		}
+		
+		List<String[]> matrix = new ArrayList<String[]>();
+		
+		List<String> line, matches, manual, extracted;
+		int document, topic, isMatch;
+		String keyword;
+		String[] arrayLine;
+		for (document = 0; document < filenames.size(); document++) {
+			line = new ArrayList<String>();
+			
+			manual = manualTopics.get(document);
+			extracted = extractedTopics.get(document);
+			matches = matches(manual, extracted);
+			
+			for (topic = 0; topic < extractedTopics.get(document).size(); topic++) {
+				line.add(filenames.get(document));
+				
+				keyword = extractedTopics.get(document).get(topic);
+				line.add(keyword);
+				
+				isMatch = (matches.contains(keyword) ? 1 : 0);
+				line.add(isMatch + "");
+				
+				line.add(extractedTopics.size() + "");
+				
+				line.add(matches.size() + "");
+			}
+			
+			arrayLine = (String[]) line.toArray();
+			matrix.add(arrayLine);
+		}
+		
+		String[] header = new String[]{"Nome do Arquivo", "Termo do MAUI", "Termo em Comum", "Nº Termos do Maui", "Nº Acertos"};
+		
+		return new Table(header, matrix, null);
 	}
 }
