@@ -28,6 +28,10 @@ public class MauiFileUtils {
 		} 
 	}
 	
+	/**
+	 * Gets the path to the "data" folder in the project's directory.
+	 * @return
+	 */
 	public static final String getDataPath() {
 		String rootPath = getRootPath();
 		if(rootPath.endsWith("maui-pt")) return rootPath + "\\data\\"; // likely to be running on console
@@ -268,7 +272,7 @@ public class MauiFileUtils {
 	}
 	
 	/**
-	 * Saves a matrix as a .csv file. The filepath must not have an extension.
+	 * Saves a matrix as a .csv file. The filepath does not need an extension.
 	 * @param matrix
 	 * @param filepath
 	 * @throws IOException
@@ -276,18 +280,5 @@ public class MauiFileUtils {
 	public static void saveMatrixAsCSV(List<String[]> matrix, String filepath) throws IOException {
 		StringTable st = new StringTable(matrix);
 		st.exportAsCSV(filepath + ".csv");
-	}
-	
-	/**
-	 * Saves a matrix as a .xls file. The filepath must not have an extension.
-	 * @param matrix
-	 * @param filepath
-	 */
-	public static void saveMatrixAsXLS(List<String[]> matrix, String filepath, String[] columnTypes) {
-		ExcelSheet es = new ExcelSheet();
-		
-		List<Object[]> newmatrix = MPTUtils.convertMatrixColumns(matrix, columnTypes, true);
-		MPTUtils.fillSheet(es, newmatrix);
-		es.saveToFile(filepath + ".xls");
 	}
 }

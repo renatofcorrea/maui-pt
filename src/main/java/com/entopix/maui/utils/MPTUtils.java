@@ -1,7 +1,10 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -11,6 +14,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.stemmers.Stemmer;
@@ -242,36 +251,34 @@ public class MPTUtils {
 		return Math.sqrt(result);
 	}
 	
-	public static List<String> replaceInAll(List<String> list, char oldChar, char newChar) {
-		List<String> l = new ArrayList<>();
-		for (String s : list) {
-			l.add(s.replace(oldChar, newChar));
-		}
-		return l;
-	}
-	
 	/**
-	 * Populates a excel sheet with content from a object matrix and returns it.
-	 * @param sheet
-	 * @param content
+	 * Adds the content from a matrix of objects to a sheet.
+	 * The objects must be String, Double or Boolean instances.
+	 * @param wb
+	 * @param sheetname
+	 * @param matrix
 	 * @return
+	 * @throws IOException 
 	 */
-	public static ExcelSheet fillSheet(ExcelSheet sheet, List<Object[]> matrix) {
+	public static Sheet fillSheet(Sheet sheet, List<Object[]> matrix) throws IOException {
+		Row r;
+		Cell c;
 		int i,j;
 		Object[] array;
 		for (i = 0; i < matrix.size(); i++) {
 			array = matrix.get(i);
+			r = sheet.createRow(i);
 			for (j = 0; j < array.length; j++) {
-				if (!sheet.hasRow(i)) {
-					sheet.addRow(i);
-					sheet.addCell(i, j);
-				} else if (!sheet.hasCell(i, j)) {
-					sheet.addCell(i, j);
+				c = r.createCell(j);
+				if (array[j] instanceof String) {
+					c.setCellValue(array[j].toString());
+				} else if (array[j] instanceof Double) {
+					c.setCellValue((Double) array[j]);
+				} else if (array[j] instanceof Boolean) {
+					c.setCellValue((Boolean) array[j]);
 				}
-				sheet.setCellValue(array[j], i, j);
 			}
 		}
-		
 		return sheet;
 	}
 
@@ -313,58 +320,57 @@ public class MPTUtils {
 	}
 	
 	/**
-	 * Builds a matrix comparing the keywords extracted by a model on every document by its corresponding manual keywords.
+	 * Builds a matrix that compares the keywords extracted by a model on every document by the document's corresponding manual keywords.
 	 * @param keywordsPaths the paths to the manual keywords of every document
 	 * @param allDocTopicsExtracted
 	 * @return 
 	 * @throws Exception if number of topic lists isn't equal to number of documents
 	 */
-	public static List<String[]> keywordsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics, List<MauiTopics> mauiTopics) throws Exception {
+	public static List<Object[]> buildKeywordsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics, List<MauiTopics> mauiTopics) throws Exception {
 		
 		if (docnames.length != manualTopics.size()) {
 			throw new Exception("Incoherent number of topics");
 		}
 		
-		List<String[]> matrix = new ArrayList<>();
+		List<Object[]> matrix = new ArrayList<>();
 		String[] header = new String[]{"Documento","Termo do MAUI","Termo em Comum","Termo em Comum MAUI","Termos do Maui","Acertos"};
 		matrix.add(header);
 		
-		String[] line, matches, manual, extracted;
+		Object[] line;
+		String[] matches, manual, extracted;
 		int linePointer;
 		int currentDoc, topic, isMatch;
 		int isMauiMatch;
 		String keyword;
 		for (currentDoc = 0; currentDoc < docnames.length; currentDoc++) {
 			
-			manual = manualTopics.get(currentDoc);
-			extracted = extractedTopics.get(currentDoc);
+			manual = manualTopics.get(currentDoc); // gets the manual topics for the current document
+			extracted = extractedTopics.get(currentDoc); // gets the extracted topics for the current document
 			matches = MauiCore.matches(manual, extracted);
 			
 			for (topic = 0; topic < extractedTopics.get(currentDoc).length; topic++) {
-				line = new String[header.length];
+				line = new Object[header.length];
 				linePointer = 0;
 				
-				line[linePointer++] = docnames[currentDoc]; // Add document name
+				line[linePointer++] = docnames[currentDoc]; // add document name
 				
 				keyword = extractedTopics.get(currentDoc)[topic];
 				
-				line[linePointer++] = keyword; // Add keyword name
+				line[linePointer++] = keyword; // add keyword name
 				
 				isMatch = (Arrays.asList(matches).contains(keyword) ? 1 : 0);
-				line[linePointer++] = isMatch + "";
+				line[linePointer++] = isMatch;
 				
 				isMauiMatch = (mauiTopics.get(currentDoc).getTopics().get(topic).isCorrect() ? 1 : 0);
-				line[linePointer++] = isMauiMatch + "";
+				line[linePointer++] = isMauiMatch;
 				
-				line[linePointer++] = extractedTopics.get(currentDoc).length + ""; // Add extracted keywords count
+				line[linePointer++] = extractedTopics.get(currentDoc).length; // add extracted keywords count
 				
-				line[linePointer++] = matches.length + "";
+				line[linePointer++] = matches.length;
 				
 				matrix.add(line);
 			}
 		}
-		
-		
 		return matrix;
 	}
 	
@@ -377,9 +383,9 @@ public class MPTUtils {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<String[]> modelEvaluationMatrix(String[] docnames, List<Integer> extracted, List<Integer> manual, List<Integer> matches) throws Exception {
-		List<String[]> matrix = new ArrayList<>();
-		List<String> line = new ArrayList<>();
+	public static List<Object[]> buildModelEvaluationMatrix(String[] docnames, List<Integer> extracted, List<Integer> manual, List<Integer> matches) throws Exception {
+		List<Object[]> matrix = new ArrayList<>();
+		List<Object> line = new ArrayList<>();
 		List<Double> precisions = new ArrayList<>();
 		List<Double> recalls = new ArrayList<>();
 		List<Double> fMeasures = new ArrayList<>();
@@ -396,13 +402,13 @@ public class MPTUtils {
 			measures = MPTUtils.calculateMeasures(numExtracted, numManual, numMatches, true);
 			
 			line.add(docnames[currentDoc]);
-			line.add(numExtracted + "");
-			line.add(numManual + "");
-			line.add(numMatches + "");
-			line.add((measures[3] + "").replace(".", ",")); //consistency
-			line.add((measures[0] + "").replace(".", ",")); //precision
-			line.add((measures[1] + "").replace(".", ",")); //recall
-			line.add((measures[2] + "").replace(".", ",")); //f-measure
+			line.add(numExtracted);
+			line.add(numManual);
+			line.add(numMatches);
+			line.add(measures[3]); //consistency
+			line.add(measures[0]); //precision
+			line.add(measures[1]); //recall
+			line.add(measures[2]); //f-measure
 			
 			precisions.add(measures[0]);
 			recalls.add(measures[1]);
@@ -410,63 +416,58 @@ public class MPTUtils {
 			consistencies.add(measures[3]);
 			measures = new double[4];
 			
-			matrix.add(line.toArray(new String[0]));
+			matrix.add(line.toArray(new Object[0]));
 			line.clear();
 		}
 		
-		matrix.add(new String[0]);
+		matrix.add(new Object[0]);
 		
 		line.add("Mínimo");
-		line.add(Collections.min(extracted) + "");
-		line.add(Collections.min(manual) + "");
-		line.add(Collections.min(matches) + "");
-		line.add((Collections.min(consistencies) + ""));
-		line.add((Collections.min(precisions) + ""));
-		line.add((Collections.min(recalls) + ""));
-		line.add((Collections.min(fMeasures) + ""));
-		line = MPTUtils.replaceInAll(line, '.', ',');
-		matrix.add(line.toArray(new String[0]));
+		line.add(Collections.min(extracted));
+		line.add(Collections.min(manual));
+		line.add(Collections.min(matches));
+		line.add((Collections.min(consistencies)));
+		line.add((Collections.min(precisions)));
+		line.add((Collections.min(recalls)));
+		line.add((Collections.min(fMeasures)));
+		matrix.add(line.toArray(new Object[0]));
 		line.clear();
 		
 		line.add("Média");
-		line.add(MPTUtils.mean(MPTUtils.intToDouble((extracted))) + "");
-		line.add(MPTUtils.mean(MPTUtils.intToDouble((manual))) + "");
-		line.add(MPTUtils.mean(MPTUtils.intToDouble((matches))) + "");
-		line.add(MPTUtils.mean(consistencies) + "");
-		line.add(MPTUtils.mean(precisions) + "");
-		line.add(MPTUtils.mean(recalls) + "");
-		line.add(MPTUtils.mean(fMeasures) + "");
-		line = MPTUtils.replaceInAll(line, '.', ',');
-		matrix.add(line.toArray(new String[0]));
+		line.add(MPTUtils.mean(MPTUtils.intToDouble((extracted))));
+		line.add(MPTUtils.mean(MPTUtils.intToDouble((manual))));
+		line.add(MPTUtils.mean(MPTUtils.intToDouble((matches))));
+		line.add(MPTUtils.mean(consistencies));
+		line.add(MPTUtils.mean(precisions));
+		line.add(MPTUtils.mean(recalls));
+		line.add(MPTUtils.mean(fMeasures));
+		matrix.add(line.toArray(new Object[0]));
 		line.clear();
 		
 		line.add("Desvio Padrão");
-		line.add(MPTUtils.stdDev(MPTUtils.intToDouble(extracted)) + "");
-		line.add(MPTUtils.stdDev(MPTUtils.intToDouble(manual)) + "");
-		line.add(MPTUtils.stdDev(MPTUtils.intToDouble(matches)) + "");
-		line.add(MPTUtils.stdDev(consistencies) + "");
-		line.add(MPTUtils.stdDev(precisions) + "");
-		line.add(MPTUtils.stdDev(recalls) + "");
-		line.add(MPTUtils.stdDev(fMeasures) + "");
-		line = MPTUtils.replaceInAll(line, '.', ',');
-		matrix.add(line.toArray(new String[0]));
+		line.add(MPTUtils.stdDev(MPTUtils.intToDouble(extracted)));
+		line.add(MPTUtils.stdDev(MPTUtils.intToDouble(manual)));
+		line.add(MPTUtils.stdDev(MPTUtils.intToDouble(matches)));
+		line.add(MPTUtils.stdDev(consistencies));
+		line.add(MPTUtils.stdDev(precisions));
+		line.add(MPTUtils.stdDev(recalls));
+		line.add(MPTUtils.stdDev(fMeasures));
+		matrix.add(line.toArray(new Object[0]));
 		line.clear();
 		
 		line.add("Máximo");
-		line.add(Collections.max(extracted) + "");
-		line.add(Collections.max(manual) + "");
-		line.add(Collections.max(matches) + "");
-		line.add(Collections.max(consistencies) + "");
-		line.add(Collections.max(precisions) + "");
-		line.add(Collections.max(recalls) + "");
-		line.add(Collections.max(fMeasures) + "");
-		line = MPTUtils.replaceInAll(line, '.', ',');
-		matrix.add(line.toArray(new String[0]));
+		line.add(Collections.max(extracted));
+		line.add(Collections.max(manual));
+		line.add(Collections.max(matches));
+		line.add(Collections.max(consistencies));
+		line.add(Collections.max(precisions));
+		line.add(Collections.max(recalls));
+		line.add(Collections.max(fMeasures));
+		matrix.add(line.toArray(new Object[0]));
 		
 		return matrix;
 	}
-
-	//TODO: change the 2d lists to list of arrays
+	
 	/**
 	 * Builds a model evaluation matrix and a keywords comparison matrix, and saves them.
 	 * saves all to file.
@@ -477,20 +478,36 @@ public class MPTUtils {
 	 */
 	public static void buildAndSaveResultMatrixes(List<MauiTopics> mauiTopics, String testDirPath) throws Exception, IOException {
 		
-		// Gets the documents names, extracted topics, manual topics and matches between them
+		// Gets the documents names, extracted and manual topics and matches between them
 		List<String[]> extractedTopics = MPTUtils.mauiTopicsToString(mauiTopics);
 		List<String[]> manualTopics = MauiFileUtils.readKeyFromFolder(testDirPath, ".key");
 		List<String[]> matches = MauiCore.allMatches(manualTopics, extractedTopics);
 		String[] documentsNames = MauiFileUtils.getFileListNames(MauiFileUtils.filterFileList(testDirPath, ".key"), true);
 		
-		List<String[]> matrix = MPTUtils.keywordsComparisonMatrix(documentsNames, extractedTopics, manualTopics, mauiTopics);
-		String filepath = MauiFileUtils.getDataPath() + "tests//keywords_" + MPTUtils.getDate();
+		// Builds the matrixes
+		List<Object[]> matrix1 = MPTUtils.buildKeywordsComparisonMatrix(documentsNames, extractedTopics, manualTopics, mauiTopics);
+		List<Object[]> matrix2 = MPTUtils.buildModelEvaluationMatrix(documentsNames, elementSizes(extractedTopics), elementSizes(manualTopics), elementSizes(matches));
 		
-		MauiFileUtils.saveMatrixAsXLS(matrix, filepath, new String[] {"string","string","double","double","double","double"});
+		Workbook wb = new HSSFWorkbook();
+		Sheet sheet;
 		
-		matrix = MPTUtils.modelEvaluationMatrix(documentsNames, elementSizes(extractedTopics), elementSizes(manualTopics), elementSizes(matches));
+		// Adds matrixes to workbook
+		sheet = wb.createSheet("Comparação de Frases-Chave");
+		sheet = MPTUtils.fillSheet(sheet, matrix1);
+		sheet = wb.createSheet("Avaliação do Modelo");
+		sheet = MPTUtils.fillSheet(sheet, matrix2);
 		
-		filepath = MauiFileUtils.getDataPath() + "tests//measures_" + MPTUtils.getDate();
-		MauiFileUtils.saveMatrixAsXLS(matrix, filepath, new String[] {"string","double","double","double","double","double","double","double"});
+		// Saves workbook
+		String filepath = MauiFileUtils.getDataPath() + "//tests" + "//test_" +MPTUtils.getDate();
+		OutputStream fileOut;
+		try {
+			fileOut = new FileOutputStream(filepath + ".xls");
+			wb.write(fileOut);
+			wb.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
