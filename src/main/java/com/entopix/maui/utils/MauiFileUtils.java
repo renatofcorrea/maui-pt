@@ -9,7 +9,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 /**
@@ -172,12 +171,15 @@ public class MauiFileUtils {
 	/**
 	 * Takes a array of files and returns its names.
 	 */
-	public static String[] getFileListNames(File[] files) {
+	public static String[] getFileListNames(File[] files, boolean removeSuffix) {
 		String[] names = new String[files.length];
 		
 		int i;
 		for (i = 0; i < files.length; i++) {
 			names[i] = files[i].getName();
+			if (removeSuffix) {
+				names[i] = MPTUtils.removeSuffix(names[i]);
+			}
 		}
 		
 		return names;
@@ -236,14 +238,14 @@ public class MauiFileUtils {
 	 * Reads the keywords in a file. Assumes that every word is separated by a newline character. 
 	 * @return a list of keywords
 	 * */
-	public static List<String> readKeyFromFile(String filePath) throws Exception {
+	public static String[] readKeyFromFile(String filePath) throws Exception {
 		File keys = new File(filePath);
 		Scanner scanner = new Scanner(keys);
 		String content = scanner.useDelimiter("\\Z").next();
 		scanner.close();
-		List<String> topics = Arrays.asList(content.split("\n"));
-		for (int i = 0; i < topics.size(); i++) {
-			topics.set(i, topics.get(i).replace("\r", ""));
+		String[] topics = content.split("\n");
+		for (int i = 0; i < topics.length; i++) {
+			topics[i] = topics[i].replace("\r", "");
 		}
 		return topics;
 	}
@@ -253,14 +255,39 @@ public class MauiFileUtils {
 	 * Assumes that every word is separated by a newline character.
 	 * @return a list of keywords for every file.
 	 */
-	public static List<List<String>> readKeyFromFolder(String dir, String format) throws Exception {
+	public static List<String[]> readKeyFromFolder(String dir, String format) throws Exception {
 		File[] files = filterFileList(dir, format);
-		List<List<String>> topics = new ArrayList<>();
+		List<String[]> topics = new ArrayList<>();
 		
-		for (File f : files) {
-			topics.add(readKeyFromFile(f.getPath()));
+		int i;
+		for (i = 0; i < files.length; i++) {
+			topics.add(readKeyFromFile(files[i].getPath()));
 		}
 		
 		return topics;
+	}
+	
+	/**
+	 * Saves a matrix as a .csv file. The filepath must not have an extension.
+	 * @param matrix
+	 * @param filepath
+	 * @throws IOException
+	 */
+	public static void saveMatrixAsCSV(List<String[]> matrix, String filepath) throws IOException {
+		StringTable st = new StringTable(matrix);
+		st.exportAsCSV(filepath + ".csv");
+	}
+	
+	/**
+	 * Saves a matrix as a .xls file. The filepath must not have an extension.
+	 * @param matrix
+	 * @param filepath
+	 */
+	public static void saveMatrixAsXLS(List<String[]> matrix, String filepath, String[] columnTypes) {
+		ExcelSheet es = new ExcelSheet();
+		
+		List<Object[]> newmatrix = MPTUtils.convertMatrixColumns(matrix, columnTypes, true);
+		MPTUtils.fillSheet(es, newmatrix);
+		es.saveToFile(filepath + ".xls");
 	}
 }

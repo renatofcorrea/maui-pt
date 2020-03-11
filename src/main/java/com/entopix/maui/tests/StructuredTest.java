@@ -17,9 +17,9 @@ import com.entopix.maui.stemmers.WekaStemmerOrengo;
 import com.entopix.maui.stemmers.WekaStemmerPorter;
 import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.util.MauiTopics;
+import com.entopix.maui.utils.MPTUtils;
 import com.entopix.maui.utils.MauiFileUtils;
-import com.entopix.maui.utils.MauiPTUtils;
-import com.entopix.maui.utils.Table;
+import com.entopix.maui.utils.StringTable;
 
 public class StructuredTest {
 	
@@ -33,7 +33,7 @@ public class StructuredTest {
 	private static File fullTextsDir = new File(dataPath + "\\docs\\corpusci\\fulltexts");
 	
 	
-	private static List<Table> fulltextsMatrixes, abstractsMatrixes;
+	private static List<StringTable> fulltextsMatrixes, abstractsMatrixes;
 	private static Instant start, finish;
 	private static String elapsed;
 	private static boolean sort;
@@ -80,7 +80,7 @@ public class StructuredTest {
 		List<MauiTopics> topics;
 		for (Stemmer stemmer : stemmers) {
 			for (File trainDir : trainFolders) {
-				modelName = MauiPTUtils.generateModelName(trainDir.getPath(), stemmer);
+				modelName = MPTUtils.generateModelName(trainDir.getPath(), stemmer);
 				modelPath = modelsPath + "\\" + modelName;
 				buildModel(trainDir.getPath(), modelPath, stemmer);
 				topics = runTopicExtractor(modelPath, testDir, stemmer, false);
@@ -90,11 +90,12 @@ public class StructuredTest {
 		}
 		return list;
 	}
+
 	
 	public static void runAllTests() throws Exception {
 		
-		abstractsMatrixes = new ArrayList<Table>();
-		fulltextsMatrixes = new ArrayList<Table>();
+		abstractsMatrixes = new ArrayList<StringTable>();
+		fulltextsMatrixes = new ArrayList<StringTable>();
 		File[] trainFolders = null;
 		Stemmer[] stemmers = {
 				new PortugueseStemmer(),
@@ -109,34 +110,41 @@ public class StructuredTest {
 		
 		start = Instant.now();
 		
+		// FULLTEXTS
 		trainFolders = MauiFileUtils.filterFileList(fullTextsDir.listFiles(), "train");
-		fulltextsMatrixes.add(new Table(header, runTest(trainFolders, fullTextsDir.getPath() + "\\test30", stemmers), tableFormat));
-		fulltextsMatrixes.add(new Table(header, runTest(trainFolders, fullTextsDir.getPath() + "\\test60", stemmers), tableFormat));
+		List<String[]> results = null;
+		results = runTest(trainFolders, fullTextsDir.getPath() + "\\test30", stemmers);
+		fulltextsMatrixes.add(new StringTable(header, results, tableFormat));
+		results = runTest(trainFolders, fullTextsDir.getPath() + "\\test60", stemmers);
+		fulltextsMatrixes.add(new StringTable(header, results, tableFormat));
 		
+		// ABSTRACTS
 		MauiCore.setMinOccur(1); //Set to abstract models only
-		
 		trainFolders = MauiFileUtils.filterFileList(abstractsDir.listFiles(), "train");
-		abstractsMatrixes.add(new Table(header, runTest(trainFolders, abstractsDir.getPath() + "\\test30", stemmers), tableFormat));
-		abstractsMatrixes.add(new Table(header, runTest(trainFolders, abstractsDir.getPath() + "\\test60", stemmers), tableFormat));
+		results = runTest(trainFolders, abstractsDir.getPath() + "\\test30", stemmers);
+		abstractsMatrixes.add(new StringTable(header, results, tableFormat));
+		results = runTest(trainFolders, abstractsDir.getPath() + "\\test60", stemmers);
+		abstractsMatrixes.add(new StringTable(header, results, tableFormat));
 		
-		MauiCore.setMinOccur(2);
+		MauiCore.setMinOccur(2); //Must be set back to standard
 		
 		finish = Instant.now();
-		elapsed = MauiPTUtils.elapsedTime(start, finish);
+		elapsed = MPTUtils.elapsedTime(start, finish);
 		
 		if (sort) {
-			for (Table t : abstractsMatrixes) t.sort(sortIndex, "double");
-			for (Table t : fulltextsMatrixes) t.sort(sortIndex, "double");
+			for (StringTable t : abstractsMatrixes) t.sort(sortIndex, "double");
+			for (StringTable t : fulltextsMatrixes) t.sort(sortIndex, "double");
 		}
 		
 		String allResults = getResultString();
 		System.out.println(allResults);
 		
 		if (saveCSVFile) {
-			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts30.csv");
-			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts60.csv");
-			fulltextsMatrixes.get(0).exportAsCSV(resultsPath + "fulltexts30.csv");
-			fulltextsMatrixes.get(1).exportAsCSV(resultsPath + "fulltexts60.csv");
+			String date = MPTUtils.getDate();
+			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts30_" + date + ".csv");
+			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts60_" + date + ".csv");
+			fulltextsMatrixes.get(1).exportAsCSV(resultsPath + "fulltexts30_" + date + ".csv");
+			fulltextsMatrixes.get(1).exportAsCSV(resultsPath + "fulltexts60_" + date + ".csv");
 		}
 	}
 	
