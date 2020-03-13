@@ -21,11 +21,11 @@ import com.entopix.maui.stemmers.WekaStemmerOrengo;
 import com.entopix.maui.stemmers.WekaStemmerPorter;
 import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.stopwords.Stopwords;
-import com.entopix.maui.tests.ResultMatrixes;
 import com.entopix.maui.tests.StructuredTest;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MPTUtils;
 import com.entopix.maui.utils.MauiFileUtils;
+import com.entopix.maui.utils.ResultMatrixes;
 import com.entopix.maui.utils.UI;
 
 import weka.core.Utils;
@@ -471,7 +471,7 @@ public class StandaloneMain {
 			return;
 		}
 		String originalTopicsPath = input;
-		String filename = MPTUtils.removeSuffix(new File(input).getName());
+		String filename = MPTUtils.removeFileExtension(new File(input).getName());
 		
 		String[] extractedTopicsList = MauiFileUtils.readKeyFromFile(extractedTopicsPath);
 		String[] manualTopicsList = MauiFileUtils.readKeyFromFile(originalTopicsPath);

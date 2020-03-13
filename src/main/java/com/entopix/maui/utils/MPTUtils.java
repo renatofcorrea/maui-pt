@@ -1,7 +1,6 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -9,10 +8,6 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 
 import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.stemmers.Stemmer;
@@ -29,11 +24,12 @@ import weka.core.Utils;
 public class MPTUtils {
 	
 	/**
-	 * Generates a model name in the format "model_doctype_stemmerclass_traindir"
+	 * Generates a model name in the format "model_doctype_stemmerclass_traindir".
+	 * Throws a Exception when the path of the training directory of the model does not contain 'abstracts' or 'fulltexts' to generate the model name.
 	 * @param trainDir
 	 * @param stemmer
-	 * @return The generated model name.
-	 * @throws Exception When the training filepath of the model does not contain 'abstracts' or 'fulltexts' to generate the model name
+	 * @return
+	 * @throws Exception
 	 */
 	public static String generateModelName(String trainDir, Stemmer stemmer) {
 		String name = "model_";
@@ -43,11 +39,10 @@ public class MPTUtils {
 		} else if (trainDir.contains("fulltexts")) {
 			name += "fulltexts_";
 		} else {
-			new Exception("The training filepath of the model does not contain 'abstracts' or 'fulltexts' to generate modelname").printStackTrace();
+			new Exception("The path of the training directory of the model does not contain 'abstracts' or 'fulltexts' to generate the model name").printStackTrace();
 		}
 		
 		name += stemmer.getClass().getSimpleName() + "_";
-		
 		name += new File(trainDir).getName();
 		
 		return name;
@@ -55,7 +50,7 @@ public class MPTUtils {
 	
 	/**
 	 * Returns a Stemmer instance based on the name of the model.
-	 * The model name has to be in the format modelname_modeltype_stemmername_traindirname .
+	 * The model name has to be in the format model_modeltype_stemmer_traindir.
 	 * @throws ClassNotFoundException 
 	 * @throws IllegalAccessException 
 	 * @throws InstantiationException 
@@ -67,8 +62,12 @@ public class MPTUtils {
 		return (Stemmer) Class.forName(stemmerName).newInstance();
 	}
 	
-	/** 
+	/**
 	 * Finds the Nth occurrence of a substring on a string. (n = 0 for fist occurrence)
+	 * @param str
+	 * @param substr
+	 * @param n
+	 * @return
 	 */
 	public static int ordinalIndexOf(String str, String substr, int n) {
 	    int pos = -1;
@@ -79,17 +78,19 @@ public class MPTUtils {
 	}
 	
 	/**
-	 * Returns true if, and only if, length of s != 0 and s != null.
+	 * Returns true if, and only if, length of string s != 0 and s != null.
+	 * @param s
+	 * @return
 	 */
 	public static boolean isValid(String s) {
 		return s != null && !s.isEmpty();
 	}
 	
 	/**
-	 * Calculates the elapsed time between two instants.
+	 * Returns a string representation of elapsed time between two instants.
 	 * @param start
 	 * @param finish
-	 * @return string representation of elapsed time.
+	 * @return string
 	 */
 	public static String elapsedTime(Instant start, Instant finish) {
 		double seconds = (Duration.between(start, finish).toMillis()/1000);
@@ -98,6 +99,11 @@ public class MPTUtils {
 		return minutes + " minutes and " + remainingSec + " seconds.";
 	}
 	
+	/**
+	 * Converts a list of Topic objects to a array of strings.
+	 * @param topics
+	 * @return
+	 */
 	public static String[] topicsToString(List<Topic> topics) {
 		String[] strings = new String[topics.size()];
 		int i;
@@ -107,6 +113,11 @@ public class MPTUtils {
 		return strings;
 	}
 
+	/**
+	 * Converts a list of MauiTopics to a list of arrays of strings.
+	 * @param topicsList
+	 * @return
+	 */
 	public static List<String[]> mauiTopicsToString(List<MauiTopics> topicsList) {
 		List<String[]> strList = new ArrayList<>();
 		String[] strings;
@@ -121,6 +132,7 @@ public class MPTUtils {
 	
 	/**
 	 * Gets the Nth column in a matrix of doubles.
+	 * Throws a exception if there is a row without specified index.
 	 * @param
 	 * @return
 	 * @throws ArrayIndexOutOfBoundsException if there is a row without specified index.
@@ -139,7 +151,7 @@ public class MPTUtils {
 	}
 	
 	/**
-	 * Removes the diacritics of a string
+	 * Removes the diacritics of a string.
 	 * @param s
 	 * @return
 	 */
@@ -149,7 +161,12 @@ public class MPTUtils {
 	    return s;
 	}
 	
-	public static String removeSuffix(String s) {
+	/**
+	 * Removes the file extension of a string (all characters after last index of '.' character).
+	 * @param s
+	 * @return
+	 */
+	public static String removeFileExtension(String s) {
 		int index = s.lastIndexOf(".");
 		if (index > 0) {
 			return s.substring(0, index);
@@ -158,7 +175,7 @@ public class MPTUtils {
 	}
 	
 	/**
-	 * Takes a list of arrays and returns a list with their sizes.
+	 * Takes a list of arrays and returns it as a list with their sizes.
 	 * @param matrix
 	 * @return
 	 */
@@ -172,12 +189,24 @@ public class MPTUtils {
 		return sizes;
 	}
 	
+	/**
+	 * Returns a string with the current date as dd-MM format.
+	 * @return
+	 */
 	public static String getDate() {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM");
 		return sdf.format(new Date(System.currentTimeMillis()));
 	}
 	
 
+	/**
+	 * Calculates precision, recall, f-measure and consistency and returns them as a array of doubles.
+	 * @param extracted
+	 * @param manual
+	 * @param matches
+	 * @param roundValues
+	 * @return
+	 */
 	public static double[] calculateMeasures(int extracted, int manual, int matches, boolean roundValues) {
 		double precision, recall, fMeasure, consistency;
 		
@@ -196,7 +225,12 @@ public class MPTUtils {
 		return new double[] {precision, recall, fMeasure, consistency};
 	}
 	
-	public static List<Double> intToDouble(List<Integer> list) {
+	/**
+	 * Converts a list of Integer objects to a list of Double objects.
+	 * @param list
+	 * @return
+	 */
+	public static List<Double> integerListToDoubleList(List<Integer> list) {
 		List<Double> dList = new ArrayList<>();
 		for (Integer i : list) {
 			dList.add(i.doubleValue());
@@ -229,6 +263,11 @@ public class MPTUtils {
 		return Math.sqrt(result);
 	}
 	
+	/**
+	 * Calculates the standard deviation.
+	 * @param list
+	 * @return
+	 */
 	public static double stdDev(List<Double> list) {
 		//Variance
 		double mean = mean(list);
@@ -245,41 +284,7 @@ public class MPTUtils {
 	}
 	
 	/**
-	 * Adds the content from a matrix of objects to a sheet.
-	 * The objects must be String, Double or Boolean instances.
-	 * @param wb
-	 * @param sheetname
-	 * @param matrix
-	 * @return
-	 * @throws IOException 
-	 */
-	public static Sheet fillSheet(Sheet sheet, List<Object[]> matrix) throws IOException {
-		Row r;
-		Cell c;
-		int i,j;
-		Object[] array;
-		for (i = 0; i < matrix.size(); i++) {
-			array = matrix.get(i);
-			r = sheet.createRow(i);
-			for (j = 0; j < array.length; j++) {
-				c = r.createCell(j);
-				if (array[j] instanceof String) {
-					c.setCellValue(array[j].toString());
-				} else if (array[j] instanceof Integer) {
-					c.setCellValue(new Double((Integer) array[j]));
-				} else if (array[j] instanceof Double) {
-					c.setCellValue((Double) array[j]);
-				} else if (array[j] instanceof Boolean) {
-					c.setCellValue((Boolean) array[j]);
-				}
-			}
-			sheet.autoSizeColumn(i);
-		}
-		return sheet;
-	}
-
-	/**
-	 * Converts the values in every column of the string matrix to the specified format.
+	 * Converts the values in every column of a string matrix to the specified format.
 	 * Every string in the formatMethod must explicitly give the format in which every 
 	 * column will be converted into. Accepted words are: "string", "double" and "boolean", 
 	 * case insensitive. If an element is empty or null, it stays as a string.

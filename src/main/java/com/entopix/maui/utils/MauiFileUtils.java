@@ -182,7 +182,7 @@ public class MauiFileUtils {
 		for (i = 0; i < files.length; i++) {
 			names[i] = files[i].getName();
 			if (removeSuffix) {
-				names[i] = MPTUtils.removeSuffix(names[i]);
+				names[i] = MPTUtils.removeFileExtension(names[i]);
 			}
 		}
 		
