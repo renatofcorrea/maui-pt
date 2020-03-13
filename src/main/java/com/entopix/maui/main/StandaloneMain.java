@@ -21,6 +21,7 @@ import com.entopix.maui.stemmers.WekaStemmerOrengo;
 import com.entopix.maui.stemmers.WekaStemmerPorter;
 import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.stopwords.Stopwords;
+import com.entopix.maui.tests.ResultMatrixes;
 import com.entopix.maui.tests.StructuredTest;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MPTUtils;
@@ -79,6 +80,9 @@ public class StandaloneMain {
 	
 	/** Path to the full texts documents folder. */
 	private static final String FTS_PATH = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts";
+	
+	/** Path to the test results file. */
+	private static String resultsPath = MauiFileUtils.getDataPath() + "\\tests" + "\\test_results_" +MPTUtils.getDate();
 	
 	private static String trainDirPath = null, testDirPath = null;
 	
@@ -375,7 +379,7 @@ public class StandaloneMain {
 		}
 		
 		List<MauiTopics> topics = runTopicExtractor();
-		MPTUtils.buildAndSaveResultMatrixes(topics, testDirPath);
+		ResultMatrixes.buildAndSaveResultsWorkbook(topics, testDirPath, resultsPath);
 	}
 	
 	private static void optionRunOnFile() throws IOException, MauiFilterException, InstantiationException, IllegalAccessException, ClassNotFoundException, EmptyModelsDirException {
