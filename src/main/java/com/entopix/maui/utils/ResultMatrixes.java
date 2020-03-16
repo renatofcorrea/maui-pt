@@ -109,30 +109,13 @@ public class ResultMatrixes {
 	}
 	
 	/**
-	 * Saves a workbook to the file in the specified location.
-	 * @param wb
-	 */
-	private static void saveWorkbook(Workbook wb, String filepath) {
-		OutputStream fileOut;
-		try {
-			fileOut = new FileOutputStream(filepath + ".xls");
-			wb.write(fileOut);
-			wb.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	/**
 	 * Builds a matrix that compares the keywords extracted by a model on every document by the document's corresponding manual keywords.
 	 * @param keywordsPaths the paths to the manual keywords of every document
 	 * @param allDocTopicsExtracted
 	 * @return 
 	 * @throws Exception if number of topic lists isn't equal to number of documents
 	 */
-	private static List<Object[]> buildKeywordsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics, List<MauiTopics> mauiTopics) throws Exception {
+	public static List<Object[]> buildKeywordsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics, List<MauiTopics> mauiTopics) throws Exception {
 		
 		if (docnames.length != manualTopics.size()) {
 			throw new Exception("Incoherent number of topics");
@@ -189,7 +172,7 @@ public class ResultMatrixes {
 	 * @return
 	 * @throws Exception
 	 */
-	private static List<Object[]> buildModelEvaluationMatrix(String[] docnames, List<Integer> extracted, List<Integer> manual, List<Integer> matches) throws Exception {
+	public static List<Object[]> buildModelEvaluationMatrix(String[] docnames, List<Integer> extracted, List<Integer> manual, List<Integer> matches) throws Exception {
 		List<Object[]> matrix = new ArrayList<>();
 		List<Object> line = new ArrayList<>();
 		List<Double> precisions = new ArrayList<>();
@@ -283,7 +266,7 @@ public class ResultMatrixes {
 	 * @return
 	 * @throws IOException 
 	 */
-	private static Sheet fillSheet(Sheet sheet, List<Object[]> matrix) throws IOException {
+	public static Sheet fillSheet(Sheet sheet, List<Object[]> matrix) throws IOException {
 		Row r;
 		Cell c;
 		int i,j;
@@ -307,8 +290,22 @@ public class ResultMatrixes {
 		}
 		return sheet;
 	}
-
 	
-	
+	/**
+	 * Saves a workbook to the file in the specified location.
+	 * @param wb
+	 */
+	public static void saveWorkbook(Workbook wb, String filepath) {
+		OutputStream fileOut;
+		try {
+			fileOut = new FileOutputStream(filepath + ".xls");
+			wb.write(fileOut);
+			wb.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 }

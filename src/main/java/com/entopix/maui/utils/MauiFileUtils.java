@@ -204,6 +204,13 @@ public class MauiFileUtils {
 		return newArray.toArray(new File[newArray.size()]);
 	}
 	
+	/**
+	 * Filter a file array using a filter method.
+	 * Returns the files which names include the string in filterMethod.
+	 * @param fileArray
+	 * @param filterMethod
+	 * @return
+	 */
 	public static File[] filterFileList(File[] fileArray, String filterMethod) {
 		ArrayList<File> newArray = new ArrayList<File>();
 		

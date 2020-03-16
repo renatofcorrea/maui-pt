@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.core.ModelWrapper;
@@ -80,9 +83,6 @@ public class StandaloneMain {
 	
 	/** Path to the full texts documents folder. */
 	private static final String FTS_PATH = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts";
-	
-	/** Path to the test results file. */
-	private static String resultsPath = MauiFileUtils.getDataPath() + "\\tests" + "\\test_results_" +MPTUtils.getDate();
 	
 	private static String trainDirPath = null, testDirPath = null;
 	
@@ -379,7 +379,10 @@ public class StandaloneMain {
 		}
 		
 		List<MauiTopics> topics = runTopicExtractor();
-		ResultMatrixes.buildAndSaveResultsWorkbook(topics, testDirPath, resultsPath);
+		String resultsPath = MauiFileUtils.getDataPath() + "\\tests\\" + modelName + "_" + "test_results_" + MPTUtils.getDate();
+		ResultMatrixes.buildAndSaveResultsWorkbook(topics, testDirPath, modelName + "_" + resultsPath);
+		
+		System.out.println("\nPlanilha " + new File(resultsPath).getName() + " gerada com sucesso.");
 	}
 	
 	private static void optionRunOnFile() throws IOException, MauiFilterException, InstantiationException, IllegalAccessException, ClassNotFoundException, EmptyModelsDirException {
@@ -389,6 +392,7 @@ public class StandaloneMain {
 		} catch (EmptyModelsDirException e) {
 			return;
 		}
+		
 		System.out.println("\nArquivo Selecionado: " + testDoc.getName());
 		System.out.println("Deseja alterar o arquivo para o teste?");
 		System.out.println("1 - Sim");
@@ -454,29 +458,80 @@ public class StandaloneMain {
 	}
 	
 	private static void optionEvaluateIndexing() throws Exception { //TODO: adicionar opção para testar em diretório
-		System.out.println("\nInsira o caminho do arquivo contendo as palavras chave de saída do sistema de indexação.");
-		System.out.print("Caminho: ");
+		System.out.println("\nDeseja avaliar a indexação por arquivo ou diretório?");
+		System.out.println("1 - Avaliação por arquivo");
+		System.out.println("2 - Avaliação por diretório");
+		System.out.print("Opção: ");
 		input = SCAN.nextLine();
-		if (!MauiFileUtils.exists(input)) {
-			UI.showFileNotFoundMessage(input);
-			return;
+		if (input.equals("1")) {
+			System.out.println("Insira o caminho do arquivo contendo as palavras chave de saída do sistema de indexação (.maui, .rake, etc.).");
+			System.out.print("Caminho: ");
+			input = SCAN.nextLine();
+			if (!MauiFileUtils.exists(input)) {
+				UI.showFileNotFoundMessage(input);
+				return;
+			}
+			String extractedTopicsPath = input;
+			
+			System.out.println("Insira o caminho do arquivo contendo as palavras chave manuais do documento (.key).");
+			System.out.print("Caminho: ");
+			input = SCAN.nextLine();
+			if (!MauiFileUtils.exists(input)) {
+				UI.showFileNotFoundMessage(input);
+				return;
+			}
+			String originalTopicsPath = input;
+			String filename = MPTUtils.removeFileExtension(new File(input).getName());
+			
+			String[] extractedTopicsList = MauiFileUtils.readKeyFromFile(extractedTopicsPath);
+			String[] manualTopicsList = MauiFileUtils.readKeyFromFile(originalTopicsPath);
+			
+			MauiCore.evaluateTopics(filename, manualTopicsList, extractedTopicsList , extractedTopicsList.length, true);
 		}
-		String extractedTopicsPath = input;
-		
-		System.out.println("Insira o caminho do arquivo contendo as palavras chave originais do documento.");
-		System.out.print("Caminho: ");
-		input = SCAN.nextLine();
-		if (!MauiFileUtils.exists(input)) {
-			UI.showFileNotFoundMessage(input);
-			return;
+		else if (input.equals("2")) {
+			System.out.println("\nInsira o caminho do diretório contendo as palavras chave de saída do sistema de indexação.");
+			System.out.print("Caminho: ");
+			input = SCAN.nextLine();
+			if (!MauiFileUtils.exists(input)) {
+				UI.showFileNotFoundMessage(input);
+				return;
+			}
+			
+			String extractedTopicsPath = input;
+			
+			System.out.println("Insira o formato do arquivo (sem o ponto)");
+			System.out.print("Formato: ");
+			input = SCAN.nextLine();
+			
+			String format = "." + input;
+			
+			System.out.println("\nInsira o caminho do diretório contendo as palavras chave manuais do documento (.key).");
+			System.out.print("Caminho: ");
+			input = SCAN.nextLine();
+			if (!MauiFileUtils.exists(input)) {
+				UI.showFileNotFoundMessage(input);
+				return;
+			}
+			
+			// builds matrixes and export as .xls
+			// TODO: there should be an implementation of this in ResultMatrixes class
+			String manualTopicsPath = input;
+			String[] docnames = MauiFileUtils.getFileListNames(MauiFileUtils.filterFileList(new File(input).listFiles(), ".key"), true);
+			
+			List<String[]> allManualTopics = MauiFileUtils.readKeyFromFolder(manualTopicsPath, ".key");
+			List<String[]> allExtractedTopics = MauiFileUtils.readKeyFromFolder(extractedTopicsPath, format);
+			List<String[]> allMatches = MauiCore.allMatches(allManualTopics, allExtractedTopics);
+			
+			List<Object[]> matrix = ResultMatrixes.buildModelEvaluationMatrix(docnames, MPTUtils.elementSizes(allExtractedTopics), MPTUtils.elementSizes(allManualTopics), MPTUtils.elementSizes(allMatches));
+			
+			Workbook wb = new HSSFWorkbook();
+			Sheet sheet = wb.createSheet();
+			sheet = ResultMatrixes.fillSheet(sheet, matrix);
+			String filepath = MauiFileUtils.getDataPath() + "\\tests\\" + "indexing_evaluation_results_" + MPTUtils.getDate();
+			ResultMatrixes.saveWorkbook(wb, filepath);
+			
+			System.out.println("\nPlanilha " + new File(filepath).getName() + " gerada com sucesso.");
 		}
-		String originalTopicsPath = input;
-		String filename = MPTUtils.removeFileExtension(new File(input).getName());
-		
-		String[] extractedTopicsList = MauiFileUtils.readKeyFromFile(extractedTopicsPath);
-		String[] manualTopicsList = MauiFileUtils.readKeyFromFile(originalTopicsPath);
-		
-		MauiCore.evaluateTopics(filename, manualTopicsList, extractedTopicsList , extractedTopicsList.length, true);
 	}
 	
 	private static void optionShowCredits() {

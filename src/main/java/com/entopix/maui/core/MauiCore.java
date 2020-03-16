@@ -550,14 +550,14 @@ public class MauiCore {
 	}
 	
 	/**
-	 * Evaluates the topics on a list of documents. 
+	 * Compares the extracted topics with the manual topics of a list of documents. Returns mean of correct topics, precision, recall and f-measure.
 	 * @param keysPaths
 	 * @param allExtractedTopics list of topics extracted in every document
 	 * @param numTopicsToEvaluate
 	 * @return a size 7 array with the test results.
 	 * @throws Exception 
 	 */
-	public static double[] evaluateAllTopics(List<String> filenames, List<String[]> allManualTopics, List<String[]> allExtractedTopics, int numTopicsToEvaluate, boolean printResults) throws Exception {
+	public static double[] evaluateMeanOfTopicsList(String[] filenames, List<String[]> allManualTopics, List<String[]> allExtractedTopics, int numTopicsToEvaluate, boolean printResults) throws Exception {
 		
 		int docCount = allManualTopics.size();
 		if (docCount != allExtractedTopics.size()) throw new Exception("Length of extracted topics list is not equal to the number of documents");
@@ -565,7 +565,7 @@ public class MauiCore {
 		int i;
 		double[][] docResults = new double[docCount][];
 		for (i = 0; i < docCount; i++) {
-			docResults[i] = evaluateTopics(filenames.get(i), allManualTopics.get(i), allExtractedTopics.get(i), numTopicsToEvaluate, false);
+			docResults[i] = evaluateTopics(filenames[i], allManualTopics.get(i), allExtractedTopics.get(i), numTopicsToEvaluate, false);
 		}
 		
 		double[] allCorrects = MPTUtils.getColumn(docResults, 0);
@@ -596,6 +596,29 @@ public class MauiCore {
 			System.out.println("AVG RECALL: " + results[4] * 100);
 			System.out.println("STDEV RECALL: " + results[5] * 100);
 			System.out.println("F-MEASURE: " + results[6] * 100);
+		}
+		
+		return results;
+	}
+	
+	/**
+	 * Compares the extracted topics with the manual topics of a list of documents. Returns number of correct topics, precision, recall and f-measure for each document.
+	 * @param filenames
+	 * @param allManualTopics
+	 * @param allExtractedTopics
+	 * @param numTopicsToEvaluate
+	 * @param printResults
+	 * @return
+	 * @throws Exception
+	 */
+	public static List<double[]> evaluateTopicsList(String[] filenames, List<String[]> allManualTopics, List<String[]> allExtractedTopics, int numTopicsToEvaluate) throws Exception {
+		int docCount = allManualTopics.size();
+		if (docCount != allExtractedTopics.size()) throw new Exception("Length of extracted topics list is not equal to the number of documents");
+		
+		List<double[]> results = new ArrayList<>();
+		int i;
+		for (i = 0; i < docCount; i++) {
+			results.add(evaluateTopics(filenames[i], allManualTopics.get(i), allExtractedTopics.get(i), numTopicsToEvaluate, false));
 		}
 		
 		return results;
