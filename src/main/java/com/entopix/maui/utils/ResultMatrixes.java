@@ -1,5 +1,7 @@
 package com.entopix.maui.utils;
 
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -23,54 +25,98 @@ import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.util.MauiTopics;
 
 public class ResultMatrixes {
+
 	
 	/**
-	 * Builds and saves a workbook with two sheets: one for the keywords comparison and other for the model evaluation.
-	 * @param mauiTopics
-	 * @param testDirPath
+	 * Saves a workbook to the file in the specified location.
+	 * @param wb
+	 */
+	public static void saveWorkbook(Workbook wb, String filepath) {
+		OutputStream fileOut;
+		try {
+			fileOut = new FileOutputStream(filepath + ".xls");
+			wb.write(fileOut);
+			wb.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Saves a matrix of objects in a sheet as a .xls file.
+	 * @param matrix
 	 * @param filepath
 	 * @throws IOException
-	 * @throws Exception
 	 */
-	public static void buildAndSaveResultsWorkbook(List<MauiTopics> mauiTopics, String testDirPath, String filepath) throws IOException, Exception {
-		Workbook wb = buildWorkbook(mauiTopics, testDirPath);
+	public static void saveMatrixToFile(Matrix matrix, String filepath) throws IOException {
+		Workbook wb = new HSSFWorkbook();
+		Sheet sheet = wb.createSheet();
+		sheet = fillSheet(sheet, matrix.getData());
 		saveWorkbook(wb, filepath);
 	}
 	
 	/**
-	 * Returns a workbook with two sheets: one for the keywords comparison and 
-	 * other for the model evaluation.
-	 * @param mauiTopics
-	 * @param testDirPath
-	 * @return 
-	 * @throws Exception
+	 * Saves a list of matrixes as sheets in a .xls file.
+	 * @param matrixes
+	 * @param sheetNames
+	 * @param filepath
 	 * @throws IOException
 	 */
-	private static Workbook buildWorkbook(List<MauiTopics> mauiTopics, String testDirPath) throws Exception, IOException {
+	public static void saveMatrixesToFile(List<List<Object[]>> matrixes, String[] sheetNames, String filepath) throws IOException {
+		Workbook wb = new HSSFWorkbook();
+		int matrixCount = matrixes.size();
+		
+		Sheet sheet;
+		int i;
+		for (i = 0; i < matrixCount; i++) {
+			if (sheetNames[i] != null) {
+				sheet = wb.createSheet(sheetNames[i]);
+			} else {
+				sheet = wb.createSheet();
+			}
+			sheet = fillSheet(sheet, matrixes.get(i));
+		}
+		
+		saveWorkbook(wb, filepath);
+	}
+	
+	// This is a procedural method. It is not supposed to be used in any other part of the code.
+	/**
+	 * Builds and saves the Keyword Comparison Matrix and the Model Evaluation Matrix as a single file.
+	 * @param docnames
+	 * @param manualTopics
+	 * @param extractedTopics
+	 * @param mauiTopics
+	 * @param outPath
+	 * @throws Exception
+	 */
+	public static void buildAndSaveDetailedResults(List<MauiTopics> mauiTopics, String testDirPath, String outPath) throws Exception {
 		
 		// Gets data
-		List<String[]> extractedTopics = MPTUtils.mauiTopicsToString(mauiTopics);
-		List<String[]> manualTopics = MauiFileUtils.readKeyFromFolder(testDirPath, ".key");
-		List<String[]> matches = MauiCore.allMatches(manualTopics, extractedTopics);
-		String[] docNames = MauiFileUtils.getFileListNames(MauiFileUtils.filterFileList(testDirPath, ".key"), true);
+		Matrix manualTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".key")));
+		Matrix extractedTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".maui")));
+		Matrix matches = new Matrix(new ArrayList<Object[]>(MauiCore.allMatches(manualTopics.getDataAsString(), extractedTopics.getDataAsString())));
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(new File(testDirPath).listFiles(), ".key"), true);
 		
-		// Builds the matrixes
-		List<Object[]> matrix1 = buildKeywordsComparisonMatrix(docNames, extractedTopics, manualTopics, mauiTopics);
-		List<Object[]> matrix2 = buildModelEvaluationMatrix(docNames, MPTUtils.elementSizes(extractedTopics), MPTUtils.elementSizes(manualTopics), MPTUtils.elementSizes(matches));
+		// Build matrixes
+		Matrix keyComparison = buildKeywordsComparisonMatrix(docnames, extractedTopics.getDataAsString(), manualTopics.getDataAsString(), mauiTopics);
+		Matrix modelEvaluation = buildModelEvaluationMatrix(docnames, extractedTopics.elementSizes(), manualTopics.elementSizes(), matches.elementSizes());
 		
-		// Build workbook and adds matrixes to it
+		// Format and save matrixes
 		Workbook wb = new HSSFWorkbook();
 		Sheet sheet;
 		
 		sheet = wb.createSheet("Comparação de Frases-Chave");
-		sheet = fillSheet(sheet, matrix1);
+		sheet = fillSheet(sheet, keyComparison.getData());
 		sheet = format(sheet);
 		
 		sheet = wb.createSheet("Avaliação do Modelo");
-		sheet = fillSheet(sheet, matrix2);
+		sheet = fillSheet(sheet, modelEvaluation.getData());
 		sheet = format(sheet);
 		
-		return wb;
+		saveWorkbook(wb, outPath);
 	}
 
 	/**
@@ -115,15 +161,15 @@ public class ResultMatrixes {
 	 * @return 
 	 * @throws Exception if number of topic lists isn't equal to number of documents
 	 */
-	public static List<Object[]> buildKeywordsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics, List<MauiTopics> mauiTopics) throws Exception {
+	public static Matrix buildKeywordsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics, List<MauiTopics> mauiTopics) throws Exception {
 		
 		if (docnames.length != manualTopics.size()) {
 			throw new Exception("Incoherent number of topics");
 		}
 		
-		List<Object[]> matrix = new ArrayList<>();
+		Matrix matrix = new Matrix();
 		String[] header = new String[]{"Documento","Termo do MAUI","Termo em Comum","Termo em Comum MAUI","Termos do Maui","Acertos"};
-		matrix.add(header);
+		matrix.addLine(header);
 		
 		Object[] line;
 		String[] matches, manual, extracted;
@@ -157,7 +203,7 @@ public class ResultMatrixes {
 				
 				line[linePointer++] = matches.length;
 				
-				matrix.add(line);
+				matrix.addLine(line);
 			}
 		}
 		return matrix;
@@ -172,8 +218,8 @@ public class ResultMatrixes {
 	 * @return
 	 * @throws Exception
 	 */
-	public static List<Object[]> buildModelEvaluationMatrix(String[] docnames, List<Integer> extracted, List<Integer> manual, List<Integer> matches) throws Exception {
-		List<Object[]> matrix = new ArrayList<>();
+	public static Matrix buildModelEvaluationMatrix(String[] docnames, int[] extractedCount, int[] manualCount, int[] matchesCount) throws Exception {
+		Matrix matrix = new Matrix();
 		List<Object> line = new ArrayList<>();
 		List<Double> precisions = new ArrayList<>();
 		List<Double> recalls = new ArrayList<>();
@@ -182,12 +228,12 @@ public class ResultMatrixes {
 		int currentDoc, numExtracted, numManual, numMatches, docCount = docnames.length;
 		double[] measures = new double[4];
 		String[] header = new String[]{"Documento","Termos Extraídos", "Termos Manuais","Casamentos Exatos","Consistência","Precisão","Revocação","Medida-F"};
-		matrix.add(header);
+		matrix.addLine(header);
 		
 		for (currentDoc = 0; currentDoc < docCount; currentDoc++) {
-			numExtracted = extracted.get(currentDoc);
-			numManual = manual.get(currentDoc);
-			numMatches = matches.get(currentDoc);
+			numExtracted = extractedCount[currentDoc];
+			numManual = manualCount[currentDoc];
+			numMatches = matchesCount[currentDoc];
 			measures = MPTUtils.calculateMeasures(numExtracted, numManual, numMatches, true);
 			
 			line.add(docnames[currentDoc]);
@@ -205,11 +251,14 @@ public class ResultMatrixes {
 			consistencies.add(measures[3]);
 			measures = new double[4];
 			
-			matrix.add(line.toArray(new Object[0]));
+			matrix.addLine(line.toArray(new Object[0]));
 			line.clear();
 		}
 		
-		matrix.add(new Object[0]);
+		List<Integer> extracted = MPTUtils.intArrayToIntegerList(extractedCount);
+		List<Integer> manual = MPTUtils.intArrayToIntegerList(manualCount);
+		List<Integer> matches = MPTUtils.intArrayToIntegerList(matchesCount);
+		matrix.addLine(new Object[0]);
 		
 		line.add("Mínimo");
 		line.add(Collections.min(extracted));
@@ -219,7 +268,7 @@ public class ResultMatrixes {
 		line.add((Collections.min(precisions)));
 		line.add((Collections.min(recalls)));
 		line.add((Collections.min(fMeasures)));
-		matrix.add(line.toArray(new Object[0]));
+		matrix.addLine(line.toArray(new Object[0]));
 		line.clear();
 		
 		line.add("Média");
@@ -230,7 +279,7 @@ public class ResultMatrixes {
 		line.add(MPTUtils.mean(precisions));
 		line.add(MPTUtils.mean(recalls));
 		line.add(MPTUtils.mean(fMeasures));
-		matrix.add(line.toArray(new Object[0]));
+		matrix.addLine(line.toArray(new Object[0]));
 		line.clear();
 		
 		line.add("Desvio Padrão");
@@ -241,7 +290,7 @@ public class ResultMatrixes {
 		line.add(MPTUtils.stdDev(precisions));
 		line.add(MPTUtils.stdDev(recalls));
 		line.add(MPTUtils.stdDev(fMeasures));
-		matrix.add(line.toArray(new Object[0]));
+		matrix.addLine(line.toArray(new Object[0]));
 		line.clear();
 		
 		line.add("Máximo");
@@ -252,7 +301,7 @@ public class ResultMatrixes {
 		line.add(Collections.max(precisions));
 		line.add(Collections.max(recalls));
 		line.add(Collections.max(fMeasures));
-		matrix.add(line.toArray(new Object[0]));
+		matrix.addLine(line.toArray(new Object[0]));
 		
 		return matrix;
 	}
@@ -289,23 +338,6 @@ public class ResultMatrixes {
 			}
 		}
 		return sheet;
-	}
-	
-	/**
-	 * Saves a workbook to the file in the specified location.
-	 * @param wb
-	 */
-	public static void saveWorkbook(Workbook wb, String filepath) {
-		OutputStream fileOut;
-		try {
-			fileOut = new FileOutputStream(filepath + ".xls");
-			wb.write(fileOut);
-			wb.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	
 }

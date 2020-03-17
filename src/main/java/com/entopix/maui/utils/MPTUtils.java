@@ -122,12 +122,28 @@ public class MPTUtils {
 		List<String[]> strList = new ArrayList<>();
 		String[] strings;
 		
-		for(MauiTopics mt : topicsList) {
+		for (MauiTopics mt : topicsList) {
 			strings = topicsToString(mt.getTopics());
 			strList.add(strings);
 		}
 		
 		return strList;
+	}
+	
+	/**
+	 * Converts a string array of topics from specified document to a MauiTopics object.
+	 * @param topics
+	 * @param documentPath
+	 * @return
+	 */
+	public static MauiTopics stringArrayToMauiTopics(String[] topics, String documentPath) {
+		MauiTopics mt = new MauiTopics(documentPath);
+		int i;
+		for (i = 0; i < topics.length; i++) {
+			mt.addTopic(new Topic(topics[i]));
+		}
+		
+		return mt;
 	}
 	
 	/**
@@ -174,6 +190,7 @@ public class MPTUtils {
 		return null;
 	}
 	
+	//TODO: now in Matrix class
 	/**
 	 * Takes a list of arrays and returns it as a list with their sizes.
 	 * @param matrix
@@ -283,40 +300,11 @@ public class MPTUtils {
 		return Math.sqrt(result);
 	}
 	
-	/**
-	 * Converts the values in every column of a string matrix to the specified format.
-	 * Every string in the formatMethod must explicitly give the format in which every 
-	 * column will be converted into. Accepted words are: "string", "double" and "boolean", 
-	 * case insensitive. If an element is empty or null, it stays as a string.
-	 * @param matrix
-	 * @param formatMethod
-	 * @return
-	 */
-	public static List<Object[]> convertMatrixColumns(List<String[]> matrix, String[] columnTypes, boolean ignoreFirstLine) {
-		List<Object[]> newMatrix = new ArrayList<>();
-		String[] strRow = null;
-		Object[] objRow = null;
-		int row, col, startRow = 0;
-		if (ignoreFirstLine) {
-			startRow = 1;
-			newMatrix.add(0, matrix.get(0));
+	public static List<Integer> intArrayToIntegerList(int[] arr) {
+		List<Integer> list = new ArrayList<Integer>(arr.length);
+		for (int i : arr){
+		    list.add(i);
 		}
-		
-		for (row = startRow; row < matrix.size(); row++) {
-			strRow = matrix.get(row);
-			objRow = new Object[strRow.length];
-			for (col = 0; col < strRow.length; col++) {
-				if (columnTypes[col].equalsIgnoreCase("double")) {
-					objRow[col] = Double.valueOf(strRow[col].replace(",", "."));
-				} else if (columnTypes[col].equalsIgnoreCase("boolean")) {
-					objRow[col] = Boolean.valueOf(strRow[col]);
-				} else {
-					objRow[col] = strRow[col];
-				}
-			}
-			newMatrix.add(row, objRow);
-		}
-		
-		return newMatrix;
+		return list;
 	}
 }

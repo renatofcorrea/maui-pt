@@ -2,13 +2,11 @@ package com.entopix.maui.main;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
 
 import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.core.ModelWrapper;
@@ -27,6 +25,7 @@ import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.tests.StructuredTest;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MPTUtils;
+import com.entopix.maui.utils.Matrix;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.utils.ResultMatrixes;
 import com.entopix.maui.utils.UI;
@@ -380,7 +379,7 @@ public class StandaloneMain {
 		
 		List<MauiTopics> topics = runTopicExtractor();
 		String resultsPath = MauiFileUtils.getDataPath() + "\\tests\\" + modelName + "_" + "test_results_" + MPTUtils.getDate();
-		ResultMatrixes.buildAndSaveResultsWorkbook(topics, testDirPath, modelName + "_" + resultsPath);
+		ResultMatrixes.buildAndSaveDetailedResults(topics, testDirPath, modelName + "_" + resultsPath);
 		
 		System.out.println("\nPlanilha " + new File(resultsPath).getName() + " gerada com sucesso.");
 	}
@@ -513,25 +512,25 @@ public class StandaloneMain {
 				return;
 			}
 			
-			// builds matrixes and export as .xls
-			// TODO: there should be an implementation of this in ResultMatrixes class
+			// builds matrix and export as .xls
 			String manualTopicsPath = input;
-			String[] docnames = MauiFileUtils.getFileListNames(MauiFileUtils.filterFileList(new File(input).listFiles(), ".key"), true);
+			String filename = "indexing_evaluation_results_" + MPTUtils.getDate();
+			String filepath = MauiFileUtils.getDataPath() + "\\tests\\" + filename;
 			
-			List<String[]> allManualTopics = MauiFileUtils.readKeyFromFolder(manualTopicsPath, ".key");
-			List<String[]> allExtractedTopics = MauiFileUtils.readKeyFromFolder(extractedTopicsPath, format);
-			List<String[]> allMatches = MauiCore.allMatches(allManualTopics, allExtractedTopics);
+			saveResults(manualTopicsPath, extractedTopicsPath, format, filepath);
 			
-			List<Object[]> matrix = ResultMatrixes.buildModelEvaluationMatrix(docnames, MPTUtils.elementSizes(allExtractedTopics), MPTUtils.elementSizes(allManualTopics), MPTUtils.elementSizes(allMatches));
-			
-			Workbook wb = new HSSFWorkbook();
-			Sheet sheet = wb.createSheet();
-			sheet = ResultMatrixes.fillSheet(sheet, matrix);
-			String filepath = MauiFileUtils.getDataPath() + "\\tests\\" + "indexing_evaluation_results_" + MPTUtils.getDate();
-			ResultMatrixes.saveWorkbook(wb, filepath);
-			
-			System.out.println("\nPlanilha " + new File(filepath).getName() + " gerada com sucesso.");
+			System.out.println("\nPlanilha " + filename + " gerada com sucesso.");
 		}
+	}
+
+	private static void saveResults(String manualTopicsPath, String extractedTopicsPath, String format, String filepath) throws Exception, IOException {
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(new File(manualTopicsPath).listFiles(), ".key"), true);
+		Matrix manualTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(manualTopicsPath, ".key")));
+		Matrix extractedTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(extractedTopicsPath, format)));
+		Matrix matches = new Matrix(new ArrayList<Object[]>(MauiCore.allMatches(manualTopics.getDataAsString(), extractedTopics.getDataAsString())));
+		
+		Matrix matrix = ResultMatrixes.buildModelEvaluationMatrix(docnames, extractedTopics.elementSizes(), manualTopics.elementSizes(), matches.elementSizes());
+		ResultMatrixes.saveMatrixToFile(matrix, filepath);
 	}
 	
 	private static void optionShowCredits() {

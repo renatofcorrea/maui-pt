@@ -173,20 +173,32 @@ public class MauiFileUtils {
 	}
 	
 	/**
-	 * Takes a array of files and returns its names.
+	 * Gets the names of the files in a file list.
+	 * @param files
+	 * @param removeFileExtension
+	 * @return
 	 */
-	public static String[] getFileListNames(File[] files, boolean removeSuffix) {
+	public static String[] getFileNames(File[] files, boolean removeFileExtension) {
 		String[] names = new String[files.length];
 		
 		int i;
 		for (i = 0; i < files.length; i++) {
 			names[i] = files[i].getName();
-			if (removeSuffix) {
+			if (removeFileExtension) {
 				names[i] = MPTUtils.removeFileExtension(names[i]);
 			}
 		}
 		
 		return names;
+	}
+	
+	/**
+	 * Gets the names of the files in a directory on the specified path.
+	 * @param dir
+	 * @return
+	 */
+	public static String[] getFileNames(String dir, boolean removeFileExtension) {
+		return getFileNames(new File(dir).listFiles(), removeFileExtension);
 	}
 	
 	/**
@@ -258,6 +270,7 @@ public class MauiFileUtils {
 		for (int i = 0; i < topics.length; i++) {
 			topics[i] = topics[i].replace("\r", "");
 		}
+		
 		return topics;
 	}
 	
