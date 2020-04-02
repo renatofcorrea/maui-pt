@@ -3,7 +3,9 @@ package com.entopix.maui.main;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
@@ -24,6 +26,7 @@ import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.stopwords.Stopwords;
 import com.entopix.maui.tests.StructuredTest;
 import com.entopix.maui.util.MauiTopics;
+import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.MPTUtils;
 import com.entopix.maui.utils.Matrix;
 import com.entopix.maui.utils.MauiFileUtils;
@@ -190,12 +193,12 @@ public class StandaloneMain {
 		return MauiCore.runTopicExtractor();
 	}
 	
-	private static void runMauiWrapper() throws IOException, MauiFilterException {
+	private static List<Topic> runMauiWrapper() throws IOException, MauiFilterException {
 		MauiCore.setTestDocFile(testDoc);
 		MauiCore.setModelPath(modelPath);
 		MauiCore.setStemmer(stemmer);
 		MauiCore.setModel(model);
-		MauiCore.runMauiWrapperOnFile();
+		return MauiCore.runMauiWrapperOnFile();
 	}
 	
 	/**
@@ -384,16 +387,16 @@ public class StandaloneMain {
 		System.out.println("\nPlanilha " + new File(resultsPath).getName() + " gerada com sucesso.");
 	}
 	
-	private static void optionRunOnFile() throws IOException, MauiFilterException, InstantiationException, IllegalAccessException, ClassNotFoundException, EmptyModelsDirException {
+	private static List<Topic> optionRunOnFile() throws IOException, MauiFilterException, InstantiationException, IllegalAccessException, ClassNotFoundException, EmptyModelsDirException {
 		
 		try {
 			selectModel();
 		} catch (EmptyModelsDirException e) {
-			return;
+			return null;
 		}
 		
 		System.out.println("\nArquivo Selecionado: " + testDoc.getName());
-		System.out.println("Deseja alterar o arquivo para o teste?");
+		System.out.println("Deseja alterar o documento?");
 		System.out.println("1 - Sim");
 		System.out.println("[Enter] - Não");
 		System.out.print("Opção: ");
@@ -416,13 +419,13 @@ public class StandaloneMain {
 					testDoc = new File(input);
 				} else {
 					UI.showFileNotFoundMessage(input);
-					return;
+					return null;
 				}
 				break;
 			}
 		}
 		
-		runMauiWrapper();
+		return runMauiWrapper();
 	}
 
 	private static void optionDeleteModels() throws IOException {
@@ -533,6 +536,26 @@ public class StandaloneMain {
 		ResultMatrixes.saveMatrixToFile(matrix, filepath);
 	}
 	
+	private static void optionGetGeneralTerms() throws InstantiationException, IllegalAccessException, ClassNotFoundException, IOException, MauiFilterException, EmptyModelsDirException {
+		List<Topic> topics = optionRunOnFile();
+		String[] terms = MPTUtils.topicsToArray(topics);
+		ArrayList<Entry<String, Integer>> result = TBCI.getTBCITopConceptsCount(terms);
+		
+		System.out.println("Top Frequent Concept id= " + result.get(0).getKey() + ",freq= " + result.get(0).getValue());
+		System.out.println("Top Frequent Concept label= " + TBCI.getTBCITerm(Integer.parseInt(result.get(0).getKey())).getKey() );
+		
+		System.out.println("Top Frequent Concepts");
+	    
+	    Iterator<Entry<String, Integer>> iterator = result.iterator();
+	   
+	    System.out.println("Código\tValor\tTermo");
+	 
+	    while(iterator.hasNext()){
+	      Entry<String, Integer> entry = (Entry) iterator.next();
+	      System.out.println(entry.getKey() + "\t"+entry.getValue() + "\t"+ TBCI.getTBCITerm(Integer.parseInt(entry.getKey())).getKey());
+	    }
+	}
+	
 	private static void optionShowCredits() {
 		UI.displayCredits();
 		System.out.println("Aperte [enter] para continuar...");
@@ -554,7 +577,8 @@ public class StandaloneMain {
 				System.out.println("4 - Executar modelo em arquivo  ");
 				System.out.println("5 - Executar teste estruturado  ");
 				System.out.println("6 - Avaliar indexação  ");
-				System.out.println("7 - Sobre");
+				System.out.println("7 - Obter termos gerais");
+				System.out.println("8 - Sobre");
 				System.out.println("0 - Sair  ");
 				System.out.print("Opção: ");
 				if (SCAN.hasNext()) {
@@ -567,7 +591,8 @@ public class StandaloneMain {
 				else if (input.equals("4")) optionRunOnFile();
 				else if (input.equals("5")) StructuredTest.runAllTests();
 				else if (input.equals("6")) optionEvaluateIndexing();
-				else if (input.equals("7")) optionShowCredits();
+				else if (input.equals("7")) optionGetGeneralTerms();
+				else if (input.equals("8")) optionShowCredits();
 				else if (input.equals("0")) break;
 				else UI.showInvalidOptionMessage();	
 			}

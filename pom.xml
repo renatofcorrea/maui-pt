@@ -77,11 +77,10 @@
 		    <artifactId>commons-math3</artifactId>
 		    <version>3.6.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/javax.json/javax.json-api -->
-		<dependency>
-		    <groupId>javax.json</groupId>
-		    <artifactId>javax.json-api</artifactId>
-		    <version>1.0</version>
+		<dependency> 
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.json</artifactId>
+			<version>1.0.4</version>
 		</dependency>
 	</dependencies>
 	<build>

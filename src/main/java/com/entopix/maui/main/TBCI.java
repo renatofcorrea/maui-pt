@@ -26,9 +26,9 @@ import java.util.function.Predicate;
 
 import javax.json.Json;
 
-import javax.json.stream.JsonParser; // <-- atualizado
+import javax.json.stream.JsonParser; // <-- alteração
 
-//import org.springframework.boot.json.JsonParser; // <-- removido
+//import org.springframework.boot.json.JsonParser; //<-- import original
 
 import com.entopix.maui.util.Topic;
 
@@ -403,7 +403,7 @@ public class TBCI {
 	/**
 	 * @param terms string
 	 * @param filter 
-	 * @return Up terms of a given set of term specified by terms string @param, ordered descendant by frequency of ocorrence 
+	 * @return Up terms of a given set of term specified by terms string @param, <b> ordered descendant by frequency of occurrence
 	 */
 	public static ArrayList<Map.Entry<String,Integer>> getTBCITopConceptsCount(String[] terms){
 		//res termid e count
@@ -1054,7 +1054,6 @@ public class TBCI {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
 		//testando interface com tbci no tematres
 				Map<String,Integer> res = getTBCITopCategories();
 				Map<String,Integer> res2 = getTBCITerm("pesquisa");

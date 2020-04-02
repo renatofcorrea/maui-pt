@@ -104,7 +104,7 @@ public class MPTUtils {
 	 * @param topics
 	 * @return
 	 */
-	public static String[] topicsToString(List<Topic> topics) {
+	public static String[] topicsToArray(List<Topic> topics) {
 		String[] strings = new String[topics.size()];
 		int i;
 		for (i = 0; i < topics.size(); i++) {
@@ -123,7 +123,7 @@ public class MPTUtils {
 		String[] strings;
 		
 		for (MauiTopics mt : topicsList) {
-			strings = topicsToString(mt.getTopics());
+			strings = topicsToArray(mt.getTopics());
 			strList.add(strings);
 		}
 		
