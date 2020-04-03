@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -22,6 +23,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
 import com.entopix.maui.core.MauiCore;
+import com.entopix.maui.main.TBCI;
 import com.entopix.maui.util.MauiTopics;
 
 public class ResultMatrixes {
@@ -81,43 +83,6 @@ public class ResultMatrixes {
 		
 		saveWorkbook(wb, filepath);
 	}
-	
-	// This is a procedural method. It is not supposed to be used in any other part of the code.
-	/**
-	 * Builds and saves the Keyword Comparison Matrix and the Model Evaluation Matrix as a single file.
-	 * @param docnames
-	 * @param manualTopics
-	 * @param extractedTopics
-	 * @param mauiTopics
-	 * @param outPath
-	 * @throws Exception
-	 */
-	public static void buildAndSaveDetailedResults(List<MauiTopics> mauiTopics, String testDirPath, String outPath) throws Exception {
-		
-		// Gets data
-		Matrix manualTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".key")));
-		Matrix extractedTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".maui")));
-		Matrix matches = new Matrix(new ArrayList<Object[]>(MauiCore.allMatches(manualTopics.getDataAsString(), extractedTopics.getDataAsString())));
-		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(new File(testDirPath).listFiles(), ".key"), true);
-		
-		// Build matrixes
-		Matrix keyComparison = buildKeywordsComparisonMatrix(docnames, extractedTopics.getDataAsString(), manualTopics.getDataAsString(), mauiTopics);
-		Matrix modelEvaluation = buildModelEvaluationMatrix(docnames, extractedTopics.elementSizes(), manualTopics.elementSizes(), matches.elementSizes());
-		
-		// Format and save matrixes
-		Workbook wb = new HSSFWorkbook();
-		Sheet sheet;
-		
-		sheet = wb.createSheet("Comparação de Frases-Chave");
-		sheet = fillSheet(sheet, keyComparison.getData());
-		sheet = format(sheet);
-		
-		sheet = wb.createSheet("Avaliação do Modelo");
-		sheet = fillSheet(sheet, modelEvaluation.getData());
-		sheet = format(sheet);
-		
-		saveWorkbook(wb, outPath);
-	}
 
 	/**
 	 * Formats the sheet.
@@ -155,6 +120,40 @@ public class ResultMatrixes {
 	}
 	
 	/**
+	 * Adds the content from a matrix of objects to a sheet.
+	 * The objects must be String, Double, Integer or Boolean instances.
+	 * @param wb
+	 * @param sheetname
+	 * @param matrix
+	 * @return
+	 * @throws IOException 
+	 */
+	public static Sheet fillSheet(Sheet sheet, List<Object[]> matrix) throws IOException {
+		Row r;
+		Cell c;
+		int i,j;
+		Object[] line;
+		for (i = 0; i < matrix.size(); i++) {
+			line = matrix.get(i);
+			r = sheet.createRow(i);
+			for (j = 0; j < line.length; j++) {
+				c = r.createCell(j);
+				if (line[j] instanceof String) {
+					c.setCellValue(line[j].toString());
+				} else if (line[j] instanceof Integer) {
+					c.setCellValue(new Double((Integer) line[j]));
+				} else if (line[j] instanceof Double) {
+					c.setCellValue((Double) line[j]);
+				} else if (line[j] instanceof Boolean) {
+					c.setCellValue((Boolean) line[j]);
+				}
+				sheet.autoSizeColumn(i);
+			}
+		}
+		return sheet;
+	}
+	
+	/**
 	 * Builds a matrix that compares the keywords extracted by a model on every document by the document's corresponding manual keywords.
 	 * @param keywordsPaths the paths to the manual keywords of every document
 	 * @param allDocTopicsExtracted
@@ -177,8 +176,8 @@ public class ResultMatrixes {
 		int currentDoc, topic, isMatch;
 		int isMauiMatch;
 		String keyword;
+		
 		for (currentDoc = 0; currentDoc < docnames.length; currentDoc++) {
-			
 			manual = manualTopics.get(currentDoc); // gets the manual topics for the current document
 			extracted = extractedTopics.get(currentDoc); // gets the extracted topics for the current document
 			matches = MauiCore.matches(manual, extracted);
@@ -219,18 +218,20 @@ public class ResultMatrixes {
 	 * @throws Exception
 	 */
 	public static Matrix buildModelEvaluationMatrix(String[] docnames, int[] extractedCount, int[] manualCount, int[] matchesCount) throws Exception {
+		
 		Matrix matrix = new Matrix();
+		String[] header = new String[]{"Documento","Termos Extraídos", "Termos Manuais","Casamentos Exatos","Consistência","Precisão","Revocação","Medida-F"};
+		matrix.addLine(header);
+		
 		List<Object> line = new ArrayList<>();
 		List<Double> precisions = new ArrayList<>();
 		List<Double> recalls = new ArrayList<>();
 		List<Double> fMeasures = new ArrayList<>();
 		List<Double> consistencies = new ArrayList<>();
-		int currentDoc, numExtracted, numManual, numMatches, docCount = docnames.length;
+		int currentDoc, numExtracted, numManual, numMatches;
 		double[] measures = new double[4];
-		String[] header = new String[]{"Documento","Termos Extraídos", "Termos Manuais","Casamentos Exatos","Consistência","Precisão","Revocação","Medida-F"};
-		matrix.addLine(header);
 		
-		for (currentDoc = 0; currentDoc < docCount; currentDoc++) {
+		for (currentDoc = 0; currentDoc < docnames.length; currentDoc++) {
 			numExtracted = extractedCount[currentDoc];
 			numManual = manualCount[currentDoc];
 			numMatches = matchesCount[currentDoc];
@@ -305,39 +306,79 @@ public class ResultMatrixes {
 		
 		return matrix;
 	}
-
-	/**
-	 * Adds the content from a matrix of objects to a sheet.
-	 * The objects must be String, Double, Integer or Boolean instances.
-	 * @param wb
-	 * @param sheetname
-	 * @param matrix
-	 * @return
-	 * @throws IOException 
-	 */
-	public static Sheet fillSheet(Sheet sheet, List<Object[]> matrix) throws IOException {
-		Row r;
-		Cell c;
-		int i,j;
+	
+	public static Matrix buildGeneralTermsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics) {
+		
+		Matrix matrix = new Matrix();
+		String[] header = new String[]{"Nome do Documento", "TG mais Frequente MAUI", "TG MAIS Frequente Manual", "Acerto"};
+		matrix.addLine(header);
+		
 		Object[] line;
-		for (i = 0; i < matrix.size(); i++) {
-			line = matrix.get(i);
-			r = sheet.createRow(i);
-			for (j = 0; j < line.length; j++) {
-				c = r.createCell(j);
-				if (line[j] instanceof String) {
-					c.setCellValue(line[j].toString());
-				} else if (line[j] instanceof Integer) {
-					c.setCellValue(new Double((Integer) line[j]));
-				} else if (line[j] instanceof Double) {
-					c.setCellValue((Double) line[j]);
-				} else if (line[j] instanceof Boolean) {
-					c.setCellValue((Boolean) line[j]);
-				}
-				sheet.autoSizeColumn(i);
+		ArrayList<Entry<String, Integer>> mauiResults, keywordsResults;
+		int currentDoc, linePointer;
+		for (currentDoc = 0; currentDoc < docnames.length; currentDoc++) {
+			line = new Object[header.length];
+			mauiResults = TBCI.getTBCITopConceptsCount(extractedTopics.get(currentDoc));
+			keywordsResults = TBCI.getTBCITopConceptsCount(manualTopics.get(currentDoc));
+			
+			for (linePointer = 0; linePointer < line.length; linePointer++) {
+				line[0] = docnames[currentDoc]; //adds docname
+				
+				line[1] = TBCI.getTBCITerm(Integer.parseInt(mauiResults.get(0).getKey())).getKey(); //adds most frequent maui term
+				
+				line[2] = TBCI.getTBCITerm(Integer.parseInt(keywordsResults.get(0).getKey())).getKey(); //adds most frequent keywords term
+				
+				line[3] = (line[1].equals(line[2]) ? 1 : 0);
+				
+				matrix.addLine(line);
 			}
 		}
-		return sheet;
+		
+		return matrix;
 	}
 	
+	// This is a procedural method. It is not supposed to be used in any other part of the code.
+	/**
+	 * Builds and saves the Keyword Comparison Matrix, the Model Evaluation Matrix and the General Terms Comparison Matrix as a single file.
+	 * @param docnames
+	 * @param manualTopics
+	 * @param extractedTopics
+	 * @param mauiTopics
+	 * @param outPath
+	 * @throws Exception
+	 */
+	public static void buildAndSaveDetailedResults(List<MauiTopics> mauiTopics, String testDirPath, String outPath) throws Exception {
+		
+		// Gets data
+		Matrix manualTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".key")));
+		Matrix extractedTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".maui")));
+		Matrix matches = new Matrix(new ArrayList<Object[]>(MauiCore.allMatches(manualTopics.getDataAsStringList(), extractedTopics.getDataAsStringList())));
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(new File(testDirPath).listFiles(), ".key"), true);
+		
+		// Build matrixes
+		Matrix keyComparison = buildKeywordsComparisonMatrix(docnames, extractedTopics.getDataAsStringList(), manualTopics.getDataAsStringList(), mauiTopics);
+		Matrix modelEvaluation = buildModelEvaluationMatrix(docnames, extractedTopics.elementSizes(), manualTopics.elementSizes(), matches.elementSizes());
+		Matrix generalTermsComparison = buildGeneralTermsComparisonMatrix(docnames, extractedTopics.getDataAsStringList(), manualTopics.getDataAsStringList());
+		
+		// Format and save matrixes
+		Workbook wb = new HSSFWorkbook();
+		Sheet sheet;
+		
+		System.out.println("[ResultMatrixes] Generating Keywords Comparison Sheet...");
+		sheet = wb.createSheet("Comparação de Frases-Chave");
+		sheet = fillSheet(sheet, keyComparison.getData());
+		sheet = format(sheet);
+		
+		System.out.println("[ResultMatrixes] Generating Model Evaluation Sheet...");
+		sheet = wb.createSheet("Avaliação do Modelo");
+		sheet = fillSheet(sheet, modelEvaluation.getData());
+		sheet = format(sheet);
+		
+		System.out.println("[ResultMatrixes] Generating General Terms Comparison Sheet...");
+		sheet = wb.createSheet("Comparação de Termos Gerais");
+		sheet = fillSheet(sheet, generalTermsComparison.getData());
+		sheet = format(sheet);
+		
+		saveWorkbook(wb, outPath);
+	}
 }

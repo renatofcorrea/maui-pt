@@ -530,7 +530,7 @@ public class StandaloneMain {
 		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(new File(manualTopicsPath).listFiles(), ".key"), true);
 		Matrix manualTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(manualTopicsPath, ".key")));
 		Matrix extractedTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(extractedTopicsPath, format)));
-		Matrix matches = new Matrix(new ArrayList<Object[]>(MauiCore.allMatches(manualTopics.getDataAsString(), extractedTopics.getDataAsString())));
+		Matrix matches = new Matrix(new ArrayList<Object[]>(MauiCore.allMatches(manualTopics.getDataAsStringList(), extractedTopics.getDataAsStringList())));
 		
 		Matrix matrix = ResultMatrixes.buildModelEvaluationMatrix(docnames, extractedTopics.elementSizes(), manualTopics.elementSizes(), matches.elementSizes());
 		ResultMatrixes.saveMatrixToFile(matrix, filepath);
@@ -542,7 +542,7 @@ public class StandaloneMain {
 		ArrayList<Entry<String, Integer>> result = TBCI.getTBCITopConceptsCount(terms);
 		
 		System.out.println("Top Frequent Concept id= " + result.get(0).getKey() + ",freq= " + result.get(0).getValue());
-		System.out.println("Top Frequent Concept label= " + TBCI.getTBCITerm(Integer.parseInt(result.get(0).getKey())).getKey() );
+		System.out.println("Top Frequent Concept label= " + TBCI.getTBCITerm(Integer.parseInt(result.get(0).getKey())).getKey());  // TOP FREQUENT TERM NAME
 		
 		System.out.println("Top Frequent Concepts");
 	    

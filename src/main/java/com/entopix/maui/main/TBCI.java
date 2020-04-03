@@ -407,44 +407,42 @@ public class TBCI {
 	 */
 	public static ArrayList<Map.Entry<String,Integer>> getTBCITopConceptsCount(String[] terms){
 		//res termid e count
-		HashMap<String,Integer> res = new HashMap<String,Integer> () ;
-		for(int i=0;i<terms.length;i++){
+		HashMap<String,Integer> res = new HashMap<String,Integer>() ;
+		for (int i = 0 ; i < terms.length ; i++) {
 			//localizar termo no tbci
 			
-			Map<String, Integer> t=null;
+			Map<String, Integer> t = null;
 			Integer id = null;
 			try {
 				t = getTBCITerm(URLEncoder.encode(terms[i], "UTF-8"));
 				id= t.get(terms[i]);
 			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
-			if(id == null){
-				System.out.println("termo não é do tbci:"+terms[i]);
+			if (id == null) {
+				System.out.println("termo não é do tbci: " + terms[i]);
 				continue;
-			}
-			else{//termo do tbci
+			} else { //termo do tbci
 				String sid = id.toString();
 				//obter topterms
-				if(!t.isEmpty())
+				if (!t.isEmpty())
 				t.putAll(getAllBroaderConcepts(sid)); //getTBCITopConcepts(sid);
 				//incluindo o próprio termo
 				
 				//verificar se term incluindo no contador
 				Set<Entry<String, Integer>> set = t.entrySet();
 			    Iterator it = set.iterator();
-			    while(it.hasNext()){
+			    while (it.hasNext()){
 				      Entry<String, Integer> entry = (Entry)it.next();
-				      if(debugon)
+				      if (debugon)
 				    	  System.out.println(entry.getKey() + "\t\t"+entry.getValue());
 				      id = entry.getValue();//term id
 				      sid = id.toString();
-						if(res.get(id.toString())==null){
+						if (res.get(id.toString())==null){
 							//não incluido
 							res.put(sid, new Integer(1));
-						}else{
+						} else {
 							res.put(sid, new Integer(res.get(id.toString()).intValue()+1));
 						}
 				      
@@ -459,7 +457,11 @@ public class TBCI {
 			       return o2.getValue().compareTo(o1.getValue()); // natural order return o1.getValue().compareTo(o2.getValue());
 			   }
 			});
-		res5.removeIf( new Predicate<Entry<String, Integer>> (){ public boolean test(Entry<String,Integer> t){ if(t.getValue() < 2) return true; else return false;}});
+		res5.removeIf(new Predicate<Entry<String, Integer>>() {
+			public boolean test(Entry<String,Integer> t) { 
+				if(t.getValue() < 2) return true; else return false;
+			}
+		});
 		return res5;
 	}
 

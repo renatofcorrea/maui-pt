@@ -3,6 +3,11 @@ package com.entopix.maui.utils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Contains a List of Object Arrays to store data and utility methods.
+ * @author Rahmon Jorge
+ *
+ */
 public class Matrix {
 	
 	private List<Object[]> data;
@@ -32,7 +37,7 @@ public class Matrix {
 	 * WARNING: Use this method only if you are sure that all content are strings.
 	 * @return
 	 */
-	public List<String[]> getDataAsString() {
+	public List<String[]> getDataAsStringList() {
 		List<String[]> list = new ArrayList<>();
 		int i;
 		for (i = 0; i < data.size(); i++) {
