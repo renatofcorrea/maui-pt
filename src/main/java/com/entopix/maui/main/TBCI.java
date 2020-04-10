@@ -259,11 +259,12 @@ public class TBCI {
 		     }
 		  return res;
 
-	}//end getTBCITopCategories
+	} //end getTBCITerm
 
 	/**
-	 * @param term
-	 * @return Term data for specified term param
+	 * Gets the term data for the specified term ID.
+	 * @param idterm
+	 * @return the term data
 	 */
 	public static Entry<String,Integer> getTBCITerm(int idterm){
 		//Retrieve simple term data
@@ -405,66 +406,71 @@ public class TBCI {
 	 * @param filter 
 	 * @return Up terms of a given set of term specified by terms string @param, <b> ordered descendant by frequency of occurrence
 	 */
-	public static ArrayList<Map.Entry<String,Integer>> getTBCITopConceptsCount(String[] terms){
-		//res termid e count
-		HashMap<String,Integer> res = new HashMap<String,Integer>() ;
+	public static ArrayList<Entry<String,Integer>> getTBCITopConceptsCount(String[] terms){
+		//res term id e count
+		HashMap<String,Integer> res = new HashMap<String,Integer>();
+		
+		Map<String, Integer> term = null;
+		Integer termID = null;
+		String strTermID = null;
+		
+		Set<Entry<String, Integer>> set = null;
+		Iterator<Entry<String, Integer>> it = null;
+		Entry<String, Integer> entry = null;
+		
 		for (int i = 0 ; i < terms.length ; i++) {
-			//localizar termo no tbci
 			
-			Map<String, Integer> t = null;
-			Integer id = null;
+			//localizar termo no tbci
 			try {
-				t = getTBCITerm(URLEncoder.encode(terms[i], "UTF-8"));
-				id= t.get(terms[i]);
+				term = getTBCITerm(URLEncoder.encode(terms[i], "UTF-8"));
+				termID = term.get(terms[i]);
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}
 			
-			if (id == null) {
+			if (termID == null) {
 				System.out.println("termo não é do tbci: " + terms[i]);
 				continue;
-			} else { //termo do tbci
-				String sid = id.toString();
+			} else {
+				strTermID = termID.toString();
 				//obter topterms
-				if (!t.isEmpty())
-				t.putAll(getAllBroaderConcepts(sid)); //getTBCITopConcepts(sid);
+				if (!term.isEmpty()) term.putAll(getAllBroaderConcepts(strTermID)); //getTBCITopConcepts(sid);
+				
 				//incluindo o próprio termo
 				
 				//verificar se term incluindo no contador
-				Set<Entry<String, Integer>> set = t.entrySet();
-			    Iterator it = set.iterator();
-			    while (it.hasNext()){
-				      Entry<String, Integer> entry = (Entry)it.next();
-				      if (debugon)
-				    	  System.out.println(entry.getKey() + "\t\t"+entry.getValue());
-				      id = entry.getValue();//term id
-				      sid = id.toString();
-						if (res.get(id.toString())==null){
-							//não incluido
-							res.put(sid, new Integer(1));
-						} else {
-							res.put(sid, new Integer(res.get(id.toString()).intValue()+1));
-						}
-				      
-				    }
-				
+				set = term.entrySet();
+			    it = set.iterator();
+			    while (it.hasNext()) {
+			    	entry = (Entry) it.next();
+			    	if (debugon) System.out.println(entry.getKey() + "\t\t"+entry.getValue());
+				    termID = entry.getValue();//term id
+				    strTermID = termID.toString();
+				    if (res.get(termID.toString()) == null) {
+				    	//não incluido
+						res.put(strTermID, new Integer(1));
+					} else {
+						res.put(strTermID, new Integer(res.get(termID.toString()).intValue()+1));
+					}      
+				}
 			}
 		}
+		
 		//ordenando
 		ArrayList<Map.Entry<String,Integer>> res5 = new ArrayList<>(res.entrySet());
-		Collections.sort(res5, new Comparator<Entry<String, Integer>>(){
+		Collections.sort(res5, new Comparator<Entry<String, Integer>>() {
 			   public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2){
 			       return o2.getValue().compareTo(o1.getValue()); // natural order return o1.getValue().compareTo(o2.getValue());
 			   }
 			});
 		res5.removeIf(new Predicate<Entry<String, Integer>>() {
 			public boolean test(Entry<String,Integer> t) { 
-				if(t.getValue() < 2) return true; else return false;
+				return (t.getValue() < 2);
 			}
 		});
 		return res5;
 	}
-
+	
 	/**
 	 * @param terms string
 	 * @param filter 
@@ -527,11 +533,7 @@ public class TBCI {
 		res5.removeIf( new Predicate<Entry<String, Integer>> (){ public boolean test(Entry<String,Integer> t){ if(t.getValue() < 2) return true; else return false;}});
 		return res5;
 	}
-
-	
-	
-	
-	
+		
 	/**
 	 * Obtem termos diretamente relacionados a um termo id (gerais,específicos e relacionados)
 	 * @param termid

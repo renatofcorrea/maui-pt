@@ -100,15 +100,31 @@ public class MPTUtils {
 	}
 	
 	/**
-	 * Converts a list of Topic objects to a array of strings.
+	 * Converts a list of Topic objects into a array of strings.
 	 * @param topics
 	 * @return
 	 */
-	public static String[] topicsToArray(List<Topic> topics) {
+	public static String[] topicsToStringArray(List<Topic> topics) {
 		String[] strings = new String[topics.size()];
 		int i;
 		for (i = 0; i < topics.size(); i++) {
 			strings[i] = topics.get(i).getTitle();
+		}
+		return strings;
+	}
+	
+	/**
+	 * Converts a list of MauiTopics objects into a list of string arrays.
+	 * @param topicsList
+	 * @return
+	 */
+	public static List<String[]> mauiTopicsToListofStringArrays(List<MauiTopics> topicsList) {
+		List<String[]> strings = new ArrayList<>();
+		List<Topic> topics;
+		int doc;
+		for (doc = 0; doc < topicsList.size(); doc++) {
+			topics = topicsList.get(doc).getTopics();
+			strings.add(topicsToStringArray(topics));
 		}
 		return strings;
 	}
@@ -123,7 +139,7 @@ public class MPTUtils {
 		String[] strings;
 		
 		for (MauiTopics mt : topicsList) {
-			strings = topicsToArray(mt.getTopics());
+			strings = topicsToStringArray(mt.getTopics());
 			strList.add(strings);
 		}
 		
@@ -306,5 +322,14 @@ public class MPTUtils {
 		    list.add(i);
 		}
 		return list;
+	}
+	
+	public static int matchesCount(String[] arr1, String[] arr2) throws Exception {
+		if (arr1.length != arr2.length) throw new Exception("Array lengths must be equal.");
+		int count = 0;
+		for (int i = 0; i < arr1.length; i++) {
+			if (arr1[i].equals(arr2[i])) count++;
+		}
+		return count;
 	}
 }

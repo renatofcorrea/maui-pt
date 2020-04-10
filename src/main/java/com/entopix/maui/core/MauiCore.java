@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
 
@@ -14,6 +16,7 @@ import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.main.MauiModelBuilder;
 import com.entopix.maui.main.MauiTopicExtractor;
 import com.entopix.maui.main.MauiWrapper;
+import com.entopix.maui.main.TBCI;
 import com.entopix.maui.stemmers.PortugueseStemmer;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.stopwords.Stopwords;
@@ -622,5 +625,50 @@ public class MauiCore {
 		}
 		
 		return results;
+	}
+	
+	/**
+	 * Shows top frequent concepts and returns the most frequent.
+	 * @param terms
+	 * @return
+	 */
+	public static String getTopFrequentTerm(String[] terms, boolean fullResults) {
+		ArrayList<Entry<String, Integer>> result = TBCI.getTBCITopConceptsCount(terms);
+		
+		String tfcID = result.get(0).getKey(); // Top Frequent Concept ID
+		String tfcName = TBCI.getTBCITerm(Integer.parseInt(tfcID)).getKey(); // TOP FREQUENT CONCEPT NAME
+		
+		if (fullResults) {
+			Integer tfcFreq = result.get(0).getValue(); // Top Frequent Concept Frequency
+			
+			System.out.println("Top Frequent Concept ID: " + tfcID);
+			System.out.println("Top Frequent Concept Frequency: " + tfcFreq);
+			System.out.println("Top Frequent Concept Name: " + tfcName);  
+			
+			System.out.println("Top Frequent Concepts");
+		    
+		    Iterator<Entry<String, Integer>> iterator = result.iterator();
+		   
+		    System.out.println("Código\tValor\tTermo");
+		 
+		    while (iterator.hasNext()){
+		      Entry<String, Integer> entry = iterator.next();
+		      System.out.println(entry.getKey() + "\t"+entry.getValue() + "\t"+ TBCI.getTBCITerm(Integer.parseInt(entry.getKey())).getKey());
+		    }
+		}
+	    
+	    return tfcName;
+	}
+	
+	public static String[] getTopFrequentTermsList(List<String[]> termsList, boolean debug) {
+		int termsCount = termsList.size();
+		String[] list = new String[termsCount];
+		int doc;
+		for (doc = 0; doc < termsCount; doc++) {
+			if (debug) System.out.println("Documentos avaliados: " + doc + " de " + termsCount);
+			list[doc] = getTopFrequentTerm(termsList.get(doc), false);
+		}
+		
+		return list;
 	}
 }

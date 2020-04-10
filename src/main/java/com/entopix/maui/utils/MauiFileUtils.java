@@ -202,17 +202,30 @@ public class MauiFileUtils {
 	}
 	
 	/**
+	 * Returns a filtered file list with the files whose names contain the String specified in "filterMethod".
+	 * If "ignoreDirs" is true, it will always add directories to the filtered list.
 	 * @param dirPath
 	 * @param filterMethod
+	 * @param ignoreDirs
 	 * @return
 	 */
-	public static File[] filterFileList(String dirPath, String filterMethod) {
+	public static File[] filterFileList(String dirPath, String filterMethod, boolean ignoreDirs) {
 		File[] fileArray = new File(dirPath).listFiles();
 		ArrayList<File> newArray = new ArrayList<File>();
 		
-		for (File f : fileArray) {
-			if (f.getName().contains(filterMethod)) newArray.add(f);
+		if (!ignoreDirs) {
+			for (File f : fileArray) {
+				if (f.getName().contains(filterMethod)) newArray.add(f);
+			}
+		} else {
+			for (int file = 0; file < fileArray.length; file++) {
+				if (fileArray[file].isDirectory()) newArray.add(fileArray[file]);
+				else {
+					if (fileArray[file].getName().contains(filterMethod)) newArray.add(fileArray[file]);
+				}
+			}
 		}
+		
 		return newArray.toArray(new File[newArray.size()]);
 	}
 	
@@ -233,7 +246,7 @@ public class MauiFileUtils {
 	}
 	
 	public static File chooseFileFromDirectory(String dirPath, Scanner scanner) {
-		return chooseFileFromList(new File(dirPath).listFiles(), scanner);
+		return chooseFileFromArray(new File(dirPath).listFiles(), scanner);
 	}
 	
 	/**
@@ -241,14 +254,39 @@ public class MauiFileUtils {
 	 * @param fileList
 	 * @return fileChoice
 	 */
-	public static File chooseFileFromList(File[] fileList, Scanner scanner) {
+	public static File chooseFileFromArray(File[] fileList, Scanner scanner) {
 		if (fileList == null) throw new NullPointerException();
 		int fileChoice;
 		displayNumberedFileList(fileList);
 		System.out.print("Opção: ");
 		fileChoice = scanner.nextInt();
 		scanner.nextLine();
-		return fileList[fileChoice - 1];
+		try {
+			return fileList[fileChoice - 1];
+		} catch (ArrayIndexOutOfBoundsException e) {
+			System.out.println("\nOpção Inválida.\n");
+			return chooseFileFromArray(fileList, scanner);
+		}
+	}
+	
+	/**
+	 * Browses a file of the specified format in the specified folder.
+	 * If no format is specified, then it may also return a directory.
+	 * @param dir
+	 * @param format the string that will filter the files in the folder.
+	 * @param scan
+	 * @return
+	 */
+	public static File browseFile(String dir, String format, Scanner scan) { //TODO: add "select folder" param instead of absence of format
+		System.out.println("\nDiretório atual: " + dir + "\n");
+		
+		File[] files = filterFileList(dir, format, true);
+		File file = chooseFileFromArray(files, scan);
+		if (file.isDirectory() && !format.equals("")) {
+			return browseFile(file.getPath(), format, scan);
+		} else {
+			return file;
+		}
 	}
 	
 	public static void printOnFile(String s, String filePath) throws IOException {
@@ -280,7 +318,7 @@ public class MauiFileUtils {
 	 * @return a list of keywords for every file.
 	 */
 	public static List<String[]> readKeyFromFolder(String dir, String format) throws Exception {
-		File[] files = filterFileList(dir, format);
+		File[] files = filterFileList(dir, format, false);
 		List<String[]> topics = new ArrayList<>();
 		
 		int i;
