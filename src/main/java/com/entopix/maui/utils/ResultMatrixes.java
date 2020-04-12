@@ -337,7 +337,7 @@ public class ResultMatrixes {
 		return matrix;
 	}
 	
-	// This is a procedural method. It is not supposed to be used in any other part of the code.
+	// This is a specific procedural method for StandaloneMain.main. It is not supposed to be reused.
 	/**
 	 * Builds and saves the Keyword Comparison Matrix, the Model Evaluation Matrix and the General Terms Comparison Matrix as a single file.
 	 * @param docnames

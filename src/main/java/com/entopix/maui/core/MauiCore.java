@@ -1,6 +1,7 @@
 package com.entopix.maui.core;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -630,7 +631,7 @@ public class MauiCore {
 	/**
 	 * Shows top frequent concepts and returns the most frequent.
 	 * @param terms
-	 * @return
+	 * @return the top frequent term.
 	 */
 	public static String getTopFrequentTerm(String[] terms, boolean fullResults) {
 		ArrayList<Entry<String, Integer>> result = TBCI.getTBCITopConceptsCount(terms);
@@ -660,13 +661,26 @@ public class MauiCore {
 	    return tfcName;
 	}
 	
-	public static String[] getTopFrequentTermsList(List<String[]> termsList, boolean debug) {
-		int termsCount = termsList.size();
+	public static String[] getTopFrequentTermsFromDir(File dir, String format, boolean debug) {
+		List<String[]> keywords = null;
+		try {
+			keywords = MauiFileUtils.readKeyFromFolder(dir.getPath(), format);
+		} catch (FileNotFoundException e) {
+			System.out.println(e.toString());
+			return null;
+		}
+		
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(dir.getPath(), format, true), false);
+		int termsCount = keywords.size();
 		String[] list = new String[termsCount];
 		int doc;
 		for (doc = 0; doc < termsCount; doc++) {
-			if (debug) System.out.println("Documentos avaliados: " + doc + " de " + termsCount);
-			list[doc] = getTopFrequentTerm(termsList.get(doc), false);
+			list[doc] = getTopFrequentTerm(keywords.get(doc), false);
+			if (debug) {
+				System.out.println("Arquivo: " + docnames[doc]);
+				System.out.println("Termo Geral: " + list[doc]);
+				System.out.println("Documentos avaliados: " + (doc + 1) + " de " + termsCount);
+			}
 		}
 		
 		return list;

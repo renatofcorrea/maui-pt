@@ -2,6 +2,7 @@ package com.entopix.maui.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -202,18 +203,18 @@ public class MauiFileUtils {
 	}
 	
 	/**
-	 * Returns a filtered file list with the files whose names contain the String specified in "filterMethod".
-	 * If "ignoreDirs" is true, it will always add directories to the filtered list.
+	 * Filter the files inside a directory using a filter method.
+	 * If "filterDirs" is false, it will always add directories to the filtered list, regardless of their names.
 	 * @param dirPath
 	 * @param filterMethod
-	 * @param ignoreDirs
-	 * @return
+	 * @param filterDirs
+	 * @return the files whose names include the string in filterMethod.
 	 */
-	public static File[] filterFileList(String dirPath, String filterMethod, boolean ignoreDirs) {
+	public static File[] filterFileList(String dirPath, String filterMethod, boolean filterDirs) { //TODO: SPLIT THE "FILTERDIRS" OPTION INTO TWO METHODS FOR SAFETY
 		File[] fileArray = new File(dirPath).listFiles();
 		ArrayList<File> newArray = new ArrayList<File>();
 		
-		if (!ignoreDirs) {
+		if (filterDirs) {
 			for (File f : fileArray) {
 				if (f.getName().contains(filterMethod)) newArray.add(f);
 			}
@@ -231,10 +232,9 @@ public class MauiFileUtils {
 	
 	/**
 	 * Filter a file array using a filter method.
-	 * Returns the files which names include the string in filterMethod.
 	 * @param fileArray
 	 * @param filterMethod
-	 * @return
+	 * @return the files whose names include the string in filterMethod.
 	 */
 	public static File[] filterFileList(File[] fileArray, String filterMethod) {
 		ArrayList<File> newArray = new ArrayList<File>();
@@ -280,7 +280,7 @@ public class MauiFileUtils {
 	public static File browseFile(String dir, String format, Scanner scan) { //TODO: add "select folder" param instead of absence of format
 		System.out.println("\nDiretório atual: " + dir + "\n");
 		
-		File[] files = filterFileList(dir, format, true);
+		File[] files = filterFileList(dir, format, false);
 		File file = chooseFileFromArray(files, scan);
 		if (file.isDirectory() && !format.equals("")) {
 			return browseFile(file.getPath(), format, scan);
@@ -299,17 +299,20 @@ public class MauiFileUtils {
 	 * Reads the keywords in a file. Assumes that every word is separated by a newline character. 
 	 * @return a list of keywords
 	 * */
-	public static String[] readKeyFromFile(String filePath) throws Exception {
-		File keys = new File(filePath);
-		Scanner scanner = new Scanner(keys);
-		String content = scanner.useDelimiter("\\Z").next();
-		scanner.close();
-		String[] topics = content.split("\n");
-		for (int i = 0; i < topics.length; i++) {
-			topics[i] = topics[i].replace("\r", "");
+	public static String[] readKeyFromFile(String filePath) throws FileNotFoundException {
+		if (exists(filePath)) {
+			File keys = new File(filePath);
+			Scanner scanner = new Scanner(keys);
+			String content = scanner.useDelimiter("\\Z").next();
+			scanner.close();
+			String[] topics = content.split("\n");
+			for (int i = 0; i < topics.length; i++) {
+				topics[i] = topics[i].replace("\r", "");
+			}
+			return topics;
+		} else {
+			throw new FileNotFoundException("O arquivo " + filePath + " não foi encontrado.");
 		}
-		
-		return topics;
 	}
 	
 	/**
@@ -317,16 +320,20 @@ public class MauiFileUtils {
 	 * Assumes that every word is separated by a newline character.
 	 * @return a list of keywords for every file.
 	 */
-	public static List<String[]> readKeyFromFolder(String dir, String format) throws Exception {
-		File[] files = filterFileList(dir, format, false);
-		List<String[]> topics = new ArrayList<>();
-		
-		int i;
-		for (i = 0; i < files.length; i++) {
-			topics.add(readKeyFromFile(files[i].getPath()));
+	public static List<String[]> readKeyFromFolder(String dir, String format) throws FileNotFoundException {
+		if (exists(dir)) {
+			File[] files = filterFileList(dir, format, true);
+			List<String[]> topics = new ArrayList<>();
+			
+			int i;
+			for (i = 0; i < files.length; i++) {
+				topics.add(readKeyFromFile(files[i].getPath()));
+			}
+			
+			return topics;
+		} else {
+			throw new FileNotFoundException("O Arquivo " + dir + " com o formato " + format + " não foi encontrado.");
 		}
-		
-		return topics;
 	}
 	
 	/**

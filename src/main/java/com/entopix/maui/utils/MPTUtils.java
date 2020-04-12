@@ -324,12 +324,40 @@ public class MPTUtils {
 		return list;
 	}
 	
-	public static int matchesCount(String[] arr1, String[] arr2) throws Exception {
+	/**
+	 * Counts the matches on the elements that are in the same index.
+	 * @param arr1
+	 * @param arr2
+	 * @return
+	 * @throws Exception
+	 */
+	public static int matchesCount(String[] arr1, String[] arr2, boolean ignoreCase) throws Exception {
 		if (arr1.length != arr2.length) throw new Exception("Array lengths must be equal.");
 		int count = 0;
 		for (int i = 0; i < arr1.length; i++) {
-			if (arr1[i].equals(arr2[i])) count++;
+			if (ignoreCase) {
+				if (arr1[i].equalsIgnoreCase(arr2[i])) count++;
+			} else {
+				if (arr1[i].equals(arr2[i])) count++;
+			}
 		}
 		return count;
+	}
+	
+	/**
+	 * Filters a string array using a filter method.
+	 * @param list
+	 * @param filterMethod
+	 * @return the strings whose names include the string in filterMethod.
+	 */
+	public static String[] filterStringList(String[] list, String filterMethod) {
+		List<String> newlist = new ArrayList<>();
+		int i;
+		for (i = 0; i < list.length; i++) {
+			if (list[i].contains(filterMethod)) {
+				newlist.add(list[i]);
+			}
+		}
+		return newlist.toArray(new String[newlist.size()]);
 	}
 }
