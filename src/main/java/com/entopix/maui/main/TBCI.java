@@ -15,6 +15,7 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -187,7 +188,7 @@ public class TBCI {
 
 
 	/**
-	 * @param term
+	 * @param term string before () or :
 	 * @return Term data for specified term param
 	 */
 	public static Map<String,Integer> getTBCITerm(String term){
@@ -205,7 +206,7 @@ public class TBCI {
 		  String string = "";
 		  String term_id = "";
 		  try {
-			  URL  url = new URL(urlbase+"task=search&arg="+term+"&output=json");//só funciona se url sem parametro!
+			  URL  url = new URL(urlbase+"task=search&arg="+URLEncoder.encode(term,"UTF-8")+"&output=json");//só funciona se url sem parametro!
 		  
 		  URLConnection urlConn = url.openConnection(); 
 		  urlConn.setRequestProperty("Accept-Charset", "UTF-8");
@@ -238,12 +239,13 @@ public class TBCI {
 		                case "string":
 		                    parser.next();
 		                    string = parser.getString();
+		                    if(startsWithIgnoreCase(string,term)) {
 		                    if(debugon){
 		                    System.out.println(string);
 		                    System.out.println("---------");
 		                    }
 		                    res.put(string,Integer.valueOf(term_id));
-		                    ex = true;
+		                    ex = true;}
 		                    break;
 		             }
 		         }
@@ -307,6 +309,7 @@ public class TBCI {
 		                case "string":
 		                    parser.next();
 		                    string = parser.getString();
+		          
 		                    if(debugon){
 		                    System.out.println(string);
 		                    System.out.println("---------");
@@ -332,7 +335,7 @@ public class TBCI {
 
 	
 	/**
-	 * @param term
+	 * @param term string before () or :
 	 * @return Terms data that contain the string in term param
 	 */
 	public static Map<String,Integer> getTBCITerms(String term){
@@ -348,7 +351,7 @@ public class TBCI {
 		  String string = "";
 		  String term_id = "";
 		  try {
-		  URL  url = new URL(urlbase+"task=search&arg="+term+"&output=json");//só funciona se url sem parametro!
+		  URL  url = new URL(urlbase+"task=search&arg="+URLEncoder.encode(term,"UTF-8")+"&output=json");//só funciona se url sem parametro!
 		  
 		  URLConnection urlConn = url.openConnection(); 
 		  urlConn.setRequestProperty("Accept-Charset", "UTF-8");
@@ -378,11 +381,12 @@ public class TBCI {
 		                case "string":
 		                    parser.next();
 		                    string = parser.getString();
+		                    if(startsWithIgnoreCase(string,term)) {
 		                    if(debugon){
 		                    System.out.println(string);
 		                    System.out.println("---------");
 		                    }
-		                    res.put(string,Integer.valueOf(term_id));
+		                    res.put(string,Integer.valueOf(term_id));}
 		                    break;
 		             }
 		         }
@@ -420,13 +424,9 @@ public class TBCI {
 		
 		for (int i = 0 ; i < terms.length ; i++) {
 			
-			//localizar termo no tbci
-			try {
-				term = getTBCITerm(URLEncoder.encode(terms[i], "UTF-8"));
-				termID = term.get(terms[i]);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+			term = getTBCITerm(terms[i]);
+			//termID = term.get(terms[i]);//para casamento exato entre string
+			termID = term.values().iterator().next();//permite casamento parcial
 			
 			if (termID == null) {
 				System.out.println("termo não é do tbci: " + terms[i]);
@@ -456,16 +456,25 @@ public class TBCI {
 			}
 		}
 		
-		//ordenando
+		//ordenando descendente de freq
 		ArrayList<Map.Entry<String,Integer>> res5 = new ArrayList<>(res.entrySet());
 		Collections.sort(res5, new Comparator<Entry<String, Integer>>() {
 			   public int compare(Entry<String, Integer> o1, Entry<String, Integer> o2){
 			       return o2.getValue().compareTo(o1.getValue()); // natural order return o1.getValue().compareTo(o2.getValue());
 			   }
 			});
+		/*removendo com freq = 1
 		res5.removeIf(new Predicate<Entry<String, Integer>>() {
 			public boolean test(Entry<String,Integer> t) { 
 				return (t.getValue() < 2);
+			}
+		});*/
+		
+		//removendo não-topcategories
+		final Collection<Integer>topids = getTBCITopCategories().values();
+		res5.removeIf(new Predicate<Entry<String, Integer>>() {
+			public boolean test(Entry<String,Integer> t) { 
+				return (!topids.contains(Integer.parseInt(t.getKey())));
 			}
 		});
 		return res5;
@@ -1053,6 +1062,22 @@ public class TBCI {
 
 	}//end getTBCIRelatedConcepts
 
+    /**
+     * @param str    a String
+     * @param prefix a prefix
+     * @return true if {@code start} starts with {@code prefix}, disregarding case sensitivity
+     */
+    private static boolean startsWithIgnoreCase(String str, String prefix)
+    {
+        return str.regionMatches(true, 0, prefix, 0, prefix.length());
+    }
+
+    private static boolean endsWithIgnoreCase(String str, String suffix)
+    {
+        int suffixLength = suffix.length();
+        return str.regionMatches(true, str.length() - suffixLength, suffix, 0, suffixLength);
+    }
+
 	
 	/**
 	 * @param args
@@ -1060,10 +1085,10 @@ public class TBCI {
 	public static void main(String[] args) {
 		//testando interface com tbci no tematres
 				Map<String,Integer> res = getTBCITopCategories();
-				Map<String,Integer> res2 = getTBCITerm("pesquisa");
-				Map<String,Integer> res3 = getTBCITerms("pesquisa");
-				Map<String,Integer> res4 = getTBCITopConcepts(res3.get("pesquisa").toString());
-				
+				Map<String,Integer> res2 = getTBCITerm("usabilidade");
+				Map<String,Integer> res3 = getTBCITerms("publicações científicas");
+				//Map<String,Integer> res4 = getTBCITopConcepts(res3.get("usabilidade").toString());
+				Map<String,Integer> res4 = getTBCITopConcepts(res3.values().iterator().next().toString());
 				System.out.println("Termos gerais para tag: pesquisa");
 			    Set<Entry<String, Integer>> set = res4.entrySet();
 			    Iterator it = set.iterator();

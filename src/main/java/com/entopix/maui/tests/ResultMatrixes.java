@@ -1,7 +1,6 @@
-package com.entopix.maui.utils;
+package com.entopix.maui.tests;
 
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,6 +24,8 @@ import org.apache.poi.ss.usermodel.Workbook;
 import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.main.TBCI;
 import com.entopix.maui.util.MauiTopics;
+import com.entopix.maui.utils.MPTUtils;
+import com.entopix.maui.utils.Matrix;
 
 public class ResultMatrixes {
 
@@ -89,7 +90,7 @@ public class ResultMatrixes {
 	 * @param sheet
 	 * @return
 	 */
-	private static Sheet format(Sheet sheet) {
+	public static Sheet format(Sheet sheet) {
 		CellStyle style1 = sheet.getWorkbook().createCellStyle();
 		Font font = sheet.getWorkbook().createFont();
 		Row r;
@@ -166,6 +167,8 @@ public class ResultMatrixes {
 			throw new Exception("Incoherent number of topics");
 		}
 		
+		System.out.println("[ResultMatrixes] Building Keywords Comparison Matrix...");
+		
 		Matrix matrix = new Matrix();
 		String[] header = new String[]{"Documento","Termo do MAUI","Termo em Comum","Termo em Comum MAUI","Termos do Maui","Acertos"};
 		matrix.addLine(header);
@@ -205,6 +208,7 @@ public class ResultMatrixes {
 				matrix.addLine(line);
 			}
 		}
+		System.out.println("[ResultMatrixes] Done!");
 		return matrix;
 	}
 
@@ -218,6 +222,8 @@ public class ResultMatrixes {
 	 * @throws Exception
 	 */
 	public static Matrix buildModelEvaluationMatrix(String[] docnames, int[] extractedCount, int[] manualCount, int[] matchesCount) throws Exception {
+		
+		System.out.println("[ResultMatrixes] Building Model Evaluation Matrix...");
 		
 		Matrix matrix = new Matrix();
 		String[] header = new String[]{"Documento","Termos Extraídos", "Termos Manuais","Casamentos Exatos","Consistência","Precisão","Revocação","Medida-F"};
@@ -304,10 +310,13 @@ public class ResultMatrixes {
 		line.add(Collections.max(fMeasures));
 		matrix.addLine(line.toArray(new Object[0]));
 		
+		System.out.println("[ResultMatrixes] Done!");
 		return matrix;
 	}
 	
 	public static Matrix buildGeneralTermsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics) {
+		
+		System.out.println("[ResultMatrixes] Building General Terms Comparison Matrix...");
 		
 		Matrix matrix = new Matrix();
 		String[] header = new String[]{"Nome do Documento", "TG mais Frequente MAUI", "TG MAIS Frequente Manual", "Acerto"};
@@ -332,53 +341,9 @@ public class ResultMatrixes {
 				
 				matrix.addLine(line);
 			}
+			System.out.println("[ResultMatrixes] " + (currentDoc + 1) + " out of " + docnames.length + " documents processed...");
 		}
-		
+		System.out.println("[ResultMatrixes] Done!");
 		return matrix;
-	}
-	
-	// This is a specific procedural method for StandaloneMain.main. It is not supposed to be reused.
-	/**
-	 * Builds and saves the Keyword Comparison Matrix, the Model Evaluation Matrix and the General Terms Comparison Matrix as a single file.
-	 * @param docnames
-	 * @param manualTopics
-	 * @param extractedTopics
-	 * @param mauiTopics
-	 * @param outPath
-	 * @throws Exception
-	 */
-	public static void buildAndSaveDetailedResults(List<MauiTopics> mauiTopics, String testDirPath, String outPath) throws Exception {
-		
-		// Gets data
-		Matrix manualTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".key")));
-		Matrix extractedTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".maui")));
-		Matrix matches = new Matrix(new ArrayList<Object[]>(MauiCore.allMatches(manualTopics.getDataAsStringList(), extractedTopics.getDataAsStringList())));
-		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(new File(testDirPath).listFiles(), ".key"), true);
-		
-		// Build matrixes
-		Matrix keyComparison = buildKeywordsComparisonMatrix(docnames, extractedTopics.getDataAsStringList(), manualTopics.getDataAsStringList(), mauiTopics);
-		Matrix modelEvaluation = buildModelEvaluationMatrix(docnames, extractedTopics.elementSizes(), manualTopics.elementSizes(), matches.elementSizes());
-		Matrix generalTermsComparison = buildGeneralTermsComparisonMatrix(docnames, extractedTopics.getDataAsStringList(), manualTopics.getDataAsStringList());
-		
-		// Format and save matrixes
-		Workbook wb = new HSSFWorkbook();
-		Sheet sheet;
-		
-		System.out.println("[ResultMatrixes] Generating Keywords Comparison Sheet...");
-		sheet = wb.createSheet("Comparação de Frases-Chave");
-		sheet = fillSheet(sheet, keyComparison.getData());
-		sheet = format(sheet);
-		
-		System.out.println("[ResultMatrixes] Generating Model Evaluation Sheet...");
-		sheet = wb.createSheet("Avaliação do Modelo");
-		sheet = fillSheet(sheet, modelEvaluation.getData());
-		sheet = format(sheet);
-		
-		System.out.println("[ResultMatrixes] Generating General Terms Comparison Sheet...");
-		sheet = wb.createSheet("Comparação de Termos Gerais");
-		sheet = fillSheet(sheet, generalTermsComparison.getData());
-		sheet = format(sheet);
-		
-		saveWorkbook(wb, outPath);
 	}
 }

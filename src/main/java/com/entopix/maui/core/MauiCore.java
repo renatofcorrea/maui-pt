@@ -340,7 +340,7 @@ public class MauiCore {
 				"-c", String.valueOf(cutOffTopicProbability),
 		});
 		
-		setupVocab(model.getVocabUsedPath(), stemmer, stopwords);
+		setupVocab(model.getVocabUsedPath(), stemmer, stopwords); // NOTE: The usedvocabpath might be in another machine, so this might throw a runtimexception
 		topicExtractor.setVocabulary(vocab);
 		topicExtractor.setModel(model.getFilter());
 		
@@ -661,25 +661,25 @@ public class MauiCore {
 	    return tfcName;
 	}
 	
-	public static String[] getTopFrequentTermsFromDir(File dir, String format, boolean debug) {
+	public static String[] getTopFrequentTermsFromDir(String dirPath, String format, boolean debug) {
 		List<String[]> keywords = null;
 		try {
-			keywords = MauiFileUtils.readKeyFromFolder(dir.getPath(), format);
+			keywords = MauiFileUtils.readKeyFromFolder(dirPath, format);
 		} catch (FileNotFoundException e) {
 			System.out.println(e.toString());
 			return null;
 		}
 		
-		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(dir.getPath(), format, true), false);
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(dirPath, format, true), false);
 		int termsCount = keywords.size();
 		String[] list = new String[termsCount];
 		int doc;
 		for (doc = 0; doc < termsCount; doc++) {
 			list[doc] = getTopFrequentTerm(keywords.get(doc), false);
 			if (debug) {
-				System.out.println("Arquivo: " + docnames[doc]);
-				System.out.println("Termo Geral: " + list[doc]);
-				System.out.println("Documentos avaliados: " + (doc + 1) + " de " + termsCount);
+				System.out.println("[MauiCore] Arquivo: " + docnames[doc]);
+				System.out.println("[MauiCore] Termo Geral: " + list[doc]);
+				System.out.println("[MauiCore] Documentos avaliados: " + (doc + 1) + " de " + termsCount);
 			}
 		}
 		

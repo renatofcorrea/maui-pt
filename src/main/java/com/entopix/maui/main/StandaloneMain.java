@@ -3,11 +3,15 @@ package com.entopix.maui.main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 
 import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.core.ModelWrapper;
@@ -23,13 +27,13 @@ import com.entopix.maui.stemmers.WekaStemmerOrengo;
 import com.entopix.maui.stemmers.WekaStemmerPorter;
 import com.entopix.maui.stemmers.WekaStemmerSavoy;
 import com.entopix.maui.stopwords.Stopwords;
+import com.entopix.maui.tests.ResultMatrixes;
 import com.entopix.maui.tests.StructuredTest;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.MPTUtils;
 import com.entopix.maui.utils.Matrix;
 import com.entopix.maui.utils.MauiFileUtils;
-import com.entopix.maui.utils.ResultMatrixes;
 import com.entopix.maui.utils.UI;
 
 import weka.core.Utils;
@@ -225,7 +229,7 @@ public class StandaloneMain {
 		System.out.println("\nEscolha o modelo:");
 		System.out.println("\n1 - Escolher da lista");
 		System.out.println("2 - Escolher do arquivo");
-		System.out.print("Opção: ");
+		System.out.print("-> ");
 		input = SCAN.nextLine();
 		if (input.equals("1")) {
 			if (MauiFileUtils.isEmpty(MODELS_DIR)) {
@@ -287,7 +291,7 @@ public class StandaloneMain {
 		for (int i = 0; i < stemmerList.length; i++) {
 			System.out.println(i+1 + " - " + stemmerList[i].getClass().getSimpleName());
 		}
-		System.out.print("Opção: ");
+		System.out.print("-> ");
 		input = SCAN.nextLine();
 		return stemmerList[Integer.parseInt(input) - 1];
 	}
@@ -311,7 +315,7 @@ public class StandaloneMain {
 		System.out.println("\nEscolha o diretório de teste:");
 		System.out.println("\n1 - Escolher da lista");
 		System.out.println("2 - Escolher do arquivo");
-		System.out.print("Opção: ");
+		System.out.print("-> ");
 		input = SCAN.nextLine();
 		switch (input) {
 		case "1":
@@ -333,20 +337,95 @@ public class StandaloneMain {
 		}
 		
 		List<MauiTopics> topics = runTopicExtractor();
-		
-		System.out.println("\nDeseja avaliar os tópicos extraídos? Será gerado um arquivo .xls em " +  MauiFileUtils.getDataPath() + "\\tests\\" + ".");
+		System.out.println("\nDeseja testar os tópicos extraídos?");
 		System.out.println("1 - Sim");
 		System.out.println("[Enter] - Não");
+		System.out.print("-> ");
+		input = SCAN.nextLine();
 		switch (input) {
 		case "1":
-			String resultsPath = MauiFileUtils.getDataPath() + "\\tests\\" + modelName + "_" + "test_results_" + MPTUtils.getDate();
-			ResultMatrixes.buildAndSaveDetailedResults(topics, testDirPath, modelName + "_" + resultsPath);
-			System.out.println("\nPlanilha " + new File(resultsPath).getName() + " gerada com sucesso.");
+			buildAndSaveDetailedResults(topics);
 			break;
-		default:
-				
 		}
 		return topics;
+	}
+
+	private static void buildAndSaveDetailedResults(List<MauiTopics> topics) throws Exception {
+		
+		// Getting data
+		Matrix manualTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".key")));
+		Matrix extractedTopics = new Matrix(new ArrayList<Object[]>(MauiFileUtils.readKeyFromFolder(testDirPath, ".maui")));
+		Matrix matches = new Matrix(new ArrayList<Object[]>(MauiCore.allMatches(manualTopics.getDataAsStringList(), extractedTopics.getDataAsStringList())));
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterFileList(new File(testDirPath).listFiles(), ".key"), true);
+		
+		// Creating objects
+		Workbook wb = new HSSFWorkbook();
+		Sheet sheet = null;
+		String filename = modelName + "_" + "test_results_" + MPTUtils.getDate();
+		
+		System.out.println("\nNome do arquivo: " + filename);
+		System.out.println("Deseja alterar o nome do arquivo de saída dos resultados?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("-> ");
+		input = SCAN.nextLine();
+		switch (input) {
+		case "1":
+			System.out.println("Digite o novo nome:");
+			filename = SCAN.nextLine();
+		}
+		System.out.println("\nEscolha os testes a serem realizados.");
+		System.out.println("\nDeseja realizar a Comparação de Frases-Chave?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("-> ");
+		input = SCAN.nextLine();
+		switch (input) {
+		case "1":
+			Matrix keyComparison = ResultMatrixes.buildKeywordsComparisonMatrix(docnames, extractedTopics.getDataAsStringList(), manualTopics.getDataAsStringList(), topics);
+			sheet = wb.createSheet("Comparação de Frases-Chave");
+			sheet = ResultMatrixes.fillSheet(sheet, keyComparison.getData());
+			sheet = ResultMatrixes.format(sheet);	
+			break;
+		}
+		
+		System.out.println("\nDeseja realizar a Avaliação do Modelo?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("-> ");
+		input = SCAN.nextLine();
+		switch (input) {
+		case "1":
+			Matrix modelEvaluation = ResultMatrixes.buildModelEvaluationMatrix(docnames, extractedTopics.elementSizes(), manualTopics.elementSizes(), matches.elementSizes());
+			sheet = wb.createSheet("Avaliação do Modelo");
+			sheet = ResultMatrixes.fillSheet(sheet, modelEvaluation.getData());
+			sheet = ResultMatrixes.format(sheet);
+			break;
+		}
+		
+		System.out.println("\nDeseja realizar a Comparação de Termos Gerais?");
+		System.out.println("1 - Sim");
+		System.out.println("[Enter] - Não");
+		System.out.print("-> ");
+		input = SCAN.nextLine();
+		switch (input) {
+		case "1":
+			Matrix generalTermsComparison = ResultMatrixes.buildGeneralTermsComparisonMatrix(docnames, extractedTopics.getDataAsStringList(), manualTopics.getDataAsStringList());
+			sheet = wb.createSheet("Comparação de Termos Gerais");
+			sheet = ResultMatrixes.fillSheet(sheet, generalTermsComparison.getData());
+			sheet = ResultMatrixes.format(sheet);
+			break;
+		}
+		
+		if (sheet == null) {
+			System.out.println("\nNenhum teste foi selecionado.");
+			wb.close();
+			return;
+		}
+		
+		String resultsPath = MauiFileUtils.getDataPath() + "\\tests";
+		ResultMatrixes.saveWorkbook(wb, resultsPath + "\\" + filename);
+		System.out.println("\nResultados do(s) teste(s) salvos em '" + resultsPath  + "'.");
 	}
 	
 	/**
@@ -371,13 +450,13 @@ public class StandaloneMain {
 		System.out.println("Deseja alterar o documento?");
 		System.out.println("1 - Sim");
 		System.out.println("[Enter] - Não");
-		System.out.print("Opção: ");
+		System.out.print("-> ");
 		input = SCAN.nextLine();
 		switch (input) {
 		case "1":
 			System.out.println("\n1 - Escolher da lista");
 			System.out.println("2 - Escolher do arquivo");
-			System.out.print("Opção: ");
+			System.out.print("-> ");
 			input = SCAN.nextLine();
 			switch (input) {
 			case "1":
@@ -411,7 +490,7 @@ public class StandaloneMain {
 		}
 		System.out.println("\n1 - Excluir um modelo");
 		System.out.println("2 - Excluir todos os modelos");
-		System.out.print("Opção: ");
+		System.out.print("-> ");
 		input = SCAN.nextLine();
 		if (input.equals("1")) {
 			System.out.println();
@@ -423,7 +502,7 @@ public class StandaloneMain {
 			System.out.println("\nIsto apagará todos os modelos. Deseja continuar? ");
 			System.out.println("1 - Sim");
 			System.out.println("2 - Não");
-			System.out.print("Opção: ");
+			System.out.print("-> ");
 			input = SCAN.nextLine();
 			if (input.equals("1"))  {
 				FileUtils.cleanDirectory(MODELS_DIR);
@@ -439,7 +518,7 @@ public class StandaloneMain {
 		System.out.println("\nDeseja avaliar a indexação por documento ou diretório?");
 		System.out.println("1 - Avaliação por documento");
 		System.out.println("2 - Avaliação por diretório");
-		System.out.print("Opção: ");
+		System.out.print("-> ");
 		input = SCAN.nextLine();
 		switch (input) {
 		case "1":
@@ -535,23 +614,31 @@ public class StandaloneMain {
 			return;
 		}
 		System.out.println("\nObtendo termos gerais para o arquivo " + mauiKeyPath + "...");
+		Instant st1 = Instant.now(); //DEBUGGING
 		String topTermMaui = MauiCore.getTopFrequentTerm(mauiTerms, true);
+		Instant end1 = Instant.now(); //DEBUGGING
+		System.out.println("\n" + MPTUtils.elapsedTime(st1, end1));
+		Instant st2 = Instant.now(); //DEBUGGING
 		System.out.println("\nObtendo termos gerais para o arquivo " + manualKeyPath + "...");
 		String topTermManual = MauiCore.getTopFrequentTerm(manualTerms, true);
+		Instant end2 = Instant.now(); //DEBUGGING
+		System.out.println("\n" + MPTUtils.elapsedTime(st2, end2));
 		
 		System.out.println("\nTermo mais frequente MAUI: " + topTermMaui);
 		System.out.println("Termo manual mais frequente: " + topTermManual); 
 		
 		int res = (topTermMaui.equalsIgnoreCase(topTermManual) ? 1 : 0);
 		System.out.print("\nTermos iguais?: " + res + "\n");
+		
+		
 	}
 	
 	private static void evaluateGeneralTermsOnDir() throws Exception {
 		File dir = MauiFileUtils.browseFile(FTS_PATH, "", SCAN);
 		System.out.println("\nObtendo termos mais frequentes do maui (.maui)...");
-		String[] topTermsMaui = MauiCore.getTopFrequentTermsFromDir(dir, "maui", true);
+		String[] topTermsMaui = MauiCore.getTopFrequentTermsFromDir(dir.getPath(), "maui", true);
 		System.out.println("\nObtendo termos mais frequentes manuais (.key)...");
-		String[] topTermsManual = MauiCore.getTopFrequentTermsFromDir(dir, "key", true);
+		String[] topTermsManual = MauiCore.getTopFrequentTermsFromDir(dir.getPath(), "key", true);
 		
 		double matches = MPTUtils.matchesCount(topTermsMaui, topTermsManual, true);
 		double percentage = (matches / (double) topTermsManual.length) * 100;
@@ -586,7 +673,7 @@ public class StandaloneMain {
 				System.out.println("7 - Avaliar termos gerais ");
 				System.out.println("8 - Sobre");
 				System.out.println("0 - Sair  ");
-				System.out.print("Opção: ");
+				System.out.print("-> ");
 				if (SCAN.hasNext()) {
 					input = SCAN.nextLine();
 				}
@@ -595,7 +682,7 @@ public class StandaloneMain {
 					System.out.println("\nEscolha o tipo de modelo: ");
 					System.out.println("1 - Resumos");
 					System.out.println("2 - Textos Completos");
-					System.out.print("Opção: ");
+					System.out.print("-> ");
 					input = SCAN.nextLine();
 					switch (input) {
 						case "1": modelType = ABSTRACTS; break;
@@ -607,13 +694,13 @@ public class StandaloneMain {
 					System.out.println("Deseja alterar o diretório de treinamento?");
 					System.out.println("1 - Sim");
 					System.out.println("[Enter] - Não");
-					System.out.print("Opção: ");
+					System.out.print("-> ");
 					input = SCAN.nextLine();
 					switch (input) {
 					case "1":
 						System.out.println("\n1 - Escolher da lista");
 						System.out.println("2 - Escolher do arquivo");
-						System.out.print("Opção: ");
+						System.out.print("-> ");
 						input = SCAN.nextLine();
 						switch (input) {
 						case "1": // sets training directory from list
@@ -621,7 +708,7 @@ public class StandaloneMain {
 							break;
 						case "2":
 							System.out.println("\nDigite o caminho completo do diretório: ");
-							System.out.print("Opção: ");
+							System.out.print("-> ");
 							input = SCAN.nextLine();
 							if (MauiFileUtils.exists(input)) trainDirPath = input;
 							else UI.showFileNotFoundMessage(input);
@@ -638,7 +725,7 @@ public class StandaloneMain {
 					System.out.println("Deseja alterar o radicalizador?");
 					System.out.println("1 - Sim");
 					System.out.println("[Enter] - Não");
-					System.out.print("Opção: ");
+					System.out.print("-> ");
 					input = SCAN.nextLine();
 					switch (input) {
 					case "1": //loads stemmer list
@@ -653,7 +740,7 @@ public class StandaloneMain {
 					System.out.println("Deseja alterar o nome do modelo?");
 					System.out.println("1 - Sim");
 					System.out.println("[Enter] - Não");
-					System.out.print("Opção: ");
+					System.out.print("-> ");
 					input = SCAN.nextLine();
 					switch (input) {
 					case "1":
@@ -693,7 +780,7 @@ public class StandaloneMain {
 					System.out.println("\nDeseja avaliar termos gerais por documento ou diretório?");
 					System.out.println("1 - Avaliar por documento");
 					System.out.println("2 - Avaliar por diretório");
-					System.out.print("Opção: ");
+					System.out.print("-> ");
 					input = SCAN.nextLine();
 					switch (input) {
 					case "1":

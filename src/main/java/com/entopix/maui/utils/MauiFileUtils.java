@@ -258,7 +258,7 @@ public class MauiFileUtils {
 		if (fileList == null) throw new NullPointerException();
 		int fileChoice;
 		displayNumberedFileList(fileList);
-		System.out.print("Opção: ");
+		System.out.print("-> ");
 		fileChoice = scanner.nextInt();
 		scanner.nextLine();
 		try {
