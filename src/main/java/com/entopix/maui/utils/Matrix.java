@@ -1,6 +1,7 @@
 package com.entopix.maui.utils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -16,8 +17,7 @@ public class Matrix {
 		data = new ArrayList<>();
 	}
 	
-	//TODO: try using (Collection <? extends Object[]> data) signature
-	public Matrix(List<Object[]> data) {
+	public Matrix(Collection <? extends Object[]> data) {
 		this.data = new ArrayList<>(data);
 	}
 	

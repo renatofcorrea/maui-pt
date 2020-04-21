@@ -26,8 +26,9 @@ import com.entopix.maui.main.TBCI;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MPTUtils;
 import com.entopix.maui.utils.Matrix;
+import com.entopix.maui.utils.MauiFileUtils;
 
-public class ResultMatrixes {
+public class TestsManager {
 
 	
 	/**
@@ -37,7 +38,7 @@ public class ResultMatrixes {
 	public static void saveWorkbook(Workbook wb, String filepath) {
 		OutputStream fileOut;
 		try {
-			fileOut = new FileOutputStream(filepath + ".xls");
+			fileOut = new FileOutputStream(filepath);
 			wb.write(fileOut);
 			wb.close();
 		} catch (FileNotFoundException e) {
@@ -53,10 +54,10 @@ public class ResultMatrixes {
 	 * @param filepath
 	 * @throws IOException
 	 */
-	public static void saveMatrixToFile(Matrix matrix, String filepath) throws IOException {
+	public static void saveMatrixAsSheet(Matrix matrix, String filepath) throws IOException {
 		Workbook wb = new HSSFWorkbook();
 		Sheet sheet = wb.createSheet();
-		sheet = fillSheet(sheet, matrix.getData());
+		sheet = fillSheet(sheet, matrix);
 		saveWorkbook(wb, filepath);
 	}
 	
@@ -67,9 +68,9 @@ public class ResultMatrixes {
 	 * @param filepath
 	 * @throws IOException
 	 */
-	public static void saveMatrixesToFile(List<List<Object[]>> matrixes, String[] sheetNames, String filepath) throws IOException {
+	public static void saveMatrixesAsSheets(Matrix[] matrixes, String[] sheetNames, String filepath) throws IOException {
 		Workbook wb = new HSSFWorkbook();
-		int matrixCount = matrixes.size();
+		int matrixCount = matrixes.length;
 		
 		Sheet sheet;
 		int i;
@@ -79,7 +80,7 @@ public class ResultMatrixes {
 			} else {
 				sheet = wb.createSheet();
 			}
-			sheet = fillSheet(sheet, matrixes.get(i));
+			sheet = fillSheet(sheet, matrixes[i]);
 		}
 		
 		saveWorkbook(wb, filepath);
@@ -129,7 +130,8 @@ public class ResultMatrixes {
 	 * @return
 	 * @throws IOException 
 	 */
-	public static Sheet fillSheet(Sheet sheet, List<Object[]> matrix) throws IOException {
+	public static Sheet fillSheet(Sheet sheet, Matrix m) throws IOException {
+		List<Object[]> matrix = m.getData();
 		Row r;
 		Cell c;
 		int i,j;
@@ -159,7 +161,7 @@ public class ResultMatrixes {
 	 * @param keywordsPaths the paths to the manual keywords of every document
 	 * @param allDocTopicsExtracted
 	 * @return 
-	 * @throws Exception if number of topic lists isn't equal to number of documents
+	 * @throws Exception if number of manual topics isn't equal to number of documents
 	 */
 	public static Matrix buildKeywordsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics, List<MauiTopics> mauiTopics) throws Exception {
 		
@@ -167,7 +169,7 @@ public class ResultMatrixes {
 			throw new Exception("Incoherent number of topics");
 		}
 		
-		System.out.println("[ResultMatrixes] Building Keywords Comparison Matrix...");
+		log("Building Keywords Comparison Matrix...");
 		
 		Matrix matrix = new Matrix();
 		String[] header = new String[]{"Documento","Termo do MAUI","Termo em Comum","Termo em Comum MAUI","Termos do Maui","Acertos"};
@@ -208,7 +210,7 @@ public class ResultMatrixes {
 				matrix.addLine(line);
 			}
 		}
-		System.out.println("[ResultMatrixes] Done!");
+		log("Done!");
 		return matrix;
 	}
 
@@ -223,7 +225,7 @@ public class ResultMatrixes {
 	 */
 	public static Matrix buildModelEvaluationMatrix(String[] docnames, int[] extractedCount, int[] manualCount, int[] matchesCount) throws Exception {
 		
-		System.out.println("[ResultMatrixes] Building Model Evaluation Matrix...");
+		log("Building Model Evaluation Matrix...");
 		
 		Matrix matrix = new Matrix();
 		String[] header = new String[]{"Documento","Termos Extraídos", "Termos Manuais","Casamentos Exatos","Consistência","Precisão","Revocação","Medida-F"};
@@ -310,13 +312,55 @@ public class ResultMatrixes {
 		line.add(Collections.max(fMeasures));
 		matrix.addLine(line.toArray(new Object[0]));
 		
-		System.out.println("[ResultMatrixes] Done!");
+		log("Done!");
 		return matrix;
+	}
+	
+	/** Sets up and runs the model evaluation. 
+	 * @param runDir location of the .txt and .key files. 
+	 * @return a matrix with the results.*/
+	public static Matrix runModelEvaluation(String runDir, List<MauiTopics> topics, String outPath) throws Exception {
+		// Getting data
+		List<String[]> manualKeywords = MauiFileUtils.readAllKeyFromDir(runDir, ".key");
+		List<String[]> extractedKeywords = MPTUtils.mauiTopicsToListofStringArrays(topics);
+		List<String[]> matches = MauiCore.allMatches(manualKeywords, extractedKeywords);
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterDir(runDir, ".txt"), true);
+		int[] extractedCount = MPTUtils.topicsCount(topics);
+		int[] manualCount = MPTUtils.elementSizes(manualKeywords);
+		int[] matchesCount = MPTUtils.elementSizes(matches);
+		
+		Matrix results = TestsManager.buildModelEvaluationMatrix(docnames, extractedCount, manualCount, matchesCount);
+		return results;
+	}
+	
+	/** Sets up and runs the keywords comparison. 
+	 * @param runDir location of the .txt and .key files.
+	 * @return a matrix with the results. */
+	public static Matrix runKeywordsComparison(String runDir, List<MauiTopics> mauiTopics, String outPath) throws Exception {
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterDir(runDir, ".txt"), true);
+		List<String[]> extractedTopics = MPTUtils.mauiTopicsToListofStringArrays(mauiTopics);
+		List<String[]> manualTopics = MauiFileUtils.readAllKeyFromDir(runDir, ".key");
+		Matrix results = TestsManager.buildKeywordsComparisonMatrix(docnames, extractedTopics, manualTopics, mauiTopics);
+		return results;
+	}
+	
+	/**
+	 * Sets up and runs general terms comparison.
+	 * @param runDir location of the .txt and .key files. 
+	 * @param extracted
+	 * @return a matrix with the results.
+	 * @throws FileNotFoundException
+	 */
+	public static Matrix runGeneralTermsComparison(String runDir, List<String[]> extracted) throws FileNotFoundException {
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterDir(runDir, ".txt"), true);
+		List<String[]> manualTopics = MauiFileUtils.readAllKeyFromDir(runDir, ".key");
+		Matrix results = TestsManager.buildGeneralTermsComparisonMatrix(docnames, extracted, manualTopics);
+		return results;
 	}
 	
 	public static Matrix buildGeneralTermsComparisonMatrix(String[] docnames, List<String[]> extractedTopics, List<String[]> manualTopics) {
 		
-		System.out.println("[ResultMatrixes] Building General Terms Comparison Matrix...");
+		log("Building General Terms Comparison Matrix...");
 		
 		Matrix matrix = new Matrix();
 		String[] header = new String[]{"Nome do Documento", "TG mais Frequente MAUI", "TG MAIS Frequente Manual", "Acerto"};
@@ -341,9 +385,13 @@ public class ResultMatrixes {
 				
 				matrix.addLine(line);
 			}
-			System.out.println("[ResultMatrixes] " + (currentDoc + 1) + " out of " + docnames.length + " documents processed...");
+			log((currentDoc + 1) + " out of " + docnames.length + " documents processed...");
 		}
-		System.out.println("[ResultMatrixes] Done!");
+		log("Done!");
 		return matrix;
+	}
+	
+	private static void log(String message) {
+		System.out.println("[" + TestsManager.class.getSimpleName() + "] " + message);
 	}
 }

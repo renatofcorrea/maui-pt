@@ -134,7 +134,7 @@ public class MPTUtils {
 	 * @param topicsList
 	 * @return
 	 */
-	public static List<String[]> mauiTopicsToString(List<MauiTopics> topicsList) {
+	public static List<String[]> mauiTopicsToStringMatrix(List<MauiTopics> topicsList) {
 		List<String[]> strList = new ArrayList<>();
 		String[] strings;
 		
@@ -149,16 +149,29 @@ public class MPTUtils {
 	/**
 	 * Converts a string array of topics from specified document to a MauiTopics object.
 	 * @param topics
-	 * @param documentPath
+	 * @param sourceDirPath the source dir.
 	 * @return
 	 */
-	public static MauiTopics stringArrayToMauiTopics(String[] topics, String documentPath) {
-		MauiTopics mt = new MauiTopics(documentPath);
+	public static MauiTopics stringArrayToMauiTopics(String[] topics, String sourceDirPath) {
+		MauiTopics mt = new MauiTopics(sourceDirPath);
 		int i;
 		for (i = 0; i < topics.length; i++) {
 			mt.addTopic(new Topic(topics[i]));
 		}
-		
+		return mt;
+	}
+	
+	/**
+	 * Converts a list of string topics into a list of maui topics.
+	 * @param topicsList
+	 * @param sourceDirPath the source dir.
+	 * @return
+	 */
+	public static List<MauiTopics> stringMatrixToMauiTopics(List<String[]> topicsList, String sourceDirPath) {
+		List<MauiTopics> mt = new ArrayList<>();
+		for (String[] doc : topicsList) {
+			mt.add(stringArrayToMauiTopics(doc, sourceDirPath));
+		}
 		return mt;
 	}
 	
@@ -206,20 +219,28 @@ public class MPTUtils {
 		return null;
 	}
 	
-	//TODO: now in Matrix class
-	/**
-	 * Takes a list of arrays and returns it as a list with their sizes.
-	 * @param matrix
-	 * @return
-	 */
-	public static List<Integer> elementSizes(List<String[]> matrix) {
-		List<Integer> sizes = new ArrayList<Integer>();
+	/** Returns the sizes of each array in the list. */
+	public static int[] elementSizes(List<String[]> data) {
+		int[] sizes = new int[data.size()];
 		
-		for (String[] line : matrix) {
-			sizes.add(line.length);
+		int i;
+		for (i = 0; i < data.size(); i++) {
+			sizes[i] = data.get(i).length;
 		}
 		
 		return sizes;
+	}
+	
+	/** Counts the amount of topics extracted in every document.
+	 * Same as elementSizes, but for maui topics. */
+	public static int[] topicsCount(List<MauiTopics> topics) {
+		int docCount = topics.size();
+		int[] count = new int[docCount];
+		
+		for (int doc = 0; doc < docCount; doc++) {
+			count[doc] = topics.get(doc).getTopics().size();
+		}
+		return count;
 	}
 	
 	/**

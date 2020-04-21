@@ -1,5 +1,11 @@
 package com.entopix.maui.utils;
 
+import java.io.File;
+import java.util.List;
+
+import com.entopix.maui.util.MauiTopics;
+import com.entopix.maui.util.Topic;
+
 public class UI {
 	
 	public static void displayCredits() {
@@ -23,15 +29,20 @@ public class UI {
 		else System.out.println("By default, MAUI is running example in pt language and CI documents.   ");
 	}
 	
-	public static void showModelBuilt(String modelName) {
-		System.out.println("Modelo " + modelName + " construído com sucesso.");
-	}
-	
 	public static void showInvalidOptionMessage() {
-		System.out.println("ERRO: Opção Inválida.");
+		System.out.println("\nERRO: Opção Inválida.");
 	}
 	
 	public static void showFileNotFoundMessage(String f) {
 		System.out.println("ERRO: O arquivo ou diretório '" + f + "' não foi encontrado.");
+	}
+	
+	public static void displayTopics(List<MauiTopics> topics) {
+		for (MauiTopics doc : topics) {
+			System.out.println("\nARQUIVO: " + new File(doc.getFilePath()).getName());
+			for (Topic topic : doc.getTopics()) {
+				System.out.println("Tópico: " + topic.getTitle());
+			}
+		}
 	}
 }

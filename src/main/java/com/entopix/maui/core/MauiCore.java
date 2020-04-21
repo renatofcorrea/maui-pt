@@ -28,7 +28,6 @@ import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.MPTUtils;
 import com.entopix.maui.utils.MauiFileUtils;
-import com.entopix.maui.utils.UI;
 import com.entopix.maui.vocab.Vocabulary;
 
 import weka.core.Utils;
@@ -311,7 +310,7 @@ public class MauiCore {
 			if (modelPath == null) throw new NullPointerException("Model path for the modelBuilder is not set");
 			model = new ModelWrapper(filter, trainDirPath, stemmer, vocabPath);
 			MauiFileUtils.serializeObject(model, modelPath);
-			UI.showModelBuilt(new File(modelPath).getName());
+			System.out.println("Modelo " + new File(modelPath).getName() + " construído com sucesso.");
 		} else {
 			System.out.println("[MauiCore] Save model is disabled, therefore, the MauiFilter was not serialized.");
 		}
@@ -380,7 +379,8 @@ public class MauiCore {
 		for  (Topic keyword : keywords) {
 			System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
 		}
-		//Not writing .maui file because keywords are stored in List<Topic> instead of List<MauiTopics>
+		
+		//TODO: Not writing .maui file because keywords are stored in List<Topic> instead of List<MauiTopics>
 		return keywords;
 	}
 	
@@ -539,11 +539,11 @@ public class MauiCore {
 			System.out.println(numExtracted + " topics extracted");
 			System.out.println(numEvaluated + " topics evaluated " + "\n");
 			System.out.println("MANUAL (" + numManual + "):");
-			System.out.println(manual.toString());
+			System.out.println(Arrays.toString(manual));
 			System.out.println("EVALUATED (" + numTopicsToEvaluate + "): ");
-			System.out.println(evaluate.toString());
+			System.out.println(Arrays.toString(evaluate));
 			System.out.println("MATCHES (" + numCorrect + "):");
-			System.out.println(matches.toString());
+			System.out.println(Arrays.toString(matches));
 			
 			System.out.println("Precision: " + precision * 100 + "%");
 			System.out.println("Recall: " + recall * 100 + "%");
@@ -664,7 +664,7 @@ public class MauiCore {
 	public static String[] getTopFrequentTermsFromDir(String dirPath, String format, boolean debug) {
 		List<String[]> keywords = null;
 		try {
-			keywords = MauiFileUtils.readKeyFromFolder(dirPath, format);
+			keywords = MauiFileUtils.readAllKeyFromDir(dirPath, format);
 		} catch (FileNotFoundException e) {
 			System.out.println(e.toString());
 			return null;

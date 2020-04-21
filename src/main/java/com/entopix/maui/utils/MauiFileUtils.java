@@ -35,8 +35,8 @@ public class MauiFileUtils {
 	 */
 	public static final String getDataPath() {
 		String rootPath = getRootPath();
-		if(rootPath.endsWith("maui-pt")) return rootPath + "\\data\\"; // likely to be running on console
-		else return rootPath + "\\"; // likely to be running on IDE or other platform
+		if(rootPath.endsWith("maui-pt")) return rootPath + "\\data"; // likely to be running on console
+		else return rootPath; // likely to be running on IDE or other platform
 	}
 	
 	public static String getModelsDirPath() {
@@ -116,16 +116,12 @@ public class MauiFileUtils {
 		return object;
 	}
 	
-	/** 
-	 * Verifies if a file path exists.
-	 */
-	public static boolean exists(String path) {
+	/** Verifies if a file path exists.
+	 * @throws FileNotFoundException */
+	public static boolean exists(String path) throws FileNotFoundException {
+		if (path == null) throw new NullPointerException("Path argument is null.");
 		File file = new File(path);
-		if (!file.exists()) {
-			return false;
-		} else {
-			return true;
-		}
+		return file.exists();
 	}
 	
 	/**
@@ -245,17 +241,36 @@ public class MauiFileUtils {
 		return newArray.toArray(new File[newArray.size()]);
 	}
 	
-	public static File chooseFileFromDirectory(String dirPath, Scanner scanner) {
-		return chooseFileFromArray(new File(dirPath).listFiles(), scanner);
+	/**
+	 * Filters the files in the specified directory.
+	 * @return the files whose names include the string in filterMethod.
+	 */
+	public static File[] filterDir(File dir, String filterMethod) {
+		return filterFileList(dir.listFiles(), filterMethod);
+	}
+	
+	/**
+	 * Filters the files in the specified directory.
+	 * @return the files whose names include the string in filterMethod.
+	 */
+	public static File[] filterDir(String dirPath, String filterMethod) {
+		return filterFileList(new File(dirPath).listFiles(), filterMethod);
 	}
 	
 	/**
 	 * Prints a numbered file list for the user to choose, then returns the file choice.
-	 * @param fileList
-	 * @return fileChoice
 	 */
-	public static File chooseFileFromArray(File[] fileList, Scanner scanner) {
+	public static File chooseFileFromDirectory(String dirPath, Scanner scanner) {
+		return chooseFileFromFileArray(dirPath, new File(dirPath).listFiles(), scanner);
+	}
+	
+	/**
+	 * Prints a numbered file list for the user to choose, then returns the file choice.
+	 * This method is useful when handling filtered file lists.
+	 */
+	public static File chooseFileFromFileArray(String sourceDir, File[] fileList, Scanner scanner) {
 		if (fileList == null) throw new NullPointerException();
+		System.out.println("Diretório atual: " + sourceDir);
 		int fileChoice;
 		displayNumberedFileList(fileList);
 		System.out.print("-> ");
@@ -265,23 +280,30 @@ public class MauiFileUtils {
 			return fileList[fileChoice - 1];
 		} catch (ArrayIndexOutOfBoundsException e) {
 			System.out.println("\nOpção Inválida.\n");
-			return chooseFileFromArray(fileList, scanner);
+			return chooseFileFromFileArray(sourceDir, fileList, scanner);
 		}
+	}
+	
+	/** Gets a file from the user input. 
+	 * @throws FileNotFoundException */
+	public static File getCustomFile(Scanner scan) throws FileNotFoundException {
+		System.out.print("Insira o caminho completo do diretório: ");
+		String dir = scan.nextLine();
+		if (MauiFileUtils.exists(dir)) return new File(dir);
+		else throw new FileNotFoundException(dir);
 	}
 	
 	/**
 	 * Browses a file of the specified format in the specified folder.
-	 * If no format is specified, then it may also return a directory.
+	 * If no format is specified, then it may also return a directory. //TODO: add "select folder" param instead of absence of format
 	 * @param dir
 	 * @param format the string that will filter the files in the folder.
 	 * @param scan
 	 * @return
 	 */
-	public static File browseFile(String dir, String format, Scanner scan) { //TODO: add "select folder" param instead of absence of format
-		System.out.println("\nDiretório atual: " + dir + "\n");
-		
+	public static File browseFile(String dir, String format, Scanner scan) { 
 		File[] files = filterFileList(dir, format, false);
-		File file = chooseFileFromArray(files, scan);
+		File file = chooseFileFromFileArray(dir, files, scan);
 		if (file.isDirectory() && !format.equals("")) {
 			return browseFile(file.getPath(), format, scan);
 		} else {
@@ -320,7 +342,7 @@ public class MauiFileUtils {
 	 * Assumes that every word is separated by a newline character.
 	 * @return a list of keywords for every file.
 	 */
-	public static List<String[]> readKeyFromFolder(String dir, String format) throws FileNotFoundException {
+	public static List<String[]> readAllKeyFromDir(String dir, String format) throws FileNotFoundException {
 		if (exists(dir)) {
 			File[] files = filterFileList(dir, format, true);
 			List<String[]> topics = new ArrayList<>();
