@@ -319,7 +319,7 @@ public class StandaloneMain {
 			System.out.println("\nO diretório de modelos está vazio.");
 			return;
 		}
-		System.out.println("\n1 - Excluir um modelo");
+		System.out.println("1 - Excluir um modelo");
 		System.out.println("2 - Excluir todos os modelos");
 		System.out.print("-> ");
 		input = SCAN.nextLine();
@@ -515,18 +515,20 @@ public class StandaloneMain {
 	/** Option 6.1 at the general terms evaluation menu. */
 	private static void evaluateGeneralTermsOnDir() throws Exception {
 		File dir = MauiFileUtils.browseFile(FTS_PATH, "", SCAN);
+		int count = chooseTermsCount();
+		/*
 		System.out.println("\nObtendo termos mais frequentes do maui (.maui)...");
-		String[] topTermsMaui = MauiCore.getTopFrequentTermsFromDir(dir.getPath(), "maui", true);
+		String[] topTermsMaui = MauiCore.getTopFrequentTermsFromDir(dir.getPath(), "maui", count, true);
 		System.out.println("\nObtendo termos mais frequentes manuais (.key)...");
-		String[] topTermsManual = MauiCore.getTopFrequentTermsFromDir(dir.getPath(), "key", true);
+		String[] topTermsManual = MauiCore.getTopFrequentTermsFromDir(dir.getPath(), "key", count, true);
 		
 		double matches = MPTUtils.matchesCount(topTermsMaui, topTermsManual, true);
 		double percentage = (matches / (double) topTermsManual.length) * 100;
 		
 		System.out.println("\nTotal de acertos: " + matches);
 		System.out.println("Percentual de acertos: " + percentage + "%");
-		
-		runGeneralTermsEvaluation(dir.getPath());
+		*/
+		runGeneralTermsEvaluation(dir.getPath(), count);
 	}
 	
 	/**
@@ -546,16 +548,27 @@ public class StandaloneMain {
 			System.out.println(e.toString());
 			return;
 		}
+		int count = chooseTermsCount();
 		System.out.println("\nObtendo termos gerais para o arquivo " + mauiKeyPath + "...");
-		String topTermMaui = MauiCore.getTopFrequentTerm(mauiTerms, true);
+		String topTermMaui = MauiCore.getTopFrequentTerm(mauiTerms, count, true);
 		System.out.println("\nObtendo termos gerais para o arquivo " + manualKeyPath + "...");
-		String topTermManual = MauiCore.getTopFrequentTerm(manualTerms, true);
+		String topTermManual = MauiCore.getTopFrequentTerm(manualTerms, count, true);
 		
 		System.out.println("\nTermo mais frequente MAUI: " + topTermMaui);
 		System.out.println("Termo manual mais frequente: " + topTermManual); 
 		
 		int res = (topTermMaui.equalsIgnoreCase(topTermManual) ? 1 : 0);
 		System.out.print("\nTermos iguais?: " + res + "\n");
+	}
+	
+	private static int chooseTermsCount() {
+		System.out.print("Quantidade de termos a serem avaliados (1-10): ");
+		input = SCAN.nextLine();
+		int count = Integer.parseInt(input);
+		if (count < 1) count = 1;
+		else if (count > 10) count = 10;
+		System.out.println("Quantidade selecionada: " + count);
+		return count;
 	}
 	
 	/** Returns a dir choice by the user.
@@ -584,16 +597,17 @@ public class StandaloneMain {
  	private static void runMauiIndexingEvaluation(String runDirPath, List<MauiTopics> topics) throws Exception {
  		Matrix m1 = TestsManager.runModelEvaluation(runDirPath, topics, TESTS_PATH);
 		Matrix m2 = TestsManager.runKeywordsComparison(runDirPath, topics, TESTS_PATH);
-		String outpath = TESTS_PATH + "\\" + "maui_indexing_evaluation" + " " + MPTUtils.getDate() + ".xls";
+		String outpath = TESTS_PATH + "\\" + "maui_indexing_evaluation" + " " + MPTUtils.getTimeAndDate() + ".xls";
 		TestsManager.saveMatrixesAsSheets(new Matrix[] {m1,m2}, new String[] {"Avaliação do Modelo", "Comparação de Frases-Chave"}, outpath);
 		showTestResults(outpath);
  	}
  	
  	/** Generates and saves the general terms evaluation sheet. */
- 	private static void runGeneralTermsEvaluation(String dirpath) throws IOException {
- 		List<String[]> extracted = MauiFileUtils.readAllKeyFromDir(dirpath, ".maui");
-		Matrix m = TestsManager.runGeneralTermsComparison(dirpath, extracted);
-		String outpath = TESTS_PATH + "\\" + "general_terms_evaluation" + " " + MPTUtils.getDate() + ".xls";
+ 	private static void runGeneralTermsEvaluation(String dirpath, int termsToEvaluate) throws Exception {
+ 		//List<String[]> extracted = MauiFileUtils.readAllKeyFromDir(dirpath, ".maui");
+		//Matrix m = TestsManager.runGeneralTermsComparison(dirpath, extracted);
+ 		Matrix m = TestsManager.buildGeneralTermsComparisonMatrix2(dirpath, termsToEvaluate);
+		String outpath = TESTS_PATH + "\\" + "general_terms_evaluation" + " " + MPTUtils.getTimeAndDate() + ".xls";
 		TestsManager.saveMatrixAsSheet(m, outpath);
 		showTestResults(outpath);
  	}

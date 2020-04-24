@@ -247,8 +247,8 @@ public class MPTUtils {
 	 * Returns a string with the current date as dd-MM format.
 	 * @return
 	 */
-	public static String getDate() {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM");
+	public static String getTimeAndDate() {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM kkmm");
 		return sdf.format(new Date(System.currentTimeMillis()));
 	}
 	

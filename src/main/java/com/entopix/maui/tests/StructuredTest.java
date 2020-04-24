@@ -140,7 +140,7 @@ public class StructuredTest {
 		System.out.println(allResults);
 		
 		if (saveCSVFile) {
-			String date = MPTUtils.getDate();
+			String date = MPTUtils.getTimeAndDate();
 			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts30_" + date + ".csv");
 			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts60_" + date + ".csv");
 			fulltextsMatrixes.get(1).exportAsCSV(resultsPath + "fulltexts30_" + date + ".csv");

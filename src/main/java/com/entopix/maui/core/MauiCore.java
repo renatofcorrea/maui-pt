@@ -633,8 +633,10 @@ public class MauiCore {
 	 * @param terms
 	 * @return the top frequent term.
 	 */
-	public static String getTopFrequentTerm(String[] terms, boolean fullResults) {
-		ArrayList<Entry<String, Integer>> result = TBCI.getTBCITopConceptsCount(terms);
+	public static String getTopFrequentTerm(String[] terms, int termsCount, boolean fullResults) {
+		String[] termsToEvaluate = Arrays.copyOf(terms, termsCount);
+		
+		ArrayList<Entry<String, Integer>> result = TBCI.getTBCITopConceptsCount(termsToEvaluate);
 		
 		String tfcID = result.get(0).getKey(); // Top Frequent Concept ID
 		String tfcName = TBCI.getTBCITerm(Integer.parseInt(tfcID)).getKey(); // TOP FREQUENT CONCEPT NAME
@@ -661,7 +663,8 @@ public class MauiCore {
 	    return tfcName;
 	}
 	
-	public static String[] getTopFrequentTermsFromDir(String dirPath, String format, boolean debug) {
+	/** Returns the top frequent term from every document of specified format in dirpath. */
+	public static String[] getTopFrequentTermsFromDir(String dirPath, String format, int termsToEvaluate, boolean debug) {
 		List<String[]> keywords = null;
 		try {
 			keywords = MauiFileUtils.readAllKeyFromDir(dirPath, format);
@@ -675,7 +678,7 @@ public class MauiCore {
 		String[] list = new String[termsCount];
 		int doc;
 		for (doc = 0; doc < termsCount; doc++) {
-			list[doc] = getTopFrequentTerm(keywords.get(doc), false);
+			list[doc] = getTopFrequentTerm(keywords.get(doc), termsToEvaluate, false);
 			if (debug) {
 				System.out.println("[MauiCore] Arquivo: " + docnames[doc]);
 				System.out.println("[MauiCore] Termo Geral: " + list[doc]);

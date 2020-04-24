@@ -391,6 +391,42 @@ public class TestsManager {
 		return matrix;
 	}
 	
+	public static Matrix buildGeneralTermsComparisonMatrix2(String dirPath, int termsToEvaluate) throws Exception {
+		
+		log("Building General Terms Comparison Matrix...");
+		
+		// Gathering data
+		System.out.println();
+		log("Processing MAUI terms...");
+		String[] topTermsMaui = MauiCore.getTopFrequentTermsFromDir(dirPath, ".maui", termsToEvaluate, true);
+		System.out.println();
+		log("Processing manual terms...");
+		String[] topTermsManual = MauiCore.getTopFrequentTermsFromDir(dirPath, ".key", termsToEvaluate, true);
+		double matches = MPTUtils.matchesCount(topTermsMaui, topTermsManual, true);
+		double percentage = (matches / (double) topTermsManual.length) * 100;
+		System.out.println("\nTotal de acertos: " + matches);
+		System.out.println("Percentual de acertos: " + percentage + "%"); // TODO: round this
+		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterDir(dirPath, ".txt"), false);
+		
+		// Building matrix
+		Matrix matrix = new Matrix();
+		String[] header = new String[]{"Nome do Documento", "TG mais Frequente MAUI", "TG mais Frequente Manual", "Acerto"};
+		matrix.addLine(header);
+		
+		Object[] line = null;
+		int currentDoc;
+		for (currentDoc = 0; currentDoc < docnames.length; currentDoc++) {
+			line = new Object[header.length];
+			line[0] = docnames[currentDoc]; //adds doc name
+			line[1] = topTermsMaui[currentDoc]; //adds maui top term
+			line[2] = topTermsManual[currentDoc]; //adds manual top term
+			line[3] = (line[1].equals(line[2]) ? 1 : 0); //checks match
+			matrix.addLine(line);
+		}
+		log("Done!");
+		return matrix;
+	}
+	
 	private static void log(String message) {
 		System.out.println("[" + TestsManager.class.getSimpleName() + "] " + message);
 	}
