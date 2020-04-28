@@ -426,7 +426,7 @@ public class TBCI {
 			
 			term = getTBCITerm(terms[i]);
 			//termID = term.get(terms[i]);//para casamento exato entre string
-			termID = term.values().iterator().next();//permite casamento parcial
+			termID = term.values().iterator().next(); //permite casamento parcial
 			
 			if (termID == null) {
 				System.out.println("termo não é do tbci: " + terms[i]);

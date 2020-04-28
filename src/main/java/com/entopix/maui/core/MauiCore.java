@@ -634,7 +634,7 @@ public class MauiCore {
 	 * @return the top frequent term.
 	 */
 	public static String getTopFrequentTerm(String[] terms, int termsCount, boolean fullResults) {
-		String[] termsToEvaluate = Arrays.copyOf(terms, termsCount);
+		String[] termsToEvaluate = Arrays.copyOf(terms, termsCount); //TODO: maybe problem here
 		
 		ArrayList<Entry<String, Integer>> result = TBCI.getTBCITopConceptsCount(termsToEvaluate);
 		
