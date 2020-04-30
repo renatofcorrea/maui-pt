@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.entopix.maui.core.MauiCore;
 import com.entopix.maui.core.ModelWrapper;
@@ -501,8 +502,8 @@ public class StandaloneMain {
 	
 	/** Option 6 at the main menu. */
 	private static void evaluateGeneralTerms() throws Exception {
-		System.out.println("1 - Avaliar por diretório");
-		System.out.println("2 - Avaliar por arquivo");
+		System.out.println("1 - Avaliar diretório");
+		System.out.println("2 - Avaliar arquivo");
 		System.out.print("-> ");
 		input = SCAN.nextLine();
 		switch (input) {
@@ -515,7 +516,9 @@ public class StandaloneMain {
 	/** Option 6.1 at the general terms evaluation menu. */
 	private static void evaluateGeneralTermsOnDir() throws Exception {
 		File dir = MauiFileUtils.browseFile(FTS_PATH, "", SCAN);
-		int count = chooseTermsCount();
+		File[] allFiles = ArrayUtils.addAll(MauiFileUtils.filterDir(dir, ".maui"), MauiFileUtils.filterDir(dir, ".key"));
+		String[] allFilesPaths = MauiFileUtils.getFileListPaths(allFiles);
+		int count = chooseTermsCount(allFilesPaths);
 		runGeneralTermsEvaluation(dir.getPath(), count);
 	}
 	
@@ -536,7 +539,7 @@ public class StandaloneMain {
 			System.out.println(e.toString());
 			return;
 		}
-		int count = chooseTermsCount();
+		int count = chooseTermsCount(new String[] {mauiKeyPath, manualKeyPath});
 		System.out.println("\nObtendo termos gerais para o arquivo " + mauiKeyPath + "...");
 		String topTermMaui = MauiCore.getTopFrequentTerm(mauiTerms, count, true);
 		System.out.println("\nObtendo termos gerais para o arquivo " + manualKeyPath + "...");
@@ -549,12 +552,20 @@ public class StandaloneMain {
 		System.out.print("\nTermos iguais?: " + res + "\n");
 	}
 	
-	private static int chooseTermsCount() {
-		System.out.print("Quantidade de termos a serem avaliados (1-10): ");
+	private static int chooseTermsCount(String[] files) throws FileNotFoundException {
+		System.out.print("Quantidade de termos a serem avaliados: ");
 		input = SCAN.nextLine();
 		int count = Integer.parseInt(input);
-		if (count < 1) count = 1;
-		else if (count > 10) count = 10;
+		
+		for (int i = 0; i < files.length; i++) {
+			int maxTermCount = MauiFileUtils.readKeyFromFile(files[i]).length; 
+			if (count < 0) count = 1;
+			if (count > maxTermCount) {
+				count = maxTermCount;
+			}
+		}
+		
+		
 		System.out.println("Quantidade selecionada: " + count);
 		return count;
 	}

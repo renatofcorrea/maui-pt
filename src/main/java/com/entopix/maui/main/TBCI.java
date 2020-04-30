@@ -206,8 +206,8 @@ public class TBCI {
 		  String string = "";
 		  String term_id = "";
 		  try {
-			  URL  url = new URL(urlbase+"task=search&arg="+URLEncoder.encode(term,"UTF-8")+"&output=json");//só funciona se url sem parametro!
-		  
+			  //URL  url = new URL(urlbase+"task=search&arg="+URLEncoder.encode(term,"UTF-8")+"&output=json");//só funciona se url sem parametro! //OLD CODE
+			  URL  url = new URL(urlbase+"task=search"+"&output=json"+"&arg="+URLEncoder.encode(term,"UTF-8").replace("%26", "&"));
 		  URLConnection urlConn = url.openConnection(); 
 		  urlConn.setRequestProperty("Accept-Charset", "UTF-8");
 		  urlConn.setRequestProperty("Content-Type", "text/plain; charset=utf-8");
