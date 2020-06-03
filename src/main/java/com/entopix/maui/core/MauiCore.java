@@ -44,9 +44,9 @@ public class MauiCore {
 	//Core parameters
 	private static File testDocFile;
 	private static String testDirPath;
-	private static String trainDirPath;
+	private static String trainDirPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\train30";
 	private static Stemmer stemmer = new PortugueseStemmer();
-	private static String modelPath;
+	private static String modelPath = MauiFileUtils.getDataPath() + "\\models";
 	private static String vocabPath = MauiFileUtils.getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 	
 	//Standard ModelBuilder configs
@@ -310,7 +310,7 @@ public class MauiCore {
 			if (modelPath == null) throw new NullPointerException("Model path for the modelBuilder is not set");
 			model = new ModelWrapper(filter, trainDirPath, stemmer, vocabPath);
 			MauiFileUtils.serializeObject(model, modelPath);
-			System.out.println("Modelo " + new File(modelPath).getName() + " construído com sucesso.");
+			System.out.println("[MauiCore] Modelo " + new File(modelPath).getName() + " construído com sucesso.");
 		} else {
 			System.out.println("[MauiCore] Save model is disabled, therefore, the MauiFilter was not serialized.");
 		}
@@ -381,6 +381,26 @@ public class MauiCore {
 		}
 		
 		//TODO: Not writing .maui file because keywords are stored in List<Topic> instead of List<MauiTopics>
+		return keywords;
+	}
+	
+	public static ArrayList<Topic> runMauiWrapperOnString(String text) throws MauiFilterException {
+		if (model == null) throw new NullPointerException("MauiCore's model was not set.");
+		MauiWrapper mw = null;
+		setupVocab(vocabPath, stemmer, stopwords);
+		
+		try {
+			mw = new MauiWrapper(vocab, model.getFilter()); //TODO: use full constructor
+		} catch (Exception e) {
+			model.getFilter().setVocabulary(vocab);
+			mw = new MauiWrapper(vocab, model.getFilter());
+		}
+		mw.setModelParameters(vocabPath, stemmer, stopwords, language);
+
+		ArrayList<Topic> keywords = mw.extractTopicsFromText(text, numTopicsToExtract);
+		for  (Topic keyword : keywords) {
+			System.out.println("Palavra-chave: " + keyword.getTitle() + " " + keyword.getProbability());
+		}
 		return keywords;
 	}
 	
