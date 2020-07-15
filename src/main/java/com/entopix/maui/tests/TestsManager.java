@@ -21,7 +21,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 
-import com.entopix.maui.core.MauiCore;
+import com.entopix.maui.core.MPTCore;
 import com.entopix.maui.main.TBCI;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.utils.MPTUtils;
@@ -185,7 +185,7 @@ public class TestsManager {
 		for (currentDoc = 0; currentDoc < docnames.length; currentDoc++) {
 			manual = manualTopics.get(currentDoc); // gets the manual topics for the current document
 			extracted = extractedTopics.get(currentDoc); // gets the extracted topics for the current document
-			matches = MauiCore.matches(manual, extracted);
+			matches = MPTCore.matches(manual, extracted);
 			
 			for (topic = 0; topic < extractedTopics.get(currentDoc).length; topic++) {
 				line = new Object[header.length];
@@ -323,7 +323,7 @@ public class TestsManager {
 		// Getting data
 		List<String[]> manualKeywords = MauiFileUtils.readAllKeyFromDir(runDir, ".key");
 		List<String[]> extractedKeywords = MPTUtils.mauiTopicsToListofStringArrays(topics);
-		List<String[]> matches = MauiCore.allMatches(manualKeywords, extractedKeywords);
+		List<String[]> matches = MPTCore.allMatches(manualKeywords, extractedKeywords);
 		String[] docnames = MauiFileUtils.getFileNames(MauiFileUtils.filterDir(runDir, ".txt"), true);
 		int[] extractedCount = MPTUtils.topicsCount(topics);
 		int[] manualCount = MPTUtils.elementSizes(manualKeywords);
@@ -398,10 +398,10 @@ public class TestsManager {
 		// Gathering data
 		System.out.println();
 		log("Processing MAUI terms...");
-		String[] topTermsMaui = MauiCore.getTopFrequentTermsFromDir(dirPath, ".maui", termsToEvaluate, true);
+		String[] topTermsMaui = MPTCore.getTopFrequentTermsFromDir(dirPath, ".maui", termsToEvaluate, true);
 		System.out.println();
 		log("Processing manual terms...");
-		String[] topTermsManual = MauiCore.getTopFrequentTermsFromDir(dirPath, ".key", termsToEvaluate, true);
+		String[] topTermsManual = MPTCore.getTopFrequentTermsFromDir(dirPath, ".key", termsToEvaluate, true);
 		double matches = MPTUtils.matchesCount(topTermsMaui, topTermsManual, true);
 		double percentage = (matches / (double) topTermsManual.length) * 100;
 		System.out.println("\nTotal de acertos: " + matches);

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import com.entopix.maui.core.MauiCore;
+import com.entopix.maui.core.MPTCore;
 import com.entopix.maui.stemmers.Stemmer;
 import com.entopix.maui.util.MauiTopics;
 import com.entopix.maui.util.Topic;
@@ -58,7 +58,7 @@ public class MPTUtils {
 	public static Stemmer getStemmerFromModelName(File model) throws InstantiationException, IllegalAccessException, ClassNotFoundException {
 		int start = ordinalIndexOf(model.getName(), "_", 1);
 		int end = ordinalIndexOf(model.getName(), "_", 2);
-		String stemmerName = MauiCore.getStemmersPackage() + model.getName().substring(start + 1, end);
+		String stemmerName = MPTCore.getStemmersPackage() + model.getName().substring(start + 1, end);
 		return (Stemmer) Class.forName(stemmerName).newInstance();
 	}
 	

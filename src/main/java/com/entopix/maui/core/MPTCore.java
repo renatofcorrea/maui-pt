@@ -29,10 +29,9 @@ import com.entopix.maui.util.Topic;
 import com.entopix.maui.utils.MPTUtils;
 import com.entopix.maui.utils.MauiFileUtils;
 import com.entopix.maui.vocab.Vocabulary;
-
 import weka.core.Utils;
 
-public class MauiCore {
+public class MPTCore {
 	
 	//Core Objects
 	private static Stopwords stopwords = new StopwordsPortuguese();
@@ -46,7 +45,7 @@ public class MauiCore {
 	private static String testDirPath;
 	private static String trainDirPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\train30";
 	private static Stemmer stemmer = new PortugueseStemmer();
-	private static String modelPath = MauiFileUtils.getDataPath() + "\\models";
+	private static String modelPath = MauiFileUtils.getDataPath() + "\\models\\standard_model";
 	private static String vocabPath = MauiFileUtils.getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf";
 	
 	//Standard ModelBuilder configs
@@ -170,91 +169,91 @@ public class MauiCore {
 	}
 
 	public static void setStopwords(Stopwords stopwords) {
-		MauiCore.stopwords = stopwords;
+		MPTCore.stopwords = stopwords;
 	}
 
 	public static void setModelBuilder(MauiModelBuilder modelBuilder) {
-		MauiCore.modelBuilder = modelBuilder;
+		MPTCore.modelBuilder = modelBuilder;
 	}
 
 	public static void setTopicExtractor(MauiTopicExtractor topicExtractor) {
-		MauiCore.topicExtractor = topicExtractor;
+		MPTCore.topicExtractor = topicExtractor;
 	}
 
 	public static void setTestDocFile(File testDocFile) {
-		MauiCore.testDocFile = testDocFile;
+		MPTCore.testDocFile = testDocFile;
 	}
 
 	public static void setTestDirPath(String testDirPath) {
-		MauiCore.testDirPath = testDirPath;
+		MPTCore.testDirPath = testDirPath;
 	}
 
 	public static void setTrainDirPath(String trainDirPath) {
-		MauiCore.trainDirPath = trainDirPath;
+		MPTCore.trainDirPath = trainDirPath;
 	}
 
 	public static void setStemmer(Stemmer stemmer) {
-		MauiCore.stemmer = stemmer;
+		MPTCore.stemmer = stemmer;
 	}
 
 	public static void setModelPath(String modelPath) {
-		MauiCore.modelPath = modelPath;
+		MPTCore.modelPath = modelPath;
 	}
 
 	public static void setVocabPath(String vocabPath) {
-		MauiCore.vocabPath = vocabPath;
+		MPTCore.vocabPath = vocabPath;
 	}
 
 	public static void setMinOccur(int minOccur) {
-		MauiCore.minOccur = minOccur;
+		MPTCore.minOccur = minOccur;
 	}
 
 	public static void setMaxPhraseLength(int maxPhraseLength) {
-		MauiCore.maxPhraseLength = maxPhraseLength;
+		MPTCore.maxPhraseLength = maxPhraseLength;
 	}
 
 	public static void setMinPhraseLength(int minPhraseLength) {
-		MauiCore.minPhraseLength = minPhraseLength;
+		MPTCore.minPhraseLength = minPhraseLength;
 	}
 
 	public static void setNumTopicsToExtract(int numTopicsToExtract) {
-		MauiCore.numTopicsToExtract = numTopicsToExtract;
+		MPTCore.numTopicsToExtract = numTopicsToExtract;
 	}
 
 	public static void setCutOffTopicProbability(double cutOffTopicProbability) {
-		MauiCore.cutOffTopicProbability = cutOffTopicProbability;
+		MPTCore.cutOffTopicProbability = cutOffTopicProbability;
 	}
 
 	public static void setPrintExtractedTopics(boolean printExtractedTopics) {
-		MauiCore.printExtractedTopics = printExtractedTopics;
+		MPTCore.printExtractedTopics = printExtractedTopics;
 	}
 
 	public static void setVocabFormat(String vocabFormat) {
-		MauiCore.vocabFormat = vocabFormat;
+		MPTCore.vocabFormat = vocabFormat;
 	}
 
 	public static void setVocabSerialize(boolean vocabSerialize) {
-		MauiCore.vocabSerialize = vocabSerialize;
+		MPTCore.vocabSerialize = vocabSerialize;
 	}
 
 	public static void setVocabReorder(boolean vocabReorder) {
-		MauiCore.vocabReorder = vocabReorder;
+		MPTCore.vocabReorder = vocabReorder;
 	}
 
 	public static void setEncoding(String encoding) {
-		MauiCore.encoding = encoding;
+		MPTCore.encoding = encoding;
 	}
 
 	public static void setLanguage(String language) {
-		MauiCore.language = language;
+		MPTCore.language = language;
 	}
 	
 	public static void setStemmersPackage(String stemmersPackage) {
-		MauiCore.stemmersPackage = stemmersPackage;
+		MPTCore.stemmersPackage = stemmersPackage;
 	}
 
 	public static void setStopwordsPackage(String stopwordsPackage) {
-		MauiCore.stopwordsPackage = stopwordsPackage;
+		MPTCore.stopwordsPackage = stopwordsPackage;
 	}
 	
 	public static void setModel(ModelWrapper modelWrapper) {
@@ -278,7 +277,8 @@ public class MauiCore {
 		vocab.initializeVocabulary(vocabPath, vocabFormat);
 	}
 	
-	public static MauiFilter buildModel() throws Exception {
+	public static MauiFilter setupAndBuildModel() throws Exception {
+		
 		if (trainDirPath == null) throw new NullPointerException("Train directory for the ModelBuilder is not set");
 		
 		modelBuilder.inputDirectoryName = trainDirPath;
@@ -314,7 +314,6 @@ public class MauiCore {
 		} else {
 			System.out.println("[MauiCore] Save model is disabled, therefore, the MauiFilter was not serialized.");
 		}
-		
 		
 		return filter;
 	}

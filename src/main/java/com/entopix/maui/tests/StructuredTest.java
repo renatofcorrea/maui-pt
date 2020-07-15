@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.entopix.maui.core.MauiCore;
+import com.entopix.maui.core.MPTCore;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
 import com.entopix.maui.stemmers.LuceneBRStemmer;
 import com.entopix.maui.stemmers.LuceneRSLPMinimalStemmer;
@@ -44,19 +44,19 @@ public class StructuredTest {
 	private static String[] tableFormat = {"%-65s","%-20s","%-20s","%-20s","%-20s","%-20s","%-20s","%-20s"};
 	
 	private static void buildModel(String trainDirPath, String modelPath, Stemmer stemmer) throws Exception {
-		MauiCore.setTrainDirPath(trainDirPath);
-		MauiCore.setModelPath(modelPath);
-		MauiCore.setStemmer(stemmer);
-		MauiCore.buildModel();
+		MPTCore.setTrainDirPath(trainDirPath);
+		MPTCore.setModelPath(modelPath);
+		MPTCore.setStemmer(stemmer);
+		MPTCore.setupAndBuildModel();
 	}
 	
 	private static List<MauiTopics> runTopicExtractor(String modelPath, String testDirPath, Stemmer stemmer, boolean printTopics) throws MauiFilterException {
-		MauiCore.setModelPath(modelPath);
-		MauiCore.setTestDirPath(testDirPath);
-		MauiCore.setStemmer(stemmer);
-		MauiCore.setPrintExtractedTopics(printTopics);
+		MPTCore.setModelPath(modelPath);
+		MPTCore.setTestDirPath(testDirPath);
+		MPTCore.setStemmer(stemmer);
+		MPTCore.setPrintExtractedTopics(printTopics);
 		try {
-			return MauiCore.runTopicExtractor();
+			return MPTCore.runTopicExtractor();
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -84,7 +84,7 @@ public class StructuredTest {
 				modelPath = modelsPath + "\\" + modelName;
 				buildModel(trainDir.getPath(), modelPath, stemmer);
 				topics = runTopicExtractor(modelPath, testDir, stemmer, false);
-				result = formatArray(modelName, MauiCore.classicEvaluateTopics(topics));
+				result = formatArray(modelName, MPTCore.classicEvaluateTopics(topics));
 				list.add(result);
 			}
 		}
@@ -119,14 +119,14 @@ public class StructuredTest {
 		fulltextsMatrixes.add(new StringTable(header, results, tableFormat));
 		
 		// ABSTRACTS
-		MauiCore.setMinOccur(1); //Set to abstract models only
+		MPTCore.setMinOccur(1); //Set to abstract models only
 		trainFolders = MauiFileUtils.filterFileList(abstractsDir.listFiles(), "train");
 		results = runTest(trainFolders, abstractsDir.getPath() + "\\test30", stemmers);
 		abstractsMatrixes.add(new StringTable(header, results, tableFormat));
 		results = runTest(trainFolders, abstractsDir.getPath() + "\\test60", stemmers);
 		abstractsMatrixes.add(new StringTable(header, results, tableFormat));
 		
-		MauiCore.setMinOccur(2); //Must be set back to standard
+		MPTCore.setMinOccur(2); //Must be set back to standard
 		
 		finish = Instant.now();
 		elapsed = MPTUtils.elapsedTime(start, finish);

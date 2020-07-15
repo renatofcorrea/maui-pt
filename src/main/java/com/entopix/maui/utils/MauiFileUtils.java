@@ -53,6 +53,7 @@ public class MauiFileUtils {
 	 * @param path
 	 */
 	public static void serializeObject(Object obj, String path) {
+		if (new File(path).isDirectory()) System.out.println("[MauiFileUtils] WARNING: Expected a file path, but received directory path");
 		FileOutputStream fout = null;
 		ObjectOutputStream oos = null;
 		

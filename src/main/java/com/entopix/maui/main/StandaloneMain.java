@@ -10,7 +10,7 @@ import java.util.Scanner;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 
-import com.entopix.maui.core.MauiCore;
+import com.entopix.maui.core.MPTCore;
 import com.entopix.maui.core.ModelWrapper;
 import com.entopix.maui.exceptions.EmptyModelsDirException;
 import com.entopix.maui.filters.MauiFilter.MauiFilterException;
@@ -125,70 +125,70 @@ public class StandaloneMain {
 		String modelPath = dataPath + Utils.getOption('m', args);
 		String vocabPath = dataPath + Utils.getOption('v', args);
 		
-		String vocabFormat = MauiCore.getVocabFormat();
+		String vocabFormat = MPTCore.getVocabFormat();
 		String input = Utils.getOption('f', args);
 		if (MPTUtils.isValid(input)) vocabFormat = input;
 		
-		String language = MauiCore.getLanguage();
+		String language = MPTCore.getLanguage();
 		input = Utils.getOption('i', args);
 		if (MPTUtils.isValid(input)) language = input;
 		
-		String encoding = MauiCore.getEncoding();
+		String encoding = MPTCore.getEncoding();
 		input = Utils.getOption('e', args);
 		if (MPTUtils.isValid(input)) encoding = input;
 		
-		boolean serialize = MauiCore.isVocabSerialize();
+		boolean serialize = MPTCore.isVocabSerialize();
 		input = Utils.getOption('z', args);
 		if (MPTUtils.isValid(Utils.getOption('z', args))) serialize = Boolean.parseBoolean(input);
 		
-		int numTopicsToExtract = MauiCore.getNumTopicsToExtract();
+		int numTopicsToExtract = MPTCore.getNumTopicsToExtract();
 		input = Utils.getOption('n', args);
 		if (MPTUtils.isValid(input)) numTopicsToExtract = Integer.parseInt(input);
 		
-		Stopwords stopwords = MauiCore.getStopwords();
+		Stopwords stopwords = MPTCore.getStopwords();
 		input = Utils.getOption('s', args);
 		if (MPTUtils.isValid(input)) {
-			stopwords = (Stopwords) Class.forName(MauiCore.getStopwordsPackage() + Utils.getOption('s', args)).newInstance();
+			stopwords = (Stopwords) Class.forName(MPTCore.getStopwordsPackage() + Utils.getOption('s', args)).newInstance();
 		}
 		
-		Stemmer stemmer = MauiCore.getStemmer();
+		Stemmer stemmer = MPTCore.getStemmer();
 		input = Utils.getOption('t', args);
 		if (MPTUtils.isValid(input)) {
-			stemmer = (Stemmer) Class.forName(MauiCore.getStemmersPackage() + Utils.getOption('t', args)).newInstance();
+			stemmer = (Stemmer) Class.forName(MPTCore.getStemmersPackage() + Utils.getOption('t', args)).newInstance();
 		}
 		
-		MauiCore.setStemmer(stemmer);
-		MauiCore.setStopwords(stopwords);
-		MauiCore.setLanguage(language);
-		MauiCore.setEncoding(encoding);
-		MauiCore.setVocabPath(vocabPath);
+		MPTCore.setStemmer(stemmer);
+		MPTCore.setStopwords(stopwords);
+		MPTCore.setLanguage(language);
+		MPTCore.setEncoding(encoding);
+		MPTCore.setVocabPath(vocabPath);
 		
 		if (MPTUtils.isValid(vocabPath)) {
-			MauiCore.setVocabFormat(vocabFormat);
+			MPTCore.setVocabFormat(vocabFormat);
 		}
 		
 		if (command.equals("train")) {
-			MauiCore.setModelPath(modelPath);
-			MauiCore.setTrainDirPath(documentsPath);
-			MauiCore.buildModel();
+			MPTCore.setModelPath(modelPath);
+			MPTCore.setTrainDirPath(documentsPath);
+			MPTCore.setupAndBuildModel();
 		}
 		
 		if (MauiFileUtils.exists(modelPath)) {
-			MauiCore.setModelPath(modelPath);
-			MauiCore.setModel((ModelWrapper) MauiFileUtils.deserializeObject(modelPath));
+			MPTCore.setModelPath(modelPath);
+			MPTCore.setModel((ModelWrapper) MauiFileUtils.deserializeObject(modelPath));
 		} else {
 			throw new Exception("Model " + modelPath + " was not found");
 		}
 		
 		if (command.equals("test")) {
-			MauiCore.setTestDirPath(documentsPath);
-			MauiCore.setVocabSerialize(serialize);
-			MauiCore.runTopicExtractor();
+			MPTCore.setTestDirPath(documentsPath);
+			MPTCore.setVocabSerialize(serialize);
+			MPTCore.runTopicExtractor();
 			
 		} else if (command.equals("run")) {
-			MauiCore.setTestDocFile(new File(documentsPath));
-			MauiCore.setNumTopicsToExtract(numTopicsToExtract);
-			MauiCore.runMauiWrapperOnFile();
+			MPTCore.setTestDocFile(new File(documentsPath));
+			MPTCore.setNumTopicsToExtract(numTopicsToExtract);
+			MPTCore.runMauiWrapperOnFile();
 		}
 	}
 	
@@ -311,7 +311,7 @@ public class StandaloneMain {
 			modelPath = MODELS_DIR + "\\" + modelName;
 		}
 		setupAndRunModelBuilder();
-		model = MauiCore.getModel();
+		model = MPTCore.getModel();
 	}
 	
 	/** Option 2 at the main menu. */
@@ -481,7 +481,7 @@ public class StandaloneMain {
 		String[] extractedTopicsList = MauiFileUtils.readKeyFromFile(extractedTopicsPath);
 		String[] manualTopicsList = MauiFileUtils.readKeyFromFile(originalTopicsPath);
 		
-		MauiCore.evaluateTopics(filename, manualTopicsList, extractedTopicsList , extractedTopicsList.length, true);
+		MPTCore.evaluateTopics(filename, manualTopicsList, extractedTopicsList , extractedTopicsList.length, true);
 	}
 	
 	/** Option 5.2.2 at the custom evaluation indexing menu. */
@@ -541,9 +541,9 @@ public class StandaloneMain {
 		}
 		int count = chooseTermsCount(new String[] {mauiKeyPath, manualKeyPath});
 		System.out.println("\nObtendo termos gerais para o arquivo " + mauiKeyPath + "...");
-		String topTermMaui = MauiCore.getTopFrequentTerm(mauiTerms, count, true);
+		String topTermMaui = MPTCore.getTopFrequentTerm(mauiTerms, count, true);
 		System.out.println("\nObtendo termos gerais para o arquivo " + manualKeyPath + "...");
-		String topTermManual = MauiCore.getTopFrequentTerm(manualTerms, count, true);
+		String topTermManual = MPTCore.getTopFrequentTerm(manualTerms, count, true);
 		
 		System.out.println("\nTermo mais frequente MAUI: " + topTermMaui);
 		System.out.println("Termo manual mais frequente: " + topTermManual); 
@@ -636,26 +636,26 @@ public class StandaloneMain {
  	}
  	
 	private static void setupAndRunModelBuilder() throws Exception {
-		MauiCore.setTrainDirPath(trainDirPath);
-		MauiCore.setModelPath(modelPath);
-		MauiCore.setStemmer(stemmer);
-		MauiCore.buildModel();
+		MPTCore.setTrainDirPath(trainDirPath);
+		MPTCore.setModelPath(modelPath);
+		MPTCore.setStemmer(stemmer);
+		MPTCore.setupAndBuildModel();
 	}
 	
 	private static List<MauiTopics> setupAndRunTopicExtractor() throws Exception {
-		MauiCore.setModelPath(modelPath);
-		MauiCore.setTestDirPath(runDirPath);
-		MauiCore.setStemmer(stemmer);
-		MauiCore.setModel(model);
-		return MauiCore.runTopicExtractor();
+		MPTCore.setModelPath(modelPath);
+		MPTCore.setTestDirPath(runDirPath);
+		MPTCore.setStemmer(stemmer);
+		MPTCore.setModel(model);
+		return MPTCore.runTopicExtractor();
 	}
 	
 	private static List<Topic> setupAndRunMauiWrapper() throws IOException, MauiFilterException {
-		MauiCore.setTestDocFile(testDoc);
-		MauiCore.setModelPath(modelPath);
-		MauiCore.setStemmer(stemmer);
-		MauiCore.setModel(model);
-		return MauiCore.runMauiWrapperOnFile();
+		MPTCore.setTestDocFile(testDoc);
+		MPTCore.setModelPath(modelPath);
+		MPTCore.setStemmer(stemmer);
+		MPTCore.setModel(model);
+		return MPTCore.runMauiWrapperOnFile();
 	}
 	
 	/**

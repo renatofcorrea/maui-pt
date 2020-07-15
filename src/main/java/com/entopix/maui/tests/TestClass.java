@@ -1,20 +1,27 @@
 package com.entopix.maui.tests;
 
-import java.util.Scanner;
+import java.io.File;
+import java.util.ArrayList;
 
-import com.entopix.maui.core.MauiCore;
-import com.entopix.maui.core.ModelWrapper;
+import org.apache.commons.io.FileUtils;
+
+import com.entopix.maui.core.MPTCore;
+import com.entopix.maui.util.Topic;
+import com.entopix.maui.utils.MauiFileUtils;
 
 public class TestClass {
 	
 	public static void main(String[] args) throws Exception {
-		Scanner sc = new Scanner(System.in);
-		System.out.println("Escreva o texto a ter palavras chave extraidas e removidas e arrancadas de seu contexo: ");
-		String text = sc.nextLine();
-		text = text.replaceAll("[ \n\t\r]{2,}"," ");
+		//Variable setup
+		String filepath = MauiFileUtils.getDataPath() + "/docs/corpusci/fulltexts/test60/Artigo01.txt";
+		String stopwordsPath = MauiFileUtils.getDataPath() + "/res/sn_stoplist.txt";
 		
-		ModelWrapper model = new ModelWrapper(MauiCore.buildModel(), MauiCore.getTrainDirPath(), MauiCore.getStemmer(), MauiCore.getVocabPath());
-		MauiCore.setModel(model);
-		MauiCore.runMauiWrapperOnString(text);
+		File file = new File(filepath);
+		String text = FileUtils.readFileToString(file);
+		
+		//Model setup
+		//ModelWrapper model = new ModelWrapper(MauiCore.buildModel(), MauiCore.getTrainDirPath(), MauiCore.getStemmer(), MauiCore.getVocabPath());
+		
+		//ArrayList<Topic> out = MPTCore.setupAndRunIndexerModel(MPTCore.getTrainDirPath(), MPTCore.getVocabPath(), text);
 	}
 }
