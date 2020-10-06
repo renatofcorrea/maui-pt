@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,6 +13,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+
+import org.apache.commons.io.FileUtils;
 /**
  * Provides paths to avoid path conflicts and methods for managing and processing files.
  * @author Rahmon Jorge
@@ -202,17 +205,16 @@ public class MauiFileUtils {
 	/**
 	 * Filter the files inside a directory using a filter method.
 	 * If "filterDirs" is false, it will always add directories to the filtered list, regardless of their names.
-	 * @param dirPath
-	 * @param filterMethod
-	 * @param filterDirs
 	 * @return the files whose names include the string in filterMethod.
+	 * @throws FileNotFoundException 
 	 */
-	public static File[] filterFileList(String dirPath, String filterMethod, boolean filterDirs) { //TODO: SPLIT THE "FILTERDIRS" OPTION INTO TWO METHODS FOR SAFETY
+	public static File[] filterFileList(String dirPath, String filterMethod, boolean filterDirs) throws FileNotFoundException { //TODO: SPLIT THE "FILTERDIRS" OPTION INTO TWO METHODS FOR SAFETY
 		File[] fileArray = new File(dirPath).listFiles();
 		ArrayList<File> newArray = new ArrayList<File>();
 		
 		if (filterDirs) {
 			for (File f : fileArray) {
+				if (!f.exists()) throw new FileNotFoundException(f.getAbsolutePath() + " was not found.");
 				if (f.getName().contains(filterMethod)) newArray.add(f);
 			}
 		} else {
@@ -232,11 +234,13 @@ public class MauiFileUtils {
 	 * @param fileArray
 	 * @param filterMethod
 	 * @return the files whose names include the string in filterMethod.
+	 * @throws FileNotFoundException 
 	 */
-	public static File[] filterFileList(File[] fileArray, String filterMethod) {
+	public static File[] filterFileList(File[] fileArray, String filterMethod) throws FileNotFoundException {
 		ArrayList<File> newArray = new ArrayList<File>();
 		
 		for (File f : fileArray) {
+			if (!f.exists()) throw new FileNotFoundException(f.getAbsolutePath() + " was not found.");
 			if (f.getName().contains(filterMethod)) newArray.add(f);
 		}
 		return newArray.toArray(new File[newArray.size()]);
@@ -245,16 +249,18 @@ public class MauiFileUtils {
 	/**
 	 * Filters the files in the specified directory.
 	 * @return the files whose names include the string in filterMethod.
+	 * @throws FileNotFoundException 
 	 */
-	public static File[] filterDir(File dir, String filterMethod) {
+	public static File[] filterDir(File dir, String filterMethod) throws FileNotFoundException {
 		return filterFileList(dir.listFiles(), filterMethod);
 	}
 	
 	/**
 	 * Filters the files in the specified directory.
 	 * @return the files whose names include the string in filterMethod.
+	 * @throws FileNotFoundException 
 	 */
-	public static File[] filterDir(String dirPath, String filterMethod) {
+	public static File[] filterDir(String dirPath, String filterMethod) throws FileNotFoundException {
 		return filterFileList(new File(dirPath).listFiles(), filterMethod);
 	}
 	
@@ -301,8 +307,9 @@ public class MauiFileUtils {
 	 * @param format the string that will filter the files in the folder.
 	 * @param scan
 	 * @return
+	 * @throws FileNotFoundException 
 	 */
-	public static File browseFile(String dir, String format, Scanner scan) { 
+	public static File browseFile(String dir, String format, Scanner scan) throws FileNotFoundException { 
 		File[] files = filterFileList(dir, format, false);
 		File file = chooseFileFromFileArray(dir, files, scan);
 		if (file.isDirectory() && !format.equals("")) {
@@ -358,6 +365,22 @@ public class MauiFileUtils {
 			throw new FileNotFoundException("O Arquivo " + dir + " com o formato " + format + " não foi encontrado.");
 		}
 	}
+	
+	/**
+	 * Reads all the .txt files in specified directory.
+	 * @return a string for every file.
+	 */
+	public static List<String> readAllTextFromDir(String dir) throws Exception {
+		if (exists(dir)) {
+			File[] files = filterFileList(dir, ".txt", true);
+			List<String> texts = new ArrayList<>();
+			for (File f : files) texts.add(FileUtils.readFileToString(f, "UTF-8"));
+			return texts;
+		} else {
+			throw new FileNotFoundException("O diretório " + dir + " não foi encontrado.");
+		}
+	}
+	
 	
 	/**
 	 * Saves a matrix as a .csv file. The filepath does not need an extension.

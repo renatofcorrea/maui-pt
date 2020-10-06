@@ -589,7 +589,12 @@ public class StandaloneMain {
 	 * @param filter the directory list will only have dirs that contain the filter string on its names. */
  	private static File browseFileOnDirList(String filter) {
 		String browsingDir = (modelType == ABSTRACTS ? ABS_PATH : FTS_PATH);
-		return MauiFileUtils.chooseFileFromFileArray(browsingDir, MauiFileUtils.filterDir(browsingDir, filter), SCAN);
+		try {
+			return MauiFileUtils.chooseFileFromFileArray(browsingDir, MauiFileUtils.filterDir(browsingDir, filter), SCAN);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
  	/** Generates and saves the model evaluation sheet and the keywords comparison sheet. */
@@ -727,7 +732,12 @@ public class StandaloneMain {
 	private static File browseTrainDirFromList() {
 		System.out.println();
 		String browsingDir = (modelType == ABSTRACTS ? ABS_PATH : FTS_PATH);
-		return MauiFileUtils.chooseFileFromFileArray(browsingDir, MauiFileUtils.filterFileList(browsingDir, "train", true), SCAN);
+		try {
+			return MauiFileUtils.chooseFileFromFileArray(browsingDir, MauiFileUtils.filterFileList(browsingDir, "train", true), SCAN);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	/**

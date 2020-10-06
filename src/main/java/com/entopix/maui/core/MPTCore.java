@@ -260,8 +260,20 @@ public class MPTCore {
 		model = modelWrapper;
 	}
 	
-	public static void loadModel(String modelPath) {
-		model = (ModelWrapper) MauiFileUtils.deserializeObject(modelPath);
+	public static void loadModel(String modelPath) throws Exception {
+		Object obj = MauiFileUtils.deserializeObject(modelPath);
+		ModelWrapper model = null;
+		if (obj instanceof ModelWrapper) model = (ModelWrapper) obj;
+		else throw new Exception("Invalid model class");
+		setModel(model);
+	}
+	
+	/**
+	 * Extracts topics from text. The model must be set beforehand using loadModel or setModel.
+	 * @return a array of topics
+	 */
+	public static String[] extractTopicsFromString(String text) throws Exception {
+		return MPTUtils.topicsToStringArray(runMauiWrapperOnString(text));
 	}
 	
 	public static void setupVocab(String vocabPath, Stemmer stemmer, Stopwords stopwords) {
@@ -321,7 +333,9 @@ public class MPTCore {
 	public static List<MauiTopics> runTopicExtractor() throws Exception {
 		if (testDirPath == null) throw new NullPointerException("Test directory path for the topic extractor not set.");
 		if (modelPath == null) throw new NullPointerException("The model path was not set.");
+		if (model == null && modelPath != null) loadModel(modelPath);
 		if (model == null) throw new NullPointerException("No model loaded.");
+			
 		
 		topicExtractor.stemmer = stemmer;
 		topicExtractor.stopwords = stopwords;
@@ -523,6 +537,10 @@ public class MPTCore {
 		return matches;
 	}
 	
+	public static double[] evaluateTopics(String[] manualKeywords, String[] extractedKeywords) throws Exception {
+		return evaluateTopics(null, manualKeywords, extractedKeywords, manualKeywords.length, false);
+	}
+	
 	/**
 	 * Compares the extracted topics with the manual topics of a single document. Returns number of correct topics, precision, recall and f-measure.
 	 * @param keysPath The path to the file containing the manual, original topics
@@ -554,7 +572,7 @@ public class MPTCore {
 		}
 		
 		if (printResults || DB_evaluateTopicsSingle) {
-			System.out.println("\nFile: " + filename);
+			if (filename != null && filename.length() > 0) System.out.println("\nFile: " + filename);
 			System.out.println(numExtracted + " topics extracted");
 			System.out.println(numEvaluated + " topics evaluated " + "\n");
 			System.out.println("MANUAL (" + numManual + "):");
@@ -623,6 +641,7 @@ public class MPTCore {
 		
 		return results;
 	}
+
 	
 	/**
 	 * Compares the extracted topics with the manual topics of a list of documents. Returns number of correct topics, precision, recall and f-measure for each document.
@@ -682,8 +701,9 @@ public class MPTCore {
 	    return tfcName;
 	}
 	
-	/** Returns the top frequent term from every document of specified format in dirpath. */
-	public static String[] getTopFrequentTermsFromDir(String dirPath, String format, int termsToEvaluate, boolean debug) {
+	/** Returns the top frequent term from every document of specified format in dirpath. 
+	 * @throws FileNotFoundException */
+	public static String[] getTopFrequentTermsFromDir(String dirPath, String format, int termsToEvaluate, boolean debug) throws FileNotFoundException {
 		List<String[]> keywords = null;
 		try {
 			keywords = MauiFileUtils.readAllKeyFromDir(dirPath, format);

@@ -381,4 +381,10 @@ public class MPTUtils {
 		}
 		return newlist.toArray(new String[newlist.size()]);
 	}
+	
+	public static List<String> flattenString(List<List<String>> strList) {
+		List<String> rtr = new ArrayList<>();
+		for (List<String> str : strList) rtr.add(String.join(", ", str));
+		return rtr;
+	}
 }
