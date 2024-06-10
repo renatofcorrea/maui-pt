@@ -352,7 +352,8 @@ public class MPTCore {
 				"-c", String.valueOf(cutOffTopicProbability),
 		});
 		
-		setupVocab(model.getVocabUsedPath(), stemmer, stopwords); // NOTE: The usedvocabpath might be in another machine, so this might throw a runtimexception
+		setupVocab(MauiFileUtils.getDataPath()+getRelativePathtoDataDir(model.getVocabUsedPath()), stemmer, stopwords); // NOTE: The usedvocabpath might be in another machine, so this might throw a runtimexception
+		//Remove models may resolve
 		topicExtractor.setVocabulary(vocab);
 		topicExtractor.setModel(model.getFilter());
 		
@@ -370,6 +371,19 @@ public class MPTCore {
 		}
 		
 		return topics;
+	}
+	
+	public static String getRelativePathtoDataDir(String fullpath) {
+		int index1 = fullpath.indexOf("\\data\\");
+		int index2 = fullpath.indexOf("/data/");
+		String relativepath = null;
+		if (index1 >=0) {
+			relativepath = fullpath.substring(index1+5);
+		}
+		else if (index2 >=0) {
+			relativepath = fullpath.substring(index2+5);
+		}
+		return relativepath;
 	}
 	
 	public static List<Topic> runMauiWrapperOnFile() throws IOException, MauiFilterException {

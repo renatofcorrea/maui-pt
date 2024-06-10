@@ -82,7 +82,7 @@ public class TestsManager {
 			}
 			sheet = fillSheet(sheet, matrixes[i]);
 		}
-		
+		wb.close();//Add for close file
 		saveWorkbook(wb, filepath);
 	}
 

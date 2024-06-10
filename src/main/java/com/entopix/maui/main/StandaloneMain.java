@@ -70,17 +70,17 @@ public class StandaloneMain {
 	
 	private static File testDoc = null;
 	
-	private static Stemmer stemmer = new PortugueseStemmer();
+	private static Stemmer stemmer = new LuceneRSLPStemmer();//PortugueseStemmer();
 	
-	private static Stemmer[] stemmerList = {
-			new PortugueseStemmer(),
-			new LuceneRSLPStemmer(),
-			new LuceneBRStemmer(),
-			new LuceneSavoyStemmer(),
-			new LuceneRSLPMinimalStemmer(),
-			new WekaStemmerOrengo(),
-			new WekaStemmerPorter(),
-			new WekaStemmerSavoy(),
+	private static Stemmer[] stemmerList = {//ranking test fulltext 60,30 (abstract 60,30)
+			new LuceneRSLPStemmer(),//#1 (#2,#6) //RSLP == Orengo Stemmer ***
+			new LuceneBRStemmer(),//#3 //BrazilianStemmer ***
+			new LuceneRSLPMinimalStemmer(),//#5,#7 (#6,#5) //RSLP-S ***
+			new LuceneSavoyStemmer(),//#7,#5 //UniNE - Light Stemmer for Portuguese 
+			new WekaStemmerSavoy(),//#2 (#1,#1) *****
+			new WekaStemmerOrengo(),//#4,#6
+			new WekaStemmerPorter(),//#6,#4
+			new PortugueseStemmer()//#8 (#3,#2) #Added to KEA *
 	};
 	
 	/** Path to the abstracts documents folder. */

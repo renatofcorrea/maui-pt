@@ -248,7 +248,7 @@ public class MPTUtils {
 	 * @return
 	 */
 	public static String getTimeAndDate() {
-		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM kkmm");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy kkmm");//Add year information
 		return sdf.format(new Date(System.currentTimeMillis()));
 	}
 	
