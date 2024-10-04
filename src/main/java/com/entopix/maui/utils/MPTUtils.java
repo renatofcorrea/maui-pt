@@ -1,6 +1,7 @@
 package com.entopix.maui.utils;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
@@ -166,11 +167,16 @@ public class MPTUtils {
 	 * @param topicsList
 	 * @param sourceDirPath the source dir.
 	 * @return
+	 * @throws FileNotFoundException 
 	 */
-	public static List<MauiTopics> stringMatrixToMauiTopics(List<String[]> topicsList, String sourceDirPath) {
+	public static List<MauiTopics> stringMatrixToMauiTopics(List<String[]> topicsList, String sourceDirPath,String format) throws FileNotFoundException {
 		List<MauiTopics> mt = new ArrayList<>();
+		//File[] files = MauiFileUtils.filterFileList(sourceDirPath, format, false);
+		File[] files = MauiFileUtils.filterDir(sourceDirPath, format);
+		int i = 0;
 		for (String[] doc : topicsList) {
-			mt.add(stringArrayToMauiTopics(doc, sourceDirPath));
+			mt.add(stringArrayToMauiTopics(doc,files[i].getPath()));
+			i++;
 		}
 		return mt;
 	}

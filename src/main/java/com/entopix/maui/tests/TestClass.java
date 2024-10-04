@@ -28,7 +28,7 @@ public class TestClass {
 		String filepath = MauiFileUtils.getDataPath() + "/docs/corpusci/abstracts/test30";
 		String stopwordsPath = MauiFileUtils.getDataPath() + "/res/sn_stoplist.txt";
 		//String modelPath = MauiFileUtils.getDataPath() + "/models/ST models/model_abstracts_WekaStemmerSavoy_train20";
-		String testDirPath = "C:\\Users\\Silvania\\Desktop\\Rahmon\\PIBITI\\projeto\\maui-pt\\data\\docs\\corpusci\\abstracts\\sns30";
+		String testDirPath = MauiFileUtils.getDataPath()+"/docs/corpusci/abstracts/sns30";//modificado para ficar portável
 		File abstractsDir = new File(MauiFileUtils.getDataPath() + "/docs/corpusci/abstracts");
 		////////////////
 		

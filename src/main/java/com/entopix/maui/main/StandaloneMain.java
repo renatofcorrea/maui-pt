@@ -496,7 +496,7 @@ public class StandaloneMain {
 		if (!validPath(input)) return;
 		String allTopicsPath = input;
 		
-		List<MauiTopics> topics = MPTUtils.stringMatrixToMauiTopics(MauiFileUtils.readAllKeyFromDir(allTopicsPath, format), allTopicsPath);
+		List<MauiTopics> topics = MPTUtils.stringMatrixToMauiTopics(MauiFileUtils.readAllKeyFromDir(allTopicsPath, format), allTopicsPath,format);
 		runMauiIndexingEvaluation(allTopicsPath, topics); //NOTE: Assumes that the .key files and .format files are in the same folder with corresponding names
 	}
 	

@@ -353,7 +353,7 @@ public class MPTCore {
 		});
 		
 		setupVocab(MauiFileUtils.getDataPath()+getRelativePathtoDataDir(model.getVocabUsedPath()), stemmer, stopwords); // NOTE: The usedvocabpath might be in another machine, so this might throw a runtimexception
-		//Remove models may resolve
+		//Remove models may resolve, use getRelativePathtoDataDir to resolve it
 		topicExtractor.setVocabulary(vocab);
 		topicExtractor.setModel(model.getFilter());
 		
@@ -364,7 +364,7 @@ public class MPTCore {
 			model.getFilter().setVocabulary(vocab);
 			topics = topicExtractor.extractTopics(DataLoader.loadTestDocuments(testDirPath));
 		}
-		
+		//TODO: adicionar acumulativamente em correctTopics de topics se topic.isCorrect() == true
 		if (printExtractedTopics) {
 			topicExtractor.printTopics(topics);
 			Evaluator.evaluateTopics(topics);

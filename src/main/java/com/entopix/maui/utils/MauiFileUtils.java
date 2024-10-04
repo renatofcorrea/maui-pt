@@ -11,6 +11,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
@@ -252,7 +253,11 @@ public class MauiFileUtils {
 	 * @throws FileNotFoundException 
 	 */
 	public static File[] filterDir(File dir, String filterMethod) throws FileNotFoundException {
-		return filterFileList(dir.listFiles(), filterMethod);
+		File [] arquivos = dir.listFiles();
+		if (arquivos != null)
+            // Ordene os arquivos alfabeticamente pelo nome
+            Arrays.sort(arquivos, (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName()));
+		return filterFileList(arquivos, filterMethod);
 	}
 	
 	/**
@@ -261,7 +266,11 @@ public class MauiFileUtils {
 	 * @throws FileNotFoundException 
 	 */
 	public static File[] filterDir(String dirPath, String filterMethod) throws FileNotFoundException {
-		return filterFileList(new File(dirPath).listFiles(), filterMethod);
+		File [] arquivos = new File(dirPath).listFiles();
+		if (arquivos != null)
+            // Ordene os arquivos alfabeticamente pelo nome
+            Arrays.sort(arquivos, (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName()));
+		return filterFileList(arquivos, filterMethod);
 	}
 	
 	/**
@@ -352,7 +361,7 @@ public class MauiFileUtils {
 	 */
 	public static List<String[]> readAllKeyFromDir(String dir, String format) throws FileNotFoundException {
 		if (exists(dir)) {
-			File[] files = filterFileList(dir, format, true);
+			File[] files = filterDir(dir, format);
 			List<String[]> topics = new ArrayList<>();
 			
 			int i;
