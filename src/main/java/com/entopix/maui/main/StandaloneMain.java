@@ -148,13 +148,13 @@ public class StandaloneMain {
 		Stopwords stopwords = MPTCore.getStopwords();
 		input = Utils.getOption('s', args);
 		if (MPTUtils.isValid(input)) {
-			stopwords = (Stopwords) Class.forName(MPTCore.getStopwordsPackage() + Utils.getOption('s', args)).newInstance();
+			stopwords = (Stopwords) Class.forName(MPTCore.getStopwordsPackage() + Utils.getOption('s', args)).getDeclaredConstructor().newInstance();
 		}
 		
 		Stemmer stemmer = MPTCore.getStemmer();
 		input = Utils.getOption('t', args);
 		if (MPTUtils.isValid(input)) {
-			stemmer = (Stemmer) Class.forName(MPTCore.getStemmersPackage() + Utils.getOption('t', args)).newInstance();
+			stemmer = (Stemmer) Class.forName(MPTCore.getStemmersPackage() + Utils.getOption('t', args)).getDeclaredConstructor().newInstance();
 		}
 		
 		MPTCore.setStemmer(stemmer);
