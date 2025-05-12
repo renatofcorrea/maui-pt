@@ -84,12 +84,12 @@ public class StandaloneMain {
 	};
 	
 	/** Path to the abstracts documents folder. */
-	private static final String ABS_PATH = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\abstracts";
+	private static final String ABS_PATH = MauiFileUtils.getDataPath() + "/docs/corpusci/abstracts";
 	
 	/** Path to the full texts documents folder. */
-	private static final String FTS_PATH = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts";
+	private static final String FTS_PATH = MauiFileUtils.getDataPath() + "/docs/corpusci/fulltexts";
 	
-	private static final String TESTS_PATH = MauiFileUtils.getDataPath() + "\\tests";
+	private static final String TESTS_PATH = MauiFileUtils.getDataPath() + "/tests";
 	
 	private static String trainDirPath = null, runDirPath = null;
 	
@@ -300,7 +300,7 @@ public class StandaloneMain {
 			input = SCAN.nextLine();
 			if (!input.equals("")) {
 				modelName = input;
-				modelPath = MODELS_DIR + "\\" + modelName;
+				modelPath = MODELS_DIR + "/" + modelName;
 			}
 			else {
 				UI.showInvalidOptionMessage();
@@ -308,7 +308,7 @@ public class StandaloneMain {
 			}
 			break;
 		default:
-			modelPath = MODELS_DIR + "\\" + modelName;
+			modelPath = MODELS_DIR + "/" + modelName;
 		}
 		setupAndRunModelBuilder();
 		model = MPTCore.getModel();
@@ -387,7 +387,7 @@ public class StandaloneMain {
 		input = SCAN.nextLine();
 		switch (input) {
 		case "1":
-			String browsingDir = (modelType == ABSTRACTS ? ABS_PATH : FTS_PATH) + "\\test60";
+			String browsingDir = (modelType == ABSTRACTS ? ABS_PATH : FTS_PATH) + "/test60";
 			File document = MauiFileUtils.chooseFileFromFileArray(browsingDir, MauiFileUtils.filterFileList(browsingDir, ".txt", true), SCAN);
 			testDoc = new File(document.getPath());
 			break;
@@ -429,7 +429,7 @@ public class StandaloneMain {
 		} catch (EmptyModelsDirException e) {
 			return;
 		}
-		String dir = FTS_PATH + "\\test30";
+		String dir = FTS_PATH + "/test30";
 		System.out.println("Diretório padrão: " + dir);
 		System.out.println("1 - Usar diretório padrão");
 		System.out.println("2 - Alterar diretório");
@@ -528,7 +528,7 @@ public class StandaloneMain {
 	 * Next, executes the same process on the equivalent .key file and compares their top frequent term.
 	 */
 	private static void evaluateGeneralTermsOnFile() throws Exception {
-		String dir = FTS_PATH + "\\test60";
+		String dir = FTS_PATH + "/test60";
 		String mauiKeyPath = MauiFileUtils.browseFile(dir, ".maui", SCAN).getPath();
 		String manualKeyPath = MPTUtils.removeFileExtension(mauiKeyPath) + ".key";
 		String[] mauiTerms, manualTerms = null;
@@ -601,7 +601,7 @@ public class StandaloneMain {
  	private static void runMauiIndexingEvaluation(String runDirPath, List<MauiTopics> topics) throws Exception {
  		Matrix m1 = TestsManager.runModelEvaluation(runDirPath, topics, TESTS_PATH);
 		Matrix m2 = TestsManager.runKeywordsComparison(runDirPath, topics, TESTS_PATH);
-		String outpath = TESTS_PATH + "\\" + "maui_indexing_evaluation" + " " + MPTUtils.getTimeAndDate() + ".xls";
+		String outpath = TESTS_PATH + "/" + "maui_indexing_evaluation" + " " + MPTUtils.getTimeAndDate() + ".xls";
 		TestsManager.saveMatrixesAsSheets(new Matrix[] {m1,m2}, new String[] {"Avaliação do Modelo", "Comparação de Frases-Chave"}, outpath);
 		showTestResults(outpath);
  	}
@@ -609,7 +609,7 @@ public class StandaloneMain {
  	/** Generates and saves the general terms evaluation sheet. */
  	private static void runGeneralTermsEvaluation(String dirpath, int termsToEvaluate) throws Exception {
  		Matrix m = TestsManager.buildGeneralTermsComparisonMatrix2(dirpath, termsToEvaluate);
-		String outpath = TESTS_PATH + "\\" + "general_terms_evaluation" + " " + MPTUtils.getTimeAndDate() + ".xls";
+		String outpath = TESTS_PATH + "/" + "general_terms_evaluation" + " " + MPTUtils.getTimeAndDate() + ".xls";
 		TestsManager.saveMatrixAsSheet(m, outpath);
 		showTestResults(outpath);
  	}
@@ -679,9 +679,9 @@ public class StandaloneMain {
 	 * Updates standard paths based on the document type of the model.
 	 */
 	private static void updatePaths() {
-		trainDirPath = (modelType == ABSTRACTS ? ABS_PATH + "\\train30" : FTS_PATH + "\\train30");
-		runDirPath = (modelType == ABSTRACTS ? ABS_PATH + "\\test60" : FTS_PATH + "\\test60");
-		testDoc = new File(runDirPath + "\\Artigo32.txt");
+		trainDirPath = (modelType == ABSTRACTS ? ABS_PATH + "/train30" : FTS_PATH + "/train30");
+		runDirPath = (modelType == ABSTRACTS ? ABS_PATH + "/test60" : FTS_PATH + "/test60");
+		testDoc = new File(runDirPath + "/Artigo32.txt");
 	}
 	
 	private static void selectModel() throws InstantiationException, IllegalAccessException, ClassNotFoundException, EmptyModelsDirException {
