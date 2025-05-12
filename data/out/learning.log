@@ -1,1 +1,1 @@
-11:32:06,827 ERROR [Vocabulary] Error while loading vocabulary from /workspaces/maui-pt/data\vocabulary\TBCI-SKOS_pt.rdf
+22:54:50,300 INFO  [VocabularyStoreFactory] Deserializing vocabulary from /workspaces/maui-pt/data/vocabulary/TBCI-SKOS_pt.rdf.gz_com.entopix.maui.vocab.VocabularyStore_Original_PortugueseStemmer.serialized

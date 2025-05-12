@@ -1,2 +1,2 @@
 #CHCP 65001
-java -Dfile.encoding=UTF-8 -jar ./lib/maui-pt.jar
+java -Dfile.encoding=UTF-8 -jar ../target/maui-pt.jar

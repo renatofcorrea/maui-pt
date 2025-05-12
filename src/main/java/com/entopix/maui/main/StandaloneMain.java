@@ -121,10 +121,10 @@ public class StandaloneMain {
 		System.arraycopy(mainArgs, 1, args, 0, mainArgs.length-1);
 		
 		String dataPath = MauiFileUtils.getDataPath();
-		String documentsPath = dataPath + Utils.getOption('l', args);
-		String modelPath = dataPath + Utils.getOption('m', args);
-		String vocabPath = dataPath + Utils.getOption('v', args);
-		
+		String documentsPath = dataPath + "/"+Utils.getOption('l', args);
+		String modelPath = dataPath +  "/"+Utils.getOption('m', args);
+		String vocabPath = dataPath + "/"+ Utils.getOption('v', args);
+		//System.out.println("*******"+vocabPath);
 		String vocabFormat = MPTCore.getVocabFormat();
 		String input = Utils.getOption('f', args);
 		if (MPTUtils.isValid(input)) vocabFormat = input;
