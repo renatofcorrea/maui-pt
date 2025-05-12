@@ -43,10 +43,10 @@ public class MPTCore {
 	//Core parameters
 	private static File testDocFile;
 	private static String testDirPath;
-	private static String trainDirPath = MauiFileUtils.getDataPath() + "\\docs\\corpusci\\fulltexts\\train30";
+	private static String trainDirPath = MauiFileUtils.getDataPath() + "/docs/corpusci/fulltexts/train30";
 	private static Stemmer stemmer = new PortugueseStemmer();
-	private static String modelPath = MauiFileUtils.getDataPath() + "\\models\\standard_model";
-	private static String vocabPath = MauiFileUtils.getDataPath() + "\\vocabulary\\TBCI-SKOS_pt.rdf";
+	private static String modelPath = MauiFileUtils.getDataPath() + "/models/standard_model";
+	private static String vocabPath = MauiFileUtils.getDataPath() + "/vocabulary/TBCI-SKOS_pt.rdf";
 	
 	//Standard ModelBuilder configs
 	private static int minOccur = 2;
@@ -374,7 +374,7 @@ public class MPTCore {
 	}
 	
 	public static String getRelativePathtoDataDir(String fullpath) {
-		int index1 = fullpath.indexOf("\\data\\");
+		int index1 = fullpath.indexOf("/data/");
 		int index2 = fullpath.indexOf("/data/");
 		String relativepath = null;
 		if (index1 >=0) {
