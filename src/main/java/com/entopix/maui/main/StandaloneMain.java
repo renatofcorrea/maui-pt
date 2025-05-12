@@ -626,18 +626,27 @@ public class StandaloneMain {
  	
  	/** Shows a file out path and display options to open it or its directory. */
   	private static void showTestResults(String outpath) throws IOException {
- 		System.out.println("Resultados dos testes salvos em " + TESTS_PATH);
-		System.out.println("1 - Abrir diretório de testes");
-		System.out.println("2 - Abrir arquivo");
-		System.out.println("3 - Voltar ao menu principal");
-		System.out.print("-> ");
-		input = SCAN.nextLine();
-		switch (input) {
-		case "1": Runtime.getRuntime().exec("explorer.exe " + TESTS_PATH); break;
-		case "2": Desktop.getDesktop().open(new File(outpath));
-		case "3": break;
-		default: UI.showInvalidOptionMessage();
-		}
+		String os = System.getProperty("os.name").toLowerCase();
+        if (os.contains("win")) {
+            // Executa o código apenas se for Windows
+            //System.out.println("Executando código na plataforma compatível...");
+            // Coloque aqui o trecho de código que deseja executar
+			System.out.println("Resultados dos testes salvos em " + TESTS_PATH);
+			System.out.println("1 - Abrir diretório de testes");
+			System.out.println("2 - Abrir arquivo");
+			System.out.println("3 - Voltar ao menu principal");
+			System.out.print("-> ");
+			input = SCAN.nextLine();
+			switch (input) {
+				case "1": Runtime.getRuntime().exec("explorer.exe " + TESTS_PATH); break;
+				case "2": Desktop.getDesktop().open(new File(outpath));
+				case "3": break;
+				default: UI.showInvalidOptionMessage();
+			}
+        } else {
+            System.out.println("Plataforma incompatível para abertura de arquivos. Verifique os arquivos em:"+ TESTS_PATH);
+        }
+ 		
  	}
  	
 	private static void setupAndRunModelBuilder() throws Exception {
