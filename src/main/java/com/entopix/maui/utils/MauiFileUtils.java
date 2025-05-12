@@ -22,7 +22,7 @@ import org.apache.commons.io.FileUtils;
  */
 public class MauiFileUtils {
 	
-	private static String modelsDirPath = getDataPath() + "\\models";
+	private static String modelsDirPath = getDataPath() + "/models";
 	
 	public static final String getRootPath() {
 		try {
