@@ -1,0 +1,57 @@
+{
+    // Use o IntelliSense para saber mais sobre os atributos possíveis.
+    // Focalizar para exibir as descrições dos atributos existentes.
+    // Para obter mais informações, acesse: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "type": "java",
+            "name": "Current File",
+            "request": "launch",
+            "mainClass": "${file}"
+        },
+        {
+            "type": "java",
+            "name": "StandaloneMain",
+            "request": "launch",
+            "mainClass": "com.entopix.maui.main.StandaloneMain",
+            "projectName": "maui"
+        },
+        {
+            "type": "java",
+            "name": "TBCI",
+            "request": "launch",
+            "mainClass": "com.entopix.maui.main.TBCI",
+            "projectName": "maui"
+        },
+        {
+            "type": "java",
+            "name": "PortugueseStemmer",
+            "request": "launch",
+            "mainClass": "com.entopix.maui.stemmers.PortugueseStemmer",
+            "projectName": "maui"
+        },
+        {
+            "type": "java",
+            "name": "StemmerTest",
+            "request": "launch",
+            "mainClass": "com.entopix.maui.tests.StemmerTest",
+            "projectName": "maui"
+        },
+        {
+            "type": "java",
+            "name": "StructuredTest",
+            "request": "launch",
+            "mainClass": "com.entopix.maui.tests.StructuredTest",
+            "projectName": "maui"
+        },
+        {
+            "type": "java",
+            "name": "TestClass",
+            "request": "launch",
+            "mainClass": "com.entopix.maui.tests.TestClass",
+            "projectName": "maui"
+        }
+    ]
+}

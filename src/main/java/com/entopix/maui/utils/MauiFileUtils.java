@@ -39,7 +39,7 @@ public class MauiFileUtils {
 	 */
 	public static final String getDataPath() {
 		String rootPath = getRootPath();
-		if(rootPath.endsWith("maui")||rootPath.endsWith("maui-pt")) return rootPath + "\\data"; // likely to be running on console
+		if(rootPath.endsWith("maui")||rootPath.endsWith("maui-pt")) return rootPath + "/data"; // likely to be running on console
 		else return rootPath; // likely to be running on IDE or other platform
 	}
 	
