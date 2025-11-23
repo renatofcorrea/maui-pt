@@ -6,7 +6,7 @@ O trabalho tem como objetivo examinar o uso da linguagem controlada ou da lingua
 
 Palavras-chave
 
-Bases de dados; Estratégia de busca; Linguagem controlada; Linguagem natural. Recuperação da informação; Artigo de revisão.
+Bases de dados; Estratégia de busca; Linguagem controlada; Linguagem natural; Recuperação da informação; Artigo de revisão.
 
 
 
