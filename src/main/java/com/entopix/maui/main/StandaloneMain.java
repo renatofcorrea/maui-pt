@@ -727,7 +727,20 @@ public class StandaloneMain {
 		if (MauiFileUtils.isEmpty(MODELS_DIR)) {
 			throw new EmptyModelsDirException("O diretório de modelos está vazio.");
 		}
-		modelPath = MauiFileUtils.chooseFileFromFileArray(MODELS_DIR.getPath(), MODELS_DIR.listFiles(), SCAN).getPath();
+		File selected = MauiFileUtils.chooseFileFromFileArray(MODELS_DIR.getPath(), MODELS_DIR.listFiles(), SCAN);
+		
+		// If the selected file is a directory, browse it to let the user select a model file inside
+		if (selected.isDirectory()) {
+			File[] modelsInDir = selected.listFiles();
+			if (modelsInDir == null || modelsInDir.length == 0) {
+				System.out.println("O diretório " + selected.getName() + " está vazio.");
+				chooseModelFromList();
+				return;
+			}
+			selected = MauiFileUtils.chooseFileFromFileArray(selected.getPath(), modelsInDir, SCAN);
+		}
+		
+		modelPath = selected.getPath();
 		model = (ModelWrapper) MauiFileUtils.deserializeObject(modelPath);
 		updateModelSetup();
 		updatePaths();

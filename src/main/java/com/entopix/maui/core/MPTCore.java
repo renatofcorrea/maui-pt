@@ -353,10 +353,14 @@ public class MPTCore {
 		});
 		
 		String vocabPathToUse = model.getVocabUsedPath();
-		if (vocabPathToUse == null || "null".equals(vocabPathToUse)) {
+		if (vocabPathToUse == null || vocabPathToUse.isEmpty() || "null".equals(vocabPathToUse)) {
 			vocabPathToUse = getVocabPath();
 		}
-		setupVocab(MauiFileUtils.getDataPath()+getRelativePathtoDataDir(vocabPathToUse), stemmer, stopwords); // NOTE: The usedvocabpath might be in another machine, so this might throw a runtimexception
+		String relativePath = getRelativePathtoDataDir(vocabPathToUse);
+		if (relativePath == null) {
+			relativePath = "vocabulary/TBCI-SKOS_pt.rdf";
+		}
+		setupVocab(MauiFileUtils.getDataPath() + "/" + relativePath, stemmer, stopwords); // NOTE: The usedvocabpath might be in another machine, so this might throw a runtimexception
 		//Remove models may resolve, use getRelativePathtoDataDir to resolve it
 		topicExtractor.setVocabulary(vocab);
 		topicExtractor.setModel(model.getFilter());
