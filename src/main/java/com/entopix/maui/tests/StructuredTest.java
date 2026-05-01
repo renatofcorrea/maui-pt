@@ -26,14 +26,14 @@ import com.entopix.maui.utils.StringTable;
 public class StructuredTest {
 	
 	private static String dataPath = MauiFileUtils.getDataPath();
-	private static String modelsPath = MauiFileUtils.getModelsDirPath() + "\\ST models";
-	private static String resultsPath = dataPath + "\\tests\\";
-	private static File abstractsDir = new File(dataPath + "\\docs\\corpusci\\abstracts");
-	private static File fullTextsDir = new File(dataPath + "\\docs\\corpusci\\fulltexts");
-	private static String abstracts30Path = abstractsDir.getPath() + "\\test30";
-	private static String abstracts60Path = abstractsDir.getPath() + "\\test60";
-	private static String fullTexts30Path = fullTextsDir.getPath() + "\\test30";
-	private static String fullTexts60Path = fullTextsDir.getPath() + "\\test60";
+	private static String modelsPath = MauiFileUtils.getModelsDirPath() + File.separator + "ST models";
+	private static String resultsPath = dataPath + File.separator + "tests" + File.separator;
+	private static File abstractsDir = new File(dataPath + File.separator + "docs" + File.separator + "corpusci" + File.separator + "abstracts");
+	private static File fullTextsDir = new File(dataPath + File.separator + "docs" + File.separator + "corpusci" + File.separator + "fulltexts");
+	private static String abstracts30Path = abstractsDir.getPath() + File.separator + "test30";
+	private static String abstracts60Path = abstractsDir.getPath() + File.separator + "test60";
+	private static String fullTexts30Path = fullTextsDir.getPath() + File.separator + "test30";
+	private static String fullTexts60Path = fullTextsDir.getPath() + File.separator + "test60";
 	
 	private static List<StringTable> fulltextsMatrixes, abstractsMatrixes;
 	private static Instant start, finish;
@@ -184,18 +184,38 @@ public class StructuredTest {
 		MPTCore.setMinOccur(fullTextsMinOccur);
 		if (trainModels) trainFolders = MauiFileUtils.filterFileList(fullTextsDir.listFiles(), "train");
 		List<String[]> results = null;
-		results = runTests(trainFolders, fullTexts30Path, modelsPath, stemmers);
-		fulltextsMatrixes.add(new StringTable(header, results, tableFormat));
-		results = runTests(trainFolders, fullTexts60Path, modelsPath, stemmers);
-		fulltextsMatrixes.add(new StringTable(header, results, tableFormat));
+		if (new File(fullTexts30Path).exists()) {
+			results = runTests(trainFolders, fullTexts30Path, modelsPath, stemmers);
+			if (results == null) results = new ArrayList<String[]>();
+			fulltextsMatrixes.add(new StringTable(header, results, tableFormat));
+		} else {
+			fulltextsMatrixes.add(new StringTable(header, new ArrayList<String[]>(), tableFormat));
+		}
+		if (new File(fullTexts60Path).exists()) {
+			results = runTests(trainFolders, fullTexts60Path, modelsPath, stemmers);
+			if (results == null) results = new ArrayList<String[]>();
+			fulltextsMatrixes.add(new StringTable(header, results, tableFormat));
+		} else {
+			fulltextsMatrixes.add(new StringTable(header, new ArrayList<String[]>(), tableFormat));
+		}
 		
 		// ABSTRACTS
 		MPTCore.setMinOccur(abstractsMinOccur); //Set to abstract models only
 		if (trainModels) trainFolders = MauiFileUtils.filterFileList(abstractsDir.listFiles(), "train");
-		results = runTests(trainFolders, abstracts30Path, modelsPath, stemmers);
-		abstractsMatrixes.add(new StringTable(header, results, tableFormat));
-		results = runTests(trainFolders, abstracts60Path, modelsPath, stemmers);
-		abstractsMatrixes.add(new StringTable(header, results, tableFormat));
+		if (new File(abstracts30Path).exists()) {
+			results = runTests(trainFolders, abstracts30Path, modelsPath, stemmers);
+			if (results == null) results = new ArrayList<String[]>();
+			abstractsMatrixes.add(new StringTable(header, results, tableFormat));
+		} else {
+			abstractsMatrixes.add(new StringTable(header, new ArrayList<String[]>(), tableFormat));
+		}
+		if (new File(abstracts60Path).exists()) {
+			results = runTests(trainFolders, abstracts60Path, modelsPath, stemmers);
+			if (results == null) results = new ArrayList<String[]>();
+			abstractsMatrixes.add(new StringTable(header, results, tableFormat));
+		} else {
+			abstractsMatrixes.add(new StringTable(header, new ArrayList<String[]>(), tableFormat));
+		}
 		
 		MPTCore.setMinOccur(2); //Must be set back to standard
 		
@@ -211,28 +231,48 @@ public class StructuredTest {
 		
 		if (saveCSVFile) {
 			String date = MPTUtils.getTimeAndDate();
-			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts30_" + date + ".csv");
-			abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts60_" + date + ".csv");
-			fulltextsMatrixes.get(1).exportAsCSV(resultsPath + "fulltexts30_" + date + ".csv");
-			fulltextsMatrixes.get(1).exportAsCSV(resultsPath + "fulltexts60_" + date + ".csv");
+			if (abstractsMatrixes.size() >= 2) {
+				if (new File(abstracts30Path).exists()) {
+					abstractsMatrixes.get(0).exportAsCSV(resultsPath + "abstracts30_" + date + ".csv");
+				}
+				if (new File(abstracts60Path).exists()) {
+					abstractsMatrixes.get(1).exportAsCSV(resultsPath + "abstracts60_" + date + ".csv");
+				}
+			}
+			if (fulltextsMatrixes.size() >= 2) {
+				if (new File(fullTexts30Path).exists()) {
+					fulltextsMatrixes.get(0).exportAsCSV(resultsPath + "fulltexts30_" + date + ".csv");
+				}
+				if (new File(fullTexts60Path).exists()) {
+					fulltextsMatrixes.get(1).exportAsCSV(resultsPath + "fulltexts60_" + date + ".csv");
+				}
+			}
 		}
 	}
 	
 	public static String getResultString() {
-		String s = "--- STRUCTURED TEST RESULTS ---\n";            
-		s += "\n--- ABSTRACTS ---\n";
-		s += "\n>>> Results based on 30 documents:\n";
-		s += abstractsMatrixes.get(0).tableToFormattedString();
-		s += "\n>>> Results based on 60 documents:\n";
-		s += abstractsMatrixes.get(1).tableToFormattedString();
-		s += "\n";
-		s += "\n--- FULL TEXTS ---\n";
-		s += "\n>>> Results based on 30 documents:\n";
-		s += fulltextsMatrixes.get(0).tableToFormattedString();
-		s += "\n>>> Results based on 60 documents:\n";
-		s += fulltextsMatrixes.get(1).tableToFormattedString();
-		s += "\nStructured Test Duration: " + elapsed;
-		return s;
+		StringBuilder s = new StringBuilder("--- STRUCTURED TEST RESULTS ---\n");
+		
+		s.append("\n--- ABSTRACTS ---\n");
+		if (abstractsMatrixes.size() >= 2) {
+			s.append("\n>>> Results based on 30 documents:\n");
+			s.append(abstractsMatrixes.get(0).tableToFormattedString());
+			s.append("\n>>> Results based on 60 documents:\n");
+			s.append(abstractsMatrixes.get(1).tableToFormattedString());
+		} else {
+			s.append("No abstract test results available. Check model/test directories and try again.\n");
+		}
+		s.append("\n--- FULL TEXTS ---\n");
+		if (fulltextsMatrixes.size() >= 2) {
+			s.append("\n>>> Results based on 30 documents:\n");
+			s.append(fulltextsMatrixes.get(0).tableToFormattedString());
+			s.append("\n>>> Results based on 60 documents:\n");
+			s.append(fulltextsMatrixes.get(1).tableToFormattedString());
+		} else {
+			s.append("No full text test results available. Check model/test directories and try again.\n");
+		}
+		s.append("\nStructured Test Duration: ").append(elapsed);
+		return s.toString();
 	}
 	
 	public static void main(String[] args) {
