@@ -164,6 +164,7 @@ public class MauiFileUtils {
 	 * Takes a array of files and returns its paths.
 	 */
 	public static String[] getFileListPaths(File[] files) {
+		if (files == null) return new String[0];
 		String[] paths = new String[files.length];
 		
 		int i;
@@ -181,6 +182,7 @@ public class MauiFileUtils {
 	 * @return
 	 */
 	public static String[] getFileNames(File[] files, boolean removeFileExtension) {
+		if (files == null) return new String[0];
 		String[] names = new String[files.length];
 		
 		int i;
@@ -238,6 +240,7 @@ public class MauiFileUtils {
 	 * @throws FileNotFoundException 
 	 */
 	public static File[] filterFileList(File[] fileArray, String filterMethod) throws FileNotFoundException {
+		if (fileArray == null) return new File[0];
 		ArrayList<File> newArray = new ArrayList<File>();
 		
 		for (File f : fileArray) {
@@ -254,9 +257,10 @@ public class MauiFileUtils {
 	 */
 	public static File[] filterDir(File dir, String filterMethod) throws FileNotFoundException {
 		File [] arquivos = dir.listFiles();
-		if (arquivos != null)
+		if (arquivos != null) {
             // Ordene os arquivos alfabeticamente pelo nome
             Arrays.sort(arquivos, (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName()));
+		}
 		return filterFileList(arquivos, filterMethod);
 	}
 	
@@ -267,9 +271,10 @@ public class MauiFileUtils {
 	 */
 	public static File[] filterDir(String dirPath, String filterMethod) throws FileNotFoundException {
 		File [] arquivos = new File(dirPath).listFiles();
-		if (arquivos != null)
+		if (arquivos != null) {
             // Ordene os arquivos alfabeticamente pelo nome
             Arrays.sort(arquivos, (f1, f2) -> f1.getName().compareToIgnoreCase(f2.getName()));
+		}
 		return filterFileList(arquivos, filterMethod);
 	}
 	
