@@ -137,9 +137,11 @@ public class StructuredTest {
 					modelName = MPTUtils.generateModelName(trainDir.getPath(), stemmer);
 					modelPath = modelsPath + "\\ST models\\" + modelName;
 					buildModel(trainDir.getPath(), modelPath, stemmer);
+					System.out.println("Model built: " + modelName + "trained with " + trainDir.getName() + " using " + stemmer.getClass().getSimpleName());
 
 					//Test Model
 					topics = runTopicExtractor(modelPath, testDir, stemmer, false);
+					System.out.println("Model tested: " + modelName + "tested with " + testDir);
 					result = formatArray(modelName, MPTCore.classicEvaluateTopics(topics));
 					list.add(result);
 				}
@@ -152,6 +154,7 @@ public class StructuredTest {
 			ModelWrapper model = null;
 			for (String modPath : modelPaths) {
 				model = loadModel(modPath);
+				System.out.println("Model loaded: " + model.getModelName() + " trained with " + model.getTrainDirName() + " using " + model.getStemmerUsed().getClass().getSimpleName());
 				topics = runTopicExtractor(modPath, testDir, model.getStemmerUsed(), false);
 				result = formatArray(new File(modPath).getName(), MPTCore.classicEvaluateTopics(topics));
 				list.add(result);
