@@ -3790,7 +3790,7 @@
 		<scopeNote xml:lang="pt">Em documento hipertexto ou hipermídia, é o termo, frase ou imagem que recebe marcação especial para funcionar como ligação a outro documento hipertextual, que pode estar em qualquer lugar na Internet. As hiperligações são acionadas por um clique do mouse.</scopeNote>
 	</Concept>
 	<Concept rdf:about="http://logic.ufpe.br/ci/tbci#c_903">
-		<prefLabel xml:lang="pt">hipertexto (processo) </prefLabel>
+		<prefLabel xml:lang="pt">hipertexto (processo)</prefLabel>
 		<related rdf:resource="http://logic.ufpe.br/ci/tbci#c_904"/>
 		<scopeNote xml:lang="pt">Sistema baseado em computador que tem como princípio básico permitir que se passe de um recurso de informação para outro, sem interrupção - IEILS, p. 231-232.</scopeNote>
 	</Concept>
